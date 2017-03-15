@@ -1,0 +1,15 @@
+[groups]
+group1 = user1,user2,user3
+group2 = user2,user4, user7
+group3 = user1,user2
+
+[/]
+* =
+@group1 = r
+@group2 = rw
+user10 = rw
+
+[/subfolder]
+* =
+@group1 = rw
+user12 = r
