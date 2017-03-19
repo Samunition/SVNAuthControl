@@ -1,0 +1,45 @@
+ /*Dark theme */
+ 
+/*SWAP 9c0 AND f90! */
+
+body {
+	background:#000;
+}
+
+a:link {
+	color:#ccc;
+}
+
+li a:hover {
+	background-color:#f90;
+	color:#000;
+}
+
+li a:focus {
+	background-color:#9c0;
+	color:#000;
+	transition:1s;
+}
+
+.wrapper {
+	background:#333;
+}
+ 
+.tabs a {
+	color:#f90;
+}
+
+.tabs .active {
+	background: #9c0;
+	color: #000; 
+	transition:0.2s;
+}
+
+p {
+	color: #ccc;
+}
+
+.smallheader {
+	background:#666;
+	
+}

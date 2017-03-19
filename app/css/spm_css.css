@@ -1,0 +1,128 @@
+/* 09f - NMi's blue */
+/* 
+*/
+body {
+	font-family:"Trebuchet MS",Monaco,sans-serif;
+	margin:0;
+	padding:0;
+	position:relative;
+	background:#fff;
+}
+
+.wrapper {
+	width:1280px;
+	padding:0 4px;
+	margin:auto;
+	border-left:1px solid #CCC;
+	border-right:1px solid #CCC;
+	background:#fff;
+	min-height:100%;
+}
+
+p {
+	padding:0;
+	margin:0;
+}
+
+/*
+p:nth-child(odd) {
+	background-color:#d8d8d8;
+}
+
+p:nth-child(even) {
+	background-color:#ccc;
+}
+*/
+
+/* Class selectors */
+
+.bigbox {
+	width:970px;
+	height:636px;
+	display:block;
+	border:1px solid black;
+	margin-top:4px;
+}
+
+.smallbox {
+	width:300px;
+	height:353px;
+	display:block;
+	border:1px solid black;
+	margin-top:4px;
+}
+
+.smallheader {
+	border-bottom:1px solid black;
+	margin:0;
+	padding:8px;
+	background:#eee;
+	height:18px;
+}
+
+.tabs .active {
+	background:#09f;
+	color:#fff;
+	transition:0.2s;
+}
+
+.tabs a:link {
+	display:inline;
+	border:0px;
+	border-bottom:3px;
+	border-style:solid;
+	padding:5px;
+	font-weight:bold;
+}
+
+ul {
+	overflow:hidden;
+	overflow-y:scroll;
+	list-style-type:square;
+	margin:0;
+	padding:0;
+	max-height:400px;
+}
+
+a:link {
+	display:block;
+	color:#000;
+	text-decoration:none;
+}
+
+li {
+	list-style-image:url("..\\img\\user.bmp");
+}
+
+li a:hover {
+	background-color:#eee;
+}
+
+li a:focus {
+	background-color:#09f;
+	color:#fff;
+	transition:ease,background-color,0.2s;
+}
+
+/* ID selectors */
+#sideboxes {
+	width: 302px;
+	float: left;
+}
+#rightboxes{
+	width: 972px;
+	float: right;
+}
+
+#buttonsbox {
+	width:970px;
+	height:70px;
+	display:block;
+	border:1px solid black;
+	margin-top:4px;
+}
+
+/* clearfix */
+.clear{
+	clear:both;
+}
