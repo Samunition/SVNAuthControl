@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SVN Permissions Manager</title>
+	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_dark.css"/>-->
+	<script type = "text/javascript" src = "scripts\spm_js.js"></script>
+</head>
+<body onload = "UMTabTo('Users'); listPopulatorTest();">
+<div class="wrapper">
+	<div id = "sideboxes">
+		<div class = "smallbox">
+			<div class = "smallheader tabs" id = "boxTabs">
+				<a href = "javascript:UMTabTo('Groups');" id = "groupsTab">Groups</a>
+				<a href = "javascript:UMTabTo('Users');" id = "usersTab")>Users</a>
+			</div>
+				<div class = "tabList" id = "userManagerUsers">
+				
+				<p><ul id = "lUsers">
+					<li><a href="javascript:void(0)">Hello!</a></li>
+				</ul></p>
+				
+				</div>
+				<div class = "tabList" id = "userManagerGroups">
+				
+				<p><ul id = "lGroups">
+					<li><a href="javascript:void(0)">Hello!</a></li>
+					<li><a href="javascript:void(0)">I am a group</a></li>
+				</ul></p>
+			</div>
+		</div>
+		
+		<div class = "smallbox" id = "lowerbox">
+			<div class = "smallheader">
+				<p>Repositories</p>
+			</div>
+				<p><ul id = "lRepos">
+				</ul></p>
+		</div>
+	</div>
+	
+	<div id="rightboxes">
+		<div class = "bigbox">
+			<div class = "smallheader">
+				<p>contextBox</p>
+			</div>
+			<p><ul id = "lContextual">
+			</ul></p>
+		</div>
+		
+		<div id = "buttonsbox">
+		</div>
+	</div>
+	<div class="clear"></div>
+</div>
+</body>
