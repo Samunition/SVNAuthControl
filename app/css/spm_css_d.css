@@ -1,24 +1,29 @@
- /*Dark theme */
- 
-/*SWAP 9c0 AND f90! */
-
 body {
 	background:#000;
 }
 
-a:link {
+p {
 	color:#ccc;
 }
 
-li a:hover {
-	background-color:#f90;
+li {
+	color:#ccc;
+	transition:2s;
+}
+
+input[name=searchbar] {
+	background-color:#888;
+}
+
+.tabList a:hover {
+	background-color:#888;
 	color:#000;
 }
 
-li a:focus {
+.tabList a .active {
 	background-color:#9c0;
 	color:#000;
-	transition:1s;
+	transition:0.5s;
 }
 
 .wrapper {
@@ -29,15 +34,12 @@ li a:focus {
 	color:#f90;
 }
 
-.tabs .active {
+.tabs .activeCurrent {
 	background: #9c0;
 	color: #000; 
 	transition:0.2s;
 }
 
-p {
-	color: #ccc;
-}
 
 .smallheader {
 	background:#666;

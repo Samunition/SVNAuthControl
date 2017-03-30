@@ -1,6 +1,5 @@
 /* 09f - NMi's blue */
-/* 
-*/
+
 body {
 	font-family:"Trebuchet MS",Monaco,sans-serif;
 	margin:0;
@@ -8,6 +7,33 @@ body {
 	position:relative;
 	background:#fff;
 }
+
+p {
+	padding:0;
+	margin:0;
+}
+
+ul {
+	overflow:hidden;
+	overflow-y:scroll;
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	max-height:400px;
+}
+
+li {
+	transition:1s;
+	text-decoration:none;
+	display:block;
+	margin-left:4px;
+}
+
+form {
+	padding:4px;
+}
+
+/* Class selectors */
 
 .wrapper {
 	width:1280px;
@@ -18,23 +44,6 @@ body {
 	background:#fff;
 	min-height:100%;
 }
-
-p {
-	padding:0;
-	margin:0;
-}
-
-/*
-p:nth-child(odd) {
-	background-color:#d8d8d8;
-}
-
-p:nth-child(even) {
-	background-color:#ccc;
-}
-*/
-
-/* Class selectors */
 
 .bigbox {
 	width:970px;
@@ -60,7 +69,28 @@ p:nth-child(even) {
 	height:18px;
 }
 
-.tabs .active {
+.buttonsbox {
+	margin:8px;
+	
+}
+
+input[name=searchbar] {
+	background-image:url('..\\img\\search.bmp');
+	background-position:1px 1px;
+    background-repeat:no-repeat;
+	float:right;
+	border: 1px solid #000;
+	width:0px;
+	padding-left:19px;
+	font-family:"Trebuchet MS",Monaco,sans-serif;
+	transition:width 0.2s;
+}
+
+input[name=searchbar]:focus {
+	width:45%;
+}
+
+.tabs .activeCurrent {
 	background:#09f;
 	color:#fff;
 	transition:0.2s;
@@ -75,36 +105,27 @@ p:nth-child(even) {
 	font-weight:bold;
 }
 
-ul {
-	overflow:hidden;
-	overflow-y:scroll;
-	list-style-type:square;
-	margin:0;
-	padding:0;
-	max-height:400px;
+.tabList a .active  {
+	background-color:#09f;
+	color:#fff;
+	transition:0.2s;
+}
+
+.tabList a:hover {
+	background-color:#eee;
 }
 
 a:link {
 	display:block;
-	color:#000;
 	text-decoration:none;
 }
 
-li {
-	list-style-image:url("..\\img\\user.bmp");
-}
-
-li a:hover {
-	background-color:#eee;
-}
-
-li a:focus {
-	background-color:#09f;
-	color:#fff;
-	transition:ease,background-color,0.2s;
+a:visited {
+	color:inherit;
 }
 
 /* ID selectors */
+
 #sideboxes {
 	width: 302px;
 	float: left;
@@ -123,6 +144,6 @@ li a:focus {
 }
 
 /* clearfix */
-.clear{
+.clear {
 	clear:both;
 }
