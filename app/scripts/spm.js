@@ -27,19 +27,59 @@ function loadFile() {
   });
 };
 
+// Change to load rules
 function loadGroups() {
   $.ajax({
     url: '/scripts/load-groups.php',
     dataType: 'json',
     type: 'POST',
     success: function(rules) {
-      //var rules = $.parseJSON(result)
-      //console.log(rules);
       console.log("Groups loaded.");
       bringGroups(rules);
+			bringUsers(rules);
     }
   });
 };
+
+// Checks if an item exists in
+Array.prototype.pushUnique = function(item) {
+	if (this.indexOf(item) == -1) {
+		this.push(item);
+		return true;
+	}
+	return false;
+};
+
+function bringUsers(json) {
+	 var users = [];
+
+	 for (var key in json) {
+		 if (key == 'groups') {
+			 for (subkey in json[key]) {
+				 // Users in the group to be split
+				 var gusers = json[key][subkey].match(/\w+/g);
+				 //for (var item in gusers) {
+				 for (var i = 0; i < gusers.length; i++){
+					 console.log(gusers[i]);
+					 //console.log(gusers);
+					 users.pushUnique(gusers[i]);
+				 }
+			 }
+		 }
+		 if (key != 'groups') {
+			 console.log(key, json[key]);
+			 for (subkey in json[key]) {
+				 if (subkey.charAt(0) != '@' &&  subkey.charAt(0) != '*') {
+					 users.pushUnique(subkey);
+				 }
+			 }
+			//  for (var value in key) {
+			// 	 console.log("LOL THIS WORKS: " + key + " : " + value);
+			//  }
+		 }
+	 }
+	 console.log(users);
+}
 
 //Refresh the groups box with the JSON's information
 function bringGroups(json) {
@@ -76,7 +116,7 @@ function saveFile() {
 function populateLists() {
 	//Populate the groups
 	var ul = document.getElementById('lGroups');
-	
+
 	for (var i=0; i<groups.length; i++) {
 		var li = document.createElement('li');
 		var liContent = document.createTextNode(groups[i]);
@@ -140,7 +180,7 @@ function prepSearch(which) {
 	} else {
 		listContainer = document.getElementById(which);
 	}
-	
+
 	gSearchableList = listContainer.getElementsByTagName("li");
 }
 
@@ -169,38 +209,38 @@ function contains(that,theOther) {
 /*---From here is unused code, can be deleted eventually---
 
 function listPopulatorTest() {	//Sample function for adding list item
-	ul = document.getElementById("lGroups"); 
+	ul = document.getElementById("lGroups");
 	litem = document.createElement("li"); //Get the new item
 	litem.className = "contextgroup";
 	litem.innerHTML = "I'm a group"; //Put text in the new item
 	ul.appendChild(litem);
-	
+
 	litem = document.createElement("li"); //Get the new item
 	litem.className = "contextgroup";
 	litem.innerHTML = "So am I a group too!"; //Put text in the new item
 	ul.appendChild(litem);
-	
+
 	litem = document.createElement("li"); //Get the new item
 	litem.className = "contextgroup";
 	litem.innerHTML = "I am also a group"; //Put text in the new item
 	ul.appendChild(litem);
-	
+
 	ul = document.getElementById("lUsers"); //Get the list
 	litem = document.createElement("li"); //Get the new item
 	litem.className = "contextgroup";
 	litem.innerHTML = "I'm a user"; //Put text in the new item
 	ul.appendChild(litem);
-	
+
 	litem = document.createElement("li"); //Get the new item
 	litem.className = "contextgroup";
 	litem.innerHTML = "So am I a user too!"; //Put text in the new item
 	ul.appendChild(litem);
-	
+
 	litem = document.createElement("li"); //Get the new item
 	litem.className = "contextgroup";
 	litem.innerHTML = "I am also a user"; //Put text in the new item
 	ul.appendChild(litem);
-	
+
 	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
 	console.log("Lists are populated.");
 }
