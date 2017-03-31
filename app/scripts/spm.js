@@ -37,6 +37,7 @@ function loadGroups() {
       console.log("Groups loaded.");
       bringGroups(rules);
 			bringUsers(rules);
+			wrapListItems();
     }
   });
 };
@@ -51,36 +52,51 @@ Array.prototype.pushUnique = function(item) {
 };
 
 function bringUsers(json) {
-	 var users = [];
+	 var users = []; // An array of unique users
 
+	 // Loop through the keys
 	 for (var key in json) {
+		 // Get users from the group list
 		 if (key == 'groups') {
 			 for (subkey in json[key]) {
-				 // Users in the group to be split
+				 // Users in the group to be split as its a list
 				 var gusers = json[key][subkey].match(/\w+/g);
-				 //for (var item in gusers) {
+
 				 for (var i = 0; i < gusers.length; i++){
 					 console.log(gusers[i]);
-					 //console.log(gusers);
 					 users.pushUnique(gusers[i]);
 				 }
 			 }
 		 }
+		 // Get users from repo access lists
 		 if (key != 'groups') {
 			 console.log(key, json[key]);
 			 for (subkey in json[key]) {
+				 // @ means groups and * means all so we dont want them as they are not users
 				 if (subkey.charAt(0) != '@' &&  subkey.charAt(0) != '*') {
 					 users.pushUnique(subkey);
 				 }
 			 }
-			//  for (var value in key) {
-			// 	 console.log("LOL THIS WORKS: " + key + " : " + value);
-			//  }
 		 }
 	 }
-	 console.log(users);
+
+	 var ul = document.getElementById("lUsers"); //Get the user list
+	 var nUsers = users.length;
+
+	 console.log("Adding " + nUsers + " users to users list");
+
+	 for (var i = 0; i < nUsers; i++) {
+		 litem = document.createElement("li");
+		 litem.className = "contextgroup";
+		 litem.innerHTML = users[i];
+		 ul.appendChild(litem);
+	 }
 }
 
+function wrapListItems() {
+	//$(".contextgroup").unwrap();
+	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
+}
 //Refresh the groups box with the JSON's information
 function bringGroups(json) {
 	var ul = document.getElementById("lGroups"); //Get the list
@@ -93,8 +109,6 @@ function bringGroups(json) {
 		ul.appendChild(litem);
 	}
 	console.log("The JSON has finished updating the groups box.");
-	$(".contextgroup").unwrap();
-	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
 }
 
 function saveFile() {
