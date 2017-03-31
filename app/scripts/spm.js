@@ -13,6 +13,8 @@ var Rules = {
 };
 
 //Will be run when page is loaded
+gSearchableList = null; //Global
+gWrapped = 0;
 function startup() {
 	UMTabTo('Groups');
 	//loadFile();
@@ -133,6 +135,7 @@ function populateUsers() {
 	 }
 }
 
+
 // Populate the groups list with the groups
 function populateGroups() {
 	var groups = Rules.ruleSet[0];
@@ -165,7 +168,12 @@ function populateRepos() {
 }
 
 function wrapListItems() {
-	//$(".contextgroup").unwrap();
+	if (gWrapped = 1) {
+		$(".contextgroup a").unwrap();
+	} else {
+		gWrapped = 1;
+	}
+	//The .contextgroup on the li items are only there to serve as identifiers and are unrelated to the anchor's contextgroup
 	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
 }
 
@@ -309,13 +317,14 @@ function activate(nameOfList) {
 }
 
 function updateContextBox(withWhat) {
-	var originatingList = $(withWhat).closest('ul');
-	var contextBoxTitle = document.getElementById("contextName");
-	if (originatingList.className = "lGroups") {
-		contextBoxTitle.innerHTML = "<p>Users that are in the group \"" + withWhat.innerHTML + "\"<input type=\"text\" name=\"searchbar\" placeholder=\"Search\" onclick=\"prepSearch('lContextBox')\" onblur=\"endSearch()\" oninput=\"search()\"></input></p>"; //YES, I KNOW
+	var originatingList = withWhat.parentNode.parentNode;
+	var contextBoxTitle = document.getElementById("contextHeader");
+	console.log(originatingList.className);
+	if (originatingList.className = 'lGroups') {
+		contextBoxTitle.innerHTML = "Users that are in the group \"" + withWhat.innerHTML + "\"";
 	}
-	if (originatingList.className = "lUsers") {
-		contextBoxTitle.innerHTML = "<p>Repositories that \"" + withWhat.innerHTML + "\" has access to<input type=\"text\" name=\"searchbar\" placeholder=\"Search\" onclick=\"prepSearch('lContextBox')\" onblur=\"endSearch()\" oninput=\"search()\"></input></p>"; //I KNOW
+	if (originatingList.className = 'lUsers') {
+		contextBoxTitle.innerHTML = "Repositories that \"" + withWhat.innerHTML + "\" has access to";
 	}
 }
 
@@ -324,27 +333,30 @@ function prepSearch(which) {
 	var listContainer;
 	if (which=="tabbox") {
 		if (document.getElementById('userManagerUsers').style.display == 'none') {
-			console.log("prepSearch is assigning lGroups");
 			listContainer = document.getElementById('lGroups');
 		} else {
-			console.log("prepSearch is assigning lUsers");
 			listContainer = document.getElementById('lUsers');
 		}
 	} else {
 		listContainer = document.getElementById(which);
 	}
-
 	gSearchableList = listContainer.getElementsByTagName("li");
 }
 
 function search() {
+	var results = 0;
+	var currentItem;
+	console.log("Searching list " + gSearchableList);
 	for (var i=0; i<gSearchableList.length; i++) {
-		if (contains(gSearchableList[i],document.activeElement.text)) {
+		currentItem = gSearchableList[i].innerHTML;
+		if (currentItem.includes(document.activeElement.value)) {
 			gSearchableList[i].style.display = 'block';
+			results++;
 		} else {
 			gSearchableList[i].style.display = 'none';
 		}
 	}
+	console.log("Search returned " + results + " results.");
 }
 
 function endSearch() {
@@ -354,49 +366,7 @@ function endSearch() {
 	gSearchableList = null;
 }
 
-function contains(that,theOther) {
-	//Iterate looking for first letter
-	//sequentially match letters once that's found. If they're wrong, start again.
-}
-
-/*---From here is unused code, can be deleted eventually---
-
-function listPopulatorTest() {	//Sample function for adding list item
-	ul = document.getElementById("lGroups");
-	litem = document.createElement("li"); //Get the new item
-	litem.className = "contextgroup";
-	litem.innerHTML = "I'm a group"; //Put text in the new item
-	ul.appendChild(litem);
-
-	litem = document.createElement("li"); //Get the new item
-	litem.className = "contextgroup";
-	litem.innerHTML = "So am I a group too!"; //Put text in the new item
-	ul.appendChild(litem);
-
-	litem = document.createElement("li"); //Get the new item
-	litem.className = "contextgroup";
-	litem.innerHTML = "I am also a group"; //Put text in the new item
-	ul.appendChild(litem);
-
-	ul = document.getElementById("lUsers"); //Get the list
-	litem = document.createElement("li"); //Get the new item
-	litem.className = "contextgroup";
-	litem.innerHTML = "I'm a user"; //Put text in the new item
-	ul.appendChild(litem);
-
-	litem = document.createElement("li"); //Get the new item
-	litem.className = "contextgroup";
-	litem.innerHTML = "So am I a user too!"; //Put text in the new item
-	ul.appendChild(litem);
-
-	litem = document.createElement("li"); //Get the new item
-	litem.className = "contextgroup";
-	litem.innerHTML = "I am also a user"; //Put text in the new item
-	ul.appendChild(litem);
-
-	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
-	console.log("Lists are populated.");
-}
+/*---------------From here is unused code------------------
 
 function listGroups(json) {
     // Groups
@@ -406,6 +376,4 @@ function listGroups(json) {
     $("#content").val(JSON.stringify(groups, null, 4));
 }
 
-//Remains of a different data structure. Not used.
-var order = 1; //1 or 2, inverts list order
 */
