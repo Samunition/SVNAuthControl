@@ -14,9 +14,6 @@ p {
 }
 
 ul {
-	overflow:hidden;
-	overflow-y:scroll;
-	list-style-type:none;
 	margin:0;
 	padding:0;
 	max-height:400px;
@@ -71,7 +68,6 @@ form {
 
 .buttonsbox {
 	margin:8px;
-	
 }
 
 input[name=searchbar] {
@@ -103,6 +99,12 @@ input[name=searchbar]:focus {
 	border-style:solid;
 	padding:5px;
 	font-weight:bold;
+}
+
+.tabList {
+	overflow:hidden;
+	overflow-y:scroll;
+	height:calc(100% - 35px); /*The best ability of css ever, end of*/
 }
 
 .tabList a .active  {
