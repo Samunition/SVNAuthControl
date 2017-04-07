@@ -56,6 +56,8 @@ function load() {
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// deleteGroup("samsgroup");
 			// deleteGroup("samsgroup");
+			console.log("Load user rules");
+			userRuleLoader("user1");
     }
   });
 };
@@ -130,6 +132,7 @@ function populateUsers() {
 	 for (var i = 0; i < nUsers; i++) {
 		 litem = document.createElement("li");
 		 litem.className = "contextgroup";
+		 litem.id = users[i];
 		 litem.innerHTML = users[i];
 		 ul.appendChild(litem);
 	 }
@@ -147,6 +150,7 @@ function populateGroups() {
 	for (var i=0; i<nGroups; i++) {
 		litem = document.createElement("li"); //Create & get the new item
 		litem.className = "contextgroup";
+		litem.id = groups[i][0];
 		litem.innerHTML = groups[i][0]; //Put text in the new item
 		ul.appendChild(litem);
 	}
@@ -162,6 +166,7 @@ function populateRepos() {
 	for (var i=0; i<nRepos; i++) {
 		litem = document.createElement("li"); //Create & get the new item
 		litem.className = "contextgroup";
+		litem.id = repos[i][0];
 		litem.innerHTML = repos[i][0]; //Put text in the new item
 		ul.appendChild(litem);
 	}
@@ -284,6 +289,69 @@ function saveFile() {
       console.log(deleted);
     }
   });
+}
+
+function userRuleLoader(username) {
+	// Get a list of groups the user is a part of
+	var checklist = [username];
+	var nGroups = Rules.ruleSet[0].length;
+
+	for (var i = 0; i < nGroups; i++) {
+		var inGroup = $.inArray(username, Rules.ruleSet[0][i][1]);
+		if (inGroup > -1) {
+			checklist.push(Rules.ruleSet[0][i][0]);
+		}
+	}
+
+	console.log(checklist);
+
+	// Check each repo against the checklist
+	var nRepos = Rules.ruleSet[2].length;
+	var nChecklist = checklist.length;
+	var perms = []; // perms[i][0] is all the repos with permissions
+
+	for (var i = 0; i < nRepos; i++) {
+		var nRules = Rules.ruleSet[2][i][1].length;
+		var repoPerms = [];
+		for (var j = 0; j < nRules; j++) {
+
+			// Check to see if all, *, has permissions
+			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
+				repoPerms.push(Rules.ruleSet[2][i][1][j]);
+			}
+
+			// Check the checklist against repo rules
+			for ( var k = 0; k < nChecklist; k++) {
+				if (checklist[k] == Rules.ruleSet[2][i][1][j][0]) {
+					repoPerms.push(Rules.ruleSet[2][i][1][j]);
+				}
+			}
+		}
+		// Add the repo perms to perms list
+		perms.push([Rules.ruleSet[2][i][0], repoPerms]);
+	}
+	console.log(perms);
+
+	//  List the results
+	var ul = document.getElementById("lContextbox"); // Get the list
+	var nPerms = perms.length;
+
+	console.log("Adding " + nPerms + " permissions to the context list");
+
+	for (var i = 0; i < nPerms; i++) {
+		litem = document.createElement("li");
+		litem.className = "contextgroup";
+		litem.innerHTML = perms[i][0] + " We need to make these collapseable lists or something for the other data about the perms";
+		ul.appendChild(litem);
+	}
+}
+
+function groupRuleLoader(groupName) {
+ // Load rules for the groups
+}
+
+function repoRuleLoader(repo) {
+ // load rules for selected repos
 }
 
 //-------------------From here is UI code------------------
