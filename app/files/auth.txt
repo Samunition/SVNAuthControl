@@ -20,9 +20,10 @@ user10 = rw
 * =
 @group1 = rw
 user12 = r
+user1 = r
 
 [/anotherone]
-* =
+* = r
 @group5 = r
 adam = rw
 rob = r

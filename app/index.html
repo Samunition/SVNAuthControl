@@ -4,7 +4,7 @@
 	<meta charset="UTF-8"/>
 	<title>SVN Permissions Manager</title>
 	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
-	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/>--> <!--alternative colours-->
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/> <!--alternative colours-->
 	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
 	<script type = "text/javascript" src = "scripts\spm.js"></script>
 </head>
@@ -16,11 +16,11 @@
 			<div class = "smallheader tabs" id = "boxTabs">
 				<a href = "#" onclick = "UMTabTo('Groups');" id = "groupsTab">Groups</a>
 				<a href = "#" onclick = "UMTabTo('Users');" id = "usersTab">Users</a>
-				<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('tabbox')" onblur="endSearch()" oninput="search()"></input>
+				<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('tabbox')" oninput="search()"></input>
 			</div>
-				<div class = "tabList" id = "userManagerUsers">
-					<p><ul id = "lUsers"></ul></p>
-				</div>
+			<div class = "tabList" id = "userManagerUsers">
+				<p><ul id = "lUsers"></ul></p>
+			</div>
 			<div class = "tabList" id = "userManagerGroups">
 				<p><ul id = "lGroups"></ul></p>
 			</div>
@@ -28,18 +28,22 @@
 <!--Lower left-hand box-->
 		<div class = "smallbox" id = "lowerbox">
 			<div class = "smallheader">
-				<p>Repositories<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos')" onblur="endSearch()" oninput="search()"></input></p>
+				<p>Repositories<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos')" oninput="search()"></input></p>
 			</div>
-			<p><ul id = "lRepos"></ul></p>
+			<div class = "tabList">
+				<p><ul id = "lRepos"></ul></p>
+			</div>
 		</div>
 	</div>
 	<div id="rightboxes">
 <!--Upper right-hand box-->
 		<div class = "bigbox">
-			<div class = "smallheader" id = "contextName">
-				<p>contextBox<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lContextBox')" onblur="endSearch()" oninput="search()"></input></p>
+			<div class = "smallheader">
+				<p><span id = "contextHeader">contextBox</span><input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lContextBox')" oninput="search()"></input></p>
 			</div>
-			<p><ul id = "lContextbox"></ul></p>
+			<div class="contextList">
+				<p><ul id = "lContextbox"></ul></p>
+			</div>
 		</div>
 <!--Lower right-hand box-->
 		<div id = "buttonsbox">
