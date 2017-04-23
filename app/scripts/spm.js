@@ -25,16 +25,17 @@ function startup() {
 	gSearchableList = null; //Global
 }
 
-function loadFile() {
-  $.ajax({
-    url: '/scripts/load-file.php',
-    type: 'POST',
-    success: function(html) {
-      $("#content").val(html);
-      console.log("File loaded.");
-    }
-  });
-}
+
+// function loadFile() {
+//   $.ajax({
+//     url: '/scripts/load-file.php',
+//     type: 'POST',
+//     success: function(html) {
+//       $("#content").val(html);
+//       console.log("File loaded.");
+//     }
+//   });
+// }
 
 function modalSetup() {
 	var modal = document.getElementById('modalbox'); // Get the modal
@@ -72,10 +73,16 @@ function load() {
 			// console.log("Load user rules");
 			// userRuleLoader("user1");
 			// rebuildFile();
-        deleteUser("user1");
+			// deleteRepo("/");
+			// deleteRepo("lol");
+			// deleteRepoRule("/anotherone", "group5");
+			// addRepoRule("/anotherone", "user7", "r");
+			// addRepoRule("/anotherone", "group9", "rw");
+      // deleteUser("user1");
+    }
     }
   });
-};
+}
 
 // Checks if an item exists in and if not pushes it
 Array.prototype.pushUnique = function(item) {
@@ -287,18 +294,71 @@ function addRepo(repoLoc) {
 
 function addRepoRule(repoLoc, delegate, perms) {
 	// Todo add a rule to the repo
+	var nRepos = Rules.ruleSet[2].length;
+	var found = false;
+
+	for (var i = 0; i < nRepos; i++) {
+		if (Rules.ruleSet[2][i][0] == repoLoc) {
+			var nRules = Rules.ruleSet[2][i].length
+			console.log("Found Repo");
+			for (var j = 0; j < nRules; j++) {
+				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
+					console.log("Rule for delegate already exists");
+				}
+				else {
+					Rules.ruleSet[2][i][1].push([delegate, perms]);
+				}
+			}
+		}
+	}
+	updateLists();
 }
 
 function deleteRepoRule(repoLoc, delegate) {
 	// Todo delete the given repo rule
+	// repos [i][1] = 2D array of rules
+	// repos [i][1][0] = first rule e.g. "user10", "rw"
+	var nRepos = Rules.ruleSet[2].length;
+
+	for (var i = 0; i < nRepos; i++) {
+		if (Rules.ruleSet[2][i][0] == repoLoc) {
+			var nRules = Rules.ruleSet[2][i].length
+			console.log("Found Repo");
+			for (var j = 0; j < nRules; j++) {
+				console.log(Rules.ruleSet[2][i][1][j]);
+				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
+					console.log("Found group1 in anotherone");
+					Rules.ruleSet[2][i][1].splice(j, 1);
+				}
+			}
+		}
+	}
 }
 
 function updateRepoRule(repoLoc, delegate, perms) {
 	// Todo update given repo rule
+
 }
 
 function deleteRepo(repoLoc) {
-	// Todo delete repo
+	var nRepos = Rules.ruleSet[2].length;
+	var found = false;
+
+	for (var i = 0; i < nRepos; i++) {
+		if (Rules.ruleSet[2][i][0] == repoLoc) {
+			Rules.ruleSet[2].splice(i, 1);
+			console.log("deleted");
+			break;
+		}
+	}
+
+	if (!found) {
+		// Not found
+		console.log("Repo not found");
+	}
+
+	// Todo search repos for group and delete rules
+	updateLists();
 }
 
 function clearLists() {
