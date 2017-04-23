@@ -19,6 +19,7 @@ function startup() {
 	UMTabTo('Groups');
 	//loadFile();
 	load();
+	modalSetup();
 	gSearchableList = null; //Global
 }
 
@@ -32,6 +33,34 @@ function loadFile() {
     }
   });
 };
+
+function modalSetup() {
+	// Get the modal
+	var modal = document.getElementById('myModal');
+	//modal.style.display = "none";
+	// Get the button that opens the modal
+	var btn = document.getElementById("addBtn");
+
+	// Get the <span> element that closes the modal
+	var span = document.getElementsByClassName("close")[0];
+	// When the user clicks the button, open the modal
+	btn.onclick = function() {
+	    modal.style.display = "block";
+	}
+
+	// When the user clicks on <span> (x), close the modal
+	span.onclick = function() {
+	    modal.style.display = "none";
+	}
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) {
+	    if (event.target == modal) {
+	        modal.style.display = "none";
+	    }
+	}
+
+}
 
 // Change to load rules
 function load() {
@@ -56,6 +85,9 @@ function load() {
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// deleteGroup("samsgroup");
 			// deleteGroup("samsgroup");
+			// console.log("Load user rules");
+			// userRuleLoader("user1");
+			// rebuildFile();
     }
   });
 };
@@ -130,6 +162,7 @@ function populateUsers() {
 	 for (var i = 0; i < nUsers; i++) {
 		 litem = document.createElement("li");
 		 litem.className = "contextgroup";
+		 litem.id = users[i];
 		 litem.innerHTML = users[i];
 		 ul.appendChild(litem);
 	 }
@@ -147,6 +180,7 @@ function populateGroups() {
 	for (var i=0; i<nGroups; i++) {
 		litem = document.createElement("li"); //Create & get the new item
 		litem.className = "contextgroup";
+		litem.id = groups[i][0];
 		litem.innerHTML = groups[i][0]; //Put text in the new item
 		ul.appendChild(litem);
 	}
@@ -162,6 +196,7 @@ function populateRepos() {
 	for (var i=0; i<nRepos; i++) {
 		litem = document.createElement("li"); //Create & get the new item
 		litem.className = "contextgroup";
+		litem.id = repos[i][0];
 		litem.innerHTML = repos[i][0]; //Put text in the new item
 		ul.appendChild(litem);
 	}
@@ -270,10 +305,8 @@ function updateLists() {
 	console.log("Screen Updated");
 }
 
-function saveFile() {
-  var contents = $('#content').val();
-
-  $.ajax({
+function saveFile(contents) {
+	$.ajax({
     url: '/scripts/save-file.php',
     type: 'POST',
     data: {
@@ -284,6 +317,113 @@ function saveFile() {
       console.log(deleted);
     }
   });
+}
+
+function userRuleLoader(username) {
+	// Get a list of groups the user is a part of
+	console.log("LOADING USER RULES");
+	var checklist = [username];
+	var nGroups = Rules.ruleSet[0].length;
+
+	for (var i = 0; i < nGroups; i++) {
+		var inGroup = $.inArray(username, Rules.ruleSet[0][i][1]);
+		if (inGroup > -1) {
+			checklist.push(Rules.ruleSet[0][i][0]);
+		}
+	}
+
+	// Check each repo against the checklist
+	var nRepos = Rules.ruleSet[2].length;
+	var nChecklist = checklist.length;
+	var perms = []; // perms[i][0] is all the repos with permissions
+
+	for (var i = 0; i < nRepos; i++) {
+		var nRules = Rules.ruleSet[2][i][1].length;
+		var repoPerms = [];
+		for (var j = 0; j < nRules; j++) {
+
+			// Check to see if all, *, has permissions
+			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
+				repoPerms.push(Rules.ruleSet[2][i][1][j]);
+			}
+
+			// Check the checklist against repo rules
+			for ( var k = 0; k < nChecklist; k++) {
+				if (checklist[k] == Rules.ruleSet[2][i][1][j][0]) {
+					repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+				}
+			}
+		}
+
+		// Add the repo perms to perms list
+		if (repoPerms.length != 0) {
+			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
+		}
+	}
+
+	//  List the results
+	var ul = document.getElementById("lContextbox"); // Get the list
+	var nPerms = perms.length;
+
+	// clear the current list
+
+	ul.innerHTML = "";
+	console.log("Adding " + nPerms + " permissions to the context list");
+
+	for (var i = 0; i < nPerms; i++) {
+		litem = document.createElement("li");
+		litem.className = "contextgroup";
+		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
+		ul.appendChild(litem);
+	}
+}
+
+function groupRuleLoader(groupName) {
+ // Load rules for the groups
+ // Check each repo against the group
+ console.log("LOADING GROUP RULES");
+ var nRepos = Rules.ruleSet[2].length;
+ var perms = []; // perms[i][0] is all the repos with permissions
+
+ for (var i = 0; i < nRepos; i++) {
+	 var nRules = Rules.ruleSet[2][i][1].length;
+	 var repoPerms = [];
+	 for (var j = 0; j < nRules; j++) {
+		 // Check to see if all, *, has permissions
+		 if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
+			 repoPerms.push(Rules.ruleSet[2][i][1][j]);
+		 }
+
+		 // Check the checklist against repo rules
+		 if (groupName == Rules.ruleSet[2][i][1][j][0]) {
+			 repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+		 }
+	 }
+	 // Add the repo perms to perms list
+	 if (repoPerms.length != 0) {
+		 perms.push([Rules.ruleSet[2][i][0], repoPerms]);
+	 }
+ }
+
+ //  List the results
+ var ul = document.getElementById("lContextbox"); // Get the list
+ var nPerms = perms.length;
+
+ // clear the current list
+ ul.innerHTML = "";
+
+ console.log("Adding " + nPerms + " permissions to the context list");
+
+ for (var i = 0; i < nPerms; i++) {
+	 litem = document.createElement("li");
+	 litem.className = "contextgroup";
+	 litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
+	 ul.appendChild(litem);
+ }
+}
+
+function repoRuleLoader(repo) {
+ // load rules for selected repos
 }
 
 //-------------------From here is UI code------------------
@@ -326,6 +466,8 @@ function updateContextBox(withWhat) {
 	}
 	if (originatingList.className = 'lUsers') {
 		contextBoxTitle.innerHTML = "Repositories that \"" + withWhat.innerHTML + "\" has access to";
+		console.log(withWhat.id);
+		userRuleLoader(withWhat.id);
 	}
 }
 

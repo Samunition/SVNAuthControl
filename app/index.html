@@ -10,6 +10,12 @@
 </head>
 <body onload = "startup();">
 <div class="wrapper">
+	<div id="myModal" class="modal">
+	  <div class="modal-content">
+	    <span class="close">&times;</span>
+	    <p><center>This will drop down when add is clicked</center></p>
+	  </div>
+	</div>
 	<div id = "sideboxes">
 <!--Upper left-hand box-->
 		<div class = "smallbox">
@@ -41,13 +47,16 @@
 			<div class = "smallheader">
 				<p><span id = "contextHeader">contextBox</span><input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lContextBox')" oninput="search()"></input></p>
 			</div>
-			<p><ul id = "lContextbox"></ul></p>
+			<div class="contextList">
+				<p><ul id = "lContextbox"></ul></p>
+			</div>
 		</div>
 <!--Lower right-hand box-->
 		<div id = "buttonsbox">
 			<form>
-				<button type = "button">Placeholder.</button>
-				<button type = "button">Another placeholder.</button>
+				<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
+				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>
+				<button id="addBtn">Open Add Modal</button>
 			</form>
 		</div>
 	</div>

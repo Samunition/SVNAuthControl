@@ -1,0 +1,188 @@
+/* 09f - NMi's blue */
+
+body {
+	font-family:"Trebuchet MS",Monaco,sans-serif;
+	margin:0;
+	padding:0;
+	position:relative;
+	background:#fff;
+}
+
+p {
+	padding:0;
+	margin:0;
+}
+
+ul {
+	overflow:hidden;
+	overflow-y:scroll;
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	max-height:400px;
+}
+
+li {
+	transition:1s;
+	text-decoration:none;
+	display:block;
+	margin-left:4px;
+}
+
+form {
+	padding:4px;
+}
+
+/* Class selectors */
+
+.wrapper {
+	width:1280px;
+	padding:0 4px;
+	margin:auto;
+	border-left:1px solid #CCC;
+	border-right:1px solid #CCC;
+	background:#fff;
+	min-height:100%;
+}
+
+.bigbox {
+	width:970px;
+	height:636px;
+	display:block;
+	border:1px solid black;
+	margin-top:4px;
+}
+
+.smallbox {
+	width:300px;
+	height:353px;
+	display:block;
+	border:1px solid black;
+	margin-top:4px;
+}
+
+.smallheader {
+	border-bottom:1px solid black;
+	margin:0;
+	padding:8px;
+	background:#eee;
+	height:18px;
+}
+
+.buttonsbox {
+	margin:8px;
+
+}
+
+input[name=searchbar] {
+	background-image:url('..\\img\\search.bmp');
+	background-position:1px 1px;
+    background-repeat:no-repeat;
+	float:right;
+	border: 1px solid #000;
+	width:0px;
+	padding-left:19px;
+	font-family:"Trebuchet MS",Monaco,sans-serif;
+	transition:width 0.2s;
+}
+
+input[name=searchbar]:focus {
+	width:15%;
+}
+
+.tabs .activeCurrent {
+	background:#09f;
+	color:#fff;
+	transition:0.2s;
+}
+
+.tabs a:link {
+	display:inline;
+	border:0px;
+	border-bottom:3px;
+	border-style:solid;
+	padding:5px;
+	font-weight:bold;
+}
+
+.tabList a .active  {
+	background-color:#09f;
+	color:#fff;
+	transition:0.2s;
+}
+
+.tabList a:hover {
+	background-color:#eee;
+}
+
+a:link {
+	display:block;
+	text-decoration:none;
+}
+
+a:visited {
+	color:inherit;
+}
+
+/* ID selectors */
+
+#sideboxes {
+	width: 302px;
+	float: left;
+}
+#rightboxes{
+	width: 972px;
+	float: right;
+}
+
+#buttonsbox {
+	width:970px;
+	height:70px;
+	display:block;
+	border:1px solid black;
+	margin-top:4px;
+}
+
+/* clearfix */
+.clear {
+	clear:both;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
