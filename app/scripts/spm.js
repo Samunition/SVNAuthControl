@@ -8,6 +8,8 @@
   document.getElementById('content').value = '';
 }); */
 
+var modalTarget = "";
+
 var Rules = {
 	ruleSet : []
 };
@@ -32,34 +34,16 @@ function loadFile() {
       console.log("File loaded.");
     }
   });
-};
+}
 
 function modalSetup() {
-	// Get the modal
-	var modal = document.getElementById('myModal');
-	//modal.style.display = "none";
-	// Get the button that opens the modal
-	var btn = document.getElementById("addBtn");
-
-	// Get the <span> element that closes the modal
-	var span = document.getElementsByClassName("close")[0];
-	// When the user clicks the button, open the modal
-	btn.onclick = function() {
-	    modal.style.display = "block";
-	}
-
-	// When the user clicks on <span> (x), close the modal
-	span.onclick = function() {
-	    modal.style.display = "none";
-	}
-
-	// When the user clicks anywhere outside of the modal, close it
-	window.onclick = function(event) {
+	var modal = document.getElementById('modalbox'); // Get the modal
+	modal.style.display = "none";
+	window.onclick = function(event) { // When the user clicks anywhere outside of the modal, close it
 	    if (event.target == modal) {
 	        modal.style.display = "none";
 	    }
 	}
-
 }
 
 // Change to load rules
@@ -79,8 +63,8 @@ function load() {
 			console.log("Populating lists");
 			updateLists();
 			console.log("Lists populated");
-
-			// addUser("sam");
+			
+			addUser("Samuel");
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// deleteGroup("samsgroup");
@@ -256,10 +240,10 @@ function updateGroup(groupName, usernames) {
 
 function addUser(username) {
 	if (Rules.ruleSet[1].pushUnique(username)) {
-		// Message sayiong it worked like a popup notification or something
+		console.log("User added");
 	}
 	else {
-		// Message saying user already present
+		window.alert("There's already a user called " + username);
 	}
 	updateLists();
 }
@@ -497,7 +481,7 @@ function search() {
 	console.log("Searching list " + gSearchableList);
 	for (var i=0; i<gSearchableList.length; i++) {
 		currentItem = gSearchableList[i].innerHTML;
-		if (currentItem.includes(document.activeElement.value)) {
+		if (currentItem.toUpperCase().includes(document.activeElement.value.toUpperCase())) {
 			gSearchableList[i].style.display = 'block';
 			results++;
 		} else {
@@ -512,6 +496,34 @@ function endSearch() {
 		gSearchableList[i].style.display = 'block';
 	}
 	gSearchableList = null;
+}
+
+function getInput(prompt, target) { //Opens the modal box to get a string from the user
+	modalTarget = target;
+	var modal = document.getElementById("modalbox");
+	var modalHead = document.getElementById("modalHeader");
+	var modalButton = document.getElementById("modalButton");
+	modal.style.display = "block";
+	modalHead.innerHTML = prompt;
+}
+
+function closeModal() {
+	var modal = document.getElementById("modalbox");
+	modal.style.display = "none";
+}
+
+function okModal() {
+	console.log("okModal has " + modalTarget);
+	var modalContents = document.getElementById("modalContent");
+	switch (modalTarget) {
+		case "user":
+			addUser(modalContents.value);
+			break;
+		case "group":
+			addGroup(modalContents.value);
+			break;
+	}
+	closeModal();
 }
 
 /*---------------From here is unused code------------------

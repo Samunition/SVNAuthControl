@@ -146,6 +146,26 @@ a:visited {
 	margin-top:4px;
 }
 
+#modalbox {
+	display:none;
+	float:middle;
+	position:fixed;
+	top:50%;
+	left:50%;
+	transform:translate(-50%, -50%);
+	width:320px;
+	height:120px;
+	text-align:center;
+	background-color:#fff;
+	border-color:#000;
+	border-style:outset;
+	padding:8px;
+}
+
+#pagecover {
+	
+}
+
 /* clearfix */
 .clear {
 	clear:both;
