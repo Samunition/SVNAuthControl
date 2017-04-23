@@ -8,13 +8,18 @@
   document.getElementById('content').value = '';
 }); */
 
+var Rules = {
+	ruleSet : []
+};
+
 //Will be run when page is loaded
 gSearchableList = null; //Global
 gWrapped = 0;
 function startup() {
 	UMTabTo('Groups');
-	loadFile();
-	loadGroups();
+	//loadFile();
+	load();
+	gSearchableList = null; //Global
 }
 
 function loadFile() {
@@ -29,21 +34,33 @@ function loadFile() {
 };
 
 // Change to load rules
-function loadGroups() {
-  $.ajax({
+function load() {
+	$.ajax({
     url: '/scripts/load-groups.php',
     dataType: 'json',
     type: 'POST',
     success: function(rules) {
-      console.log("Groups loaded.");
-      bringGroups(rules);
-			bringUsers(rules);
-			wrapListItems();
+      console.log("Rules loaded.");
+			console.log("Parsing rules");
+
+			// Rules.ruleSet = [groups, users, repos]
+			Rules.ruleSet = parseFileData(rules);
+			console.log("Rules parsed and stored");
+
+			console.log("Populating lists");
+			updateLists();
+			console.log("Lists populated");
+
+			// addUser("sam");
+			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			// deleteGroup("samsgroup");
+			// deleteGroup("samsgroup");
     }
   });
 };
 
-// Checks if an item exists in
+// Checks if an item exists in and if not pushes it
 Array.prototype.pushUnique = function(item) {
 	if (this.indexOf(item) == -1) {
 		this.push(item);
@@ -52,35 +69,59 @@ Array.prototype.pushUnique = function(item) {
 	return false;
 };
 
-function bringUsers(json) {
-	 var users = []; // An array of unique users
+function parseFileData(fileData) {
+	// groups[i][0] to get the group names
+	// groups[i][1] to get the group members array
+	// repos [i][0] = repo name
+	// repos [i][1] = 2D array of rules
+	// repos [i][1][0] = first rule e.g. "user10", "rw"
+	var groups = []; // Group names and member array pairings
+	var users = []; // Array of unique users
+	var repos = []; // Array of unique repos
 
-	 // Loop through the keys
-	 for (var key in json) {
-		 // Get users from the group list
-		 if (key == 'groups') {
-			 for (subkey in json[key]) {
-				 // Users in the group to be split as its a list
-				 var gusers = json[key][subkey].match(/\w+/g);
+	// Loop through all the keys
+	for (var key in fileData) {
+		// Parse groups section
+		if (key == 'groups') {
+			for (subkey in fileData[key]) {
+				// Split value into its seperate users
+				var groupMembers = fileData[key][subkey].match(/\w+/g);
 
-				 for (var i = 0; i < gusers.length; i++){
-					 console.log(gusers[i]);
-					 users.pushUnique(gusers[i]);
-				 }
-			 }
-		 }
-		 // Get users from repo access lists
-		 if (key != 'groups') {
-			 console.log(key, json[key]);
-			 for (subkey in json[key]) {
-				 // @ means groups and * means all so we dont want them as they are not users
-				 if (subkey.charAt(0) != '@' &&  subkey.charAt(0) != '*') {
-					 users.pushUnique(subkey);
-				 }
-			 }
-		 }
-	 }
+				// Add the key and value to groups
+				groups.push([subkey, groupMembers]);
 
+				// Add unique users to user array
+				for (var i = 0; i < groupMembers.length; i++) {
+					users.pushUnique(groupMembers[i]);
+				}
+			}
+		}
+		else {
+			var rule = []; // rules to be paired with repo
+			for (subkey in fileData[key]) {
+				// @ means groups and * means all so we dont want them as they are not users
+				if (subkey.charAt(0) != '@' &&  subkey.charAt(0) != '*') {
+					users.pushUnique(subkey);
+					rule.push([subkey, fileData[key][subkey]]);
+				}
+				else if (subkey.charAt(0) == '@') {
+					// Renive @ from group name
+					rule.push([subkey.substring(1), fileData[key][subkey]]);
+				}
+				else if (subkey.charAt(0) == '*') {
+					rule.push([subkey, fileData[key][subkey]]);
+				}
+			}
+			repos.push([key, rule]);
+		}
+	}
+
+	var rules = [groups, users, repos];
+	return rules;
+}
+
+function populateUsers() {
+	 var users = Rules.ruleSet[1];
 	 var ul = document.getElementById("lUsers"); //Get the user list
 	 var nUsers = users.length;
 
@@ -94,6 +135,38 @@ function bringUsers(json) {
 	 }
 }
 
+
+// Populate the groups list with the groups
+function populateGroups() {
+	var groups = Rules.ruleSet[0];
+	var ul = document.getElementById("lGroups"); //Get the list
+	var nGroups = groups.length;
+
+	console.log("Adding " + nGroups + " groups to groups list");
+
+	for (var i=0; i<nGroups; i++) {
+		litem = document.createElement("li"); //Create & get the new item
+		litem.className = "contextgroup";
+		litem.innerHTML = groups[i][0]; //Put text in the new item
+		ul.appendChild(litem);
+	}
+}
+
+function populateRepos() {
+	var repos = Rules.ruleSet[2];
+	var ul = document.getElementById("lRepos"); //Get the list
+	var nRepos = repos.length;
+
+	console.log("Adding " + nRepos + " repos to repo list");
+
+	for (var i=0; i<nRepos; i++) {
+		litem = document.createElement("li"); //Create & get the new item
+		litem.className = "contextgroup";
+		litem.innerHTML = repos[i][0]; //Put text in the new item
+		ul.appendChild(litem);
+	}
+}
+
 function wrapListItems() {
 	if (gWrapped = 1) {
 		$(".contextgroup a").unwrap();
@@ -104,18 +177,97 @@ function wrapListItems() {
 	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
 }
 
-//Refresh the groups box with the JSON's information
-function bringGroups(json) {
-	var ul = document.getElementById("lGroups"); //Get the list
-	var nGroups = Object.keys(json.groups).length;
-	console.log("The JSON is updating the groups box with "+nGroups+" items");
-	for (var i=0; i<nGroups; i++) {
-		litem = document.createElement("li"); //Create & get the new item
-		litem.className = "contextgroup";
-		litem.innerHTML = Object.keys(json.groups)[i];; //Put text in the new item
-		ul.appendChild(litem);
+function addGroup(groupName, usernames) {
+	var nGroups = Rules.ruleSet[0].length;
+	var found = false;
+
+	for (var i = 0; i < nGroups; i++) {
+		if (Rules.ruleSet[0][i][0] == groupName) {
+			// Group already exists
+			found = true;
+			break;
+		}
 	}
-	console.log("The JSON has finished updating the groups box.");
+	if (!found) {
+		Rules.ruleSet[0].push([groupName, usernames]);
+	}
+	updateLists();
+}
+
+function deleteGroup(groupName) {
+	var nGroups = Rules.ruleSet[0].length;
+	var found = false;
+
+	for (var i = 0; i < nGroups; i++) {
+		if (Rules.ruleSet[0][i][0] == groupName) {
+			Rules.ruleSet[0].splice(i, 1);
+			console.log("deleted");
+			break;
+		}
+	}
+
+	if (!found) {
+		// Not found
+		console.log("Group not found");
+	}
+
+	// Todo search repos for group and delete rules
+	updateLists();
+}
+
+function updateGroup(groupName, usernames) {
+	// Todo find group, replace user list with new one
+}
+
+function addUser(username) {
+	if (Rules.ruleSet[1].pushUnique(username)) {
+		// Message sayiong it worked like a popup notification or something
+	}
+	else {
+		// Message saying user already present
+	}
+	updateLists();
+}
+
+function deleteUser(username) {
+	// Delete from users and from group rules and repos
+}
+
+function addRepo(repoLoc) {
+	//Todo add a repo value
+}
+
+function addRepoRule(repoLoc, delegate, perms) {
+	// Todo add a rule to the repo
+}
+
+function deleteRepoRule(repoLoc, delegate) {
+	// Todo delete the given repo rule
+}
+
+function updateRepoRule(repoLoc, delegate, perms) {
+	// Todo update given repo rule
+}
+
+function deleteRepo(repoLoc) {
+	// Todo delete repo
+}
+
+function clearLists() {
+	$(document.getElementById("lGroups")).empty();
+	$(document.getElementById("lUsers")).empty();
+	$(document.getElementById("lRepos")).empty();
+}
+
+function updateLists() {
+	// Clear lists
+	clearLists();
+	// Populate lists
+	populateGroups();
+	populateUsers();
+	populateRepos();
+	wrapListItems();
+	console.log("Screen Updated");
 }
 
 function saveFile() {
@@ -132,18 +284,6 @@ function saveFile() {
       console.log(deleted);
     }
   });
-}
-
-function populateLists() {
-	//Populate the groups
-	var ul = document.getElementById('lGroups');
-
-	for (var i=0; i<groups.length; i++) {
-		var li = document.createElement('li');
-		var liContent = document.createTextNode(groups[i]);
-		li.appendChild(document.createTextNode(liContent));
-		ul.appendChild(li);
-	}
 }
 
 //-------------------From here is UI code------------------
@@ -166,14 +306,14 @@ function UMTabTo(whichTab) {
 //Activates the clicked item in the list where all elements have the class nameOfList
 function activate(nameOfList) {
 	var activeItem = document.activeElement;
-	console.log("activate is called with " + nameOfList);
+	//console.log("activate is called with " + nameOfList);
 	listcontent = document.getElementsByClassName(nameOfList);
-	console.log("activate has " + listcontent.length + " items.");
+	//console.log("activate has " + listcontent.length + " items.");
 	for (var i=0; i<listcontent.length; i++) {
         listcontent[i].firstChild.className = nameOfList;
     }
 	activeItem.firstChild.className = nameOfList + " active";
-	console.log("activate has finished.");
+	//console.log("activate has finished.");
 	updateContextBox(activeItem.firstChild);
 }
 
