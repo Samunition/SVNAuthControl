@@ -458,23 +458,28 @@ function activate(nameOfList) {
 }
 
 function updateContextBox(withWhat) {
-	var originatingList = withWhat.parentNode.parentNode;
+	console.log(withWhat.parentNode.parentNode.id);
+	var originatingList = withWhat.parentNode.parentNode.id;
+	console.log(originatingList);
 	var contextBoxTitle = document.getElementById("contextHeader");
-	console.log(originatingList.className);
-	if (originatingList.className = 'lGroups') {
+	if (originatingList == "lGroups") {
 		contextBoxTitle.innerHTML = "Users that are in the group \"" + withWhat.innerHTML + "\"";
+		userRuleLoader(withWhat.id);
 	}
-	if (originatingList.className = 'lUsers') {
+	if (originatingList == "lUsers") {
 		contextBoxTitle.innerHTML = "Repositories that \"" + withWhat.innerHTML + "\" has access to";
 		console.log(withWhat.id);
 		userRuleLoader(withWhat.id);
+	}
+	if (originatingList == "lRepos") {
+		contextBoxTitle.innerHTML = "Users that have access to \"" + withWhat.innerHTML + "\"";
 	}
 }
 
 function prepSearch(which) {
 	console.log("prepSearch has " + which);
 	var listContainer;
-	if (which = "tabbox") {
+	if (which == "tabbox") {
 		if (document.getElementById('userManagerUsers').style.display == 'none') {
 			listContainer = document.getElementById('lGroups');
 		} else {

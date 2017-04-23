@@ -107,23 +107,24 @@ input[name=searchbar]:focus {
 	height:calc(100% - 35px); /*The best ability of css ever, end of*/
 }
 
-.tabList a .active  {
-	background-color:#09f;
-	color:#fff;
-	transition:0.2s;
+a:link {
+	display:block;
+	text-decoration:none;
+	color:inherit;
+}
+
+a:visited {
+	color:inherit;
 }
 
 .tabList a:hover {
 	background-color:#eee;
 }
 
-a:link {
-	display:block;
-	text-decoration:none;
-}
-
-a:visited {
-	color:inherit;
+.tabList a .active  {
+	background-color:#09f;
+	color:#fff;
+	transition:0.2s;
 }
 
 /* ID selectors */
