@@ -88,6 +88,7 @@ function load() {
 			// console.log("Load user rules");
 			// userRuleLoader("user1");
 			// rebuildFile();
+        deleteUser("user1");
     }
   });
 };
@@ -257,15 +258,45 @@ function updateGroup(groupName, usernames) {
 function addUser(username) {
 	if (Rules.ruleSet[1].pushUnique(username)) {
 		// Message sayiong it worked like a popup notification or something
+        console.log("Successfully Added")
 	}
 	else {
 		// Message saying user already present
+        console.log("User already exists")
 	}
 	updateLists();
 }
 
 function deleteUser(username) {
 	// Delete from users and from group rules and repos
+    var nGroups = Rules.ruleSet[0].length;
+    var nRepos = Rules.ruleSet[2].length;
+	var found = false;
+
+	for (var i = 0; i < nGroups; i++) {
+		
+        var newGroup = Rules.ruleSet[0][i];
+        var newGroupLength = Rules.ruleSet[0][i].length;
+        for (var j = 0; j < newGroupLength; j++){
+            
+            if (Rules.ruleSet[0][i][1][j] == username)
+                Rules.ruleSet[0][i][1].splice(j, 1);
+            console.log("User deleted from group")
+        }
+        else{
+            console.log("Use not found in groups")
+        }
+            
+            
+	}
+    
+
+
+	// Todo search repos for group and delete rules
+	updateLists();
+    
+    
+    
 }
 
 function addRepo(repoLoc) {
