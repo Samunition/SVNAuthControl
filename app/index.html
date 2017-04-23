@@ -4,17 +4,19 @@
 	<meta charset="UTF-8"/>
 	<title>SVN Permissions Manager</title>
 	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
-	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/> <!--alternative colours-->
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/>--> <!--alternative colours-->
 	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
 	<script type = "text/javascript" src = "scripts\spm.js"></script>
 </head>
 <body onload = "startup();">
 <div class="wrapper">
-	<div id="myModal" class="modal">
-	  <div class="modal-content">
-	    <span class="close">&times;</span>
-	    <p><center>This will drop down when add is clicked</center></p>
-	  </div>
+	<div id="modalbox">
+		<div id="modalHeader"><p>Input something</p></div><br/>
+		<form id="modalForm">
+			<input type="text" id="modalContent"/><br/><br/>
+			<button type="button" id="modalButton" onclick="okModal(); autofocus">OK</button>
+			<button type="button" onclick="closeModal();">Cancel</button>
+		</form>
 	</div>
 	<div id = "sideboxes">
 <!--Upper left-hand box-->
@@ -56,7 +58,9 @@
 			<form>
 				<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
 				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>
-				<button id="addBtn">Open Add Modal</button>
+				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
+				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
+				<button type = "button" onclick="addUser('The');">+Add test user</button>
 			</form>
 		</div>
 	</div>
