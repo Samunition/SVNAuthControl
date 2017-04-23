@@ -107,23 +107,24 @@ input[name=searchbar]:focus {
 	height:calc(100% - 35px); /*The best ability of css ever, end of*/
 }
 
-.tabList a .active  {
-	background-color:#09f;
-	color:#fff;
-	transition:0.2s;
+a:link {
+	display:block;
+	text-decoration:none;
+	color:inherit;
+}
+
+a:visited {
+	color:inherit;
 }
 
 .tabList a:hover {
 	background-color:#eee;
 }
 
-a:link {
-	display:block;
-	text-decoration:none;
-}
-
-a:visited {
-	color:inherit;
+.tabList a .active  {
+	background-color:#09f;
+	color:#fff;
+	transition:0.2s;
 }
 
 /* ID selectors */
@@ -143,6 +144,26 @@ a:visited {
 	display:block;
 	border:1px solid black;
 	margin-top:4px;
+}
+
+#modalbox {
+	display:none;
+	float:middle;
+	position:fixed;
+	top:50%;
+	left:50%;
+	transform:translate(-50%, -50%);
+	width:320px;
+	height:120px;
+	text-align:center;
+	background-color:#fff;
+	border-color:#000;
+	border-style:outset;
+	padding:8px;
+}
+
+#pagecover {
+	
 }
 
 /* clearfix */
