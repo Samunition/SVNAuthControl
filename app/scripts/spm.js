@@ -160,6 +160,7 @@ function UMTabTo(whichTab) {
 		document.getElementById('userManagerUsers').style.display = 'none';
 		document.getElementById('userManagerGroups').style.display = 'block';
 	}
+	prepSearch("tabbox");
 }
 
 //Activates the clicked item in the list where all elements have the class nameOfList
@@ -191,7 +192,7 @@ function updateContextBox(withWhat) {
 function prepSearch(which) {
 	console.log("prepSearch has " + which);
 	var listContainer;
-	if (which=="tabbox") {
+	if (which = "tabbox") {
 		if (document.getElementById('userManagerUsers').style.display == 'none') {
 			listContainer = document.getElementById('lGroups');
 		} else {
