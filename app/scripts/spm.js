@@ -80,7 +80,6 @@ function load() {
 			// addRepoRule("/anotherone", "group9", "rw");
       // deleteUser("user1");
     }
-    }
   });
 }
 
@@ -259,6 +258,28 @@ function addUser(username) {
 function deleteUser(username) {
 	{
 	// Delete from users and from group rules and repos
+<<<<<<< HEAD
+  var nGroups = Rules.ruleSet[0].length;
+  var nRepos = Rules.ruleSet[2].length;
+	var found = false;
+
+	for (var i = 0; i < nGroups; i++) {
+		var newGroup = Rules.ruleSet[0][i];
+    var newGroupLength = Rules.ruleSet[0][i].length;
+
+		for (var j = 0; j < newGroupLength; j++){
+			if (Rules.ruleSet[0][i][1][j] == username) {
+      	Rules.ruleSet[0][i][1].splice(j, 1);
+        console.log("User deleted from group")
+      }
+      else {
+      	console.log("Use not found in groups")
+      }
+		}
+	}
+	// Todo search repos for group and delete rules
+	updateLists();
+=======
     var nUsers = Rules.ruleSet[1].length;
     var nGroups = Rules.ruleSet[0].length;
     var nRepos = Rules.ruleSet[2].length;
@@ -299,6 +320,7 @@ function deleteUser(username) {
 
 
 
+>>>>>>> origin/master
 }
 
 function addRepo(repoLoc) {
