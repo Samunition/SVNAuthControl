@@ -8,23 +8,23 @@
   document.getElementById('content').value = '';
 }); */
 
-var modalTarget = "";
+var modalTarget = ""; //Yes... I know.
+var selectMultiple = false;
+var gSelectSingle = "";
+var gSearchableList = null; //Global
+var gWrapped = 0;
+var gSelectSingleAction = "";
 
 var Rules = {
 	ruleSet : []
 };
 
 //Will be run when page is loaded
-gSearchableList = null; //Global
-gWrapped = 0;
 function startup() {
-	UMTabTo('Groups');
+	interfaceSetup()
 	//loadFile();
 	load();
-	modalSetup();
-	gSearchableList = null; //Global
 }
-
 
 // function loadFile() {
 //   $.ajax({
@@ -40,7 +40,7 @@ function startup() {
 function modalSetup() {
 	var modal = document.getElementById('modalbox'); // Get the modal
 	modal.style.display = "none";
-	window.onclick = function(event) { // When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) { // When the  user clicks anywhere outside of the modal, close it
 	    if (event.target == modal) {
 	        modal.style.display = "none";
 	    }
@@ -65,11 +65,22 @@ function load() {
 			updateLists();
 			console.log("Lists populated");
 
-			addUser("Samuel");
-			addGroup("samsgroup", ["sam", "and", "his", "mates"]);
-			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			addUser("Samuel");    
+			 addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+            updateGroup("samsgroup", ["boff", "jeff"]);
+        
+        console.log(Rules.ruleSet[0]);
+        //addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+        addRepoRule("/anotherone", "samsgroup", "rw");
 			// deleteGroup("samsgroup");
-			// deleteGroup("samsgroup");
+        console.log(Rules.ruleSet[2]);
+			 deleteGroup("samsgroup");
+        console.log(Rules.ruleSet[0]);
+        console.log(Rules.ruleSet[2]);
+        deleteRepoRule("/anotherone", "samsgroup");
+           console.log(Rules.ruleSet[2]);     
+        
+
 			// console.log("Load user rules");
 			// userRuleLoader("user1");
 			// rebuildFile();
@@ -168,7 +179,7 @@ function populateGroups() {
 	var ul = document.getElementById("lGroups"); //Get the list
 	var nGroups = groups.length;
 
-	console.log("Adding " + nGroups + " groups to groups list");
+	console.log("Addin g " + nGroups + " groups to groups list");
 
 	for (var i=0; i<nGroups; i++) {
 		litem = document.createElement("li"); //Create & get the new item
@@ -223,8 +234,10 @@ function addGroup(groupName, usernames) {
 }
 
 function deleteGroup(groupName) {
-	var nGroups = Rules.ruleSet[0].length;
-	var found = false;
+    var nUsers = Rules.ruleSet[1].length;
+    var nGroups = Rules.ruleSet[0].length;
+    var nRepos = Rules.ruleSet[2].length;
+	
 
 	for (var i = 0; i < nGroups; i++) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
@@ -233,18 +246,35 @@ function deleteGroup(groupName) {
 			break;
 		}
 	}
+    for (var i = 0; i < nRepos; i++)
+    {
+        var newReposLength = Rules.ruleSet[2][i][1].length;
+        for (var j = 0; j < newReposLength; j++)
+        {
+            if (Rules.ruleSet[2][i][1][j][0] == groupName)
+            {
+                Rules.ruleSet[2][i][1].splice(j,1);
+                
+            }
+        }
+    }
+    
 
-	if (!found) {
-		// Not found
-		console.log("Group not found");
-	}
+	
 
 	// Todo search repos for group and delete rules
 	updateLists();
 }
 
 function updateGroup(groupName, usernames) {
-	// Todo find group, replace user list with new one
+	//usernames is an array
+    var nGroups = Rules.ruleSet[0].length;
+	for (var i = 0; i < nGroups; i++) {
+		if (Rules.ruleSet[0][i][0] == groupName) {
+               Rules.ruleSet[0][i][1] = usernames; 
+        }
+	}
+	updateLists();
 }
 
 function addUser(username) {
@@ -283,6 +313,7 @@ function deleteUser(username) {
             }
         }
     }
+    
     for (var i = 0; i < nRepos; i++)
     {
         var newReposLength = Rules.ruleSet[2][i][1].length;
@@ -295,6 +326,7 @@ function deleteUser(username) {
             }
         }
     }
+    
     updateLists();
 }
 
@@ -525,7 +557,10 @@ function repoRuleLoader(repo) {
 //-------------------From here is UI code------------------
 
 function UMTabTo(whichTab) {
-	if (whichTab == 'Users') {
+	if (gSelectSingle != "") {
+		return;
+	}
+	if (whichTab.toUpperCase() == 'USERS') {
 		document.getElementById('usersTab').className = 'activeCurrent';
 		document.getElementById('groupsTab').className = '';
 		document.getElementById('userManagerGroups').style.display = 'none';
@@ -539,18 +574,72 @@ function UMTabTo(whichTab) {
 	prepSearch("tabbox");
 }
 
+function addUsersPrompt() {
+	var thisGroup = getActiveItem("contextgroup")[0];
+	if ((!thisGroup) || (thisGroup.parentNode.parentNode.id != "lUsers")) {
+		console.log("Add Users clicked without users. Got: " + thisGroup.parentNode.parentNode.id);
+		window.alert("You'll have to select some users to add first");
+	} else {
+		UMTabTo("GROUPS");
+		console.log("addUsersPrompt is DOING STUFF");
+		gSelectSingle = "lGroups";
+		gSelectSingleAction = "addToGroup"
+		popupPrompt("Add users to which group?",30,10,300,25);
+	}
+}
+
+function popupPrompt(message, x, y, w, h) {
+	popup = document.getElementById("popup");
+	popupText = document.getElementById("popupText");
+	popup.style.left = x + "%";
+	popup.style.top = y + "%";
+	popup.style.width = w + "px";
+	popup.style.height = h + "px";
+	popupText.innerHTML = message;
+	popup.style.display = "block";
+}
+
+function closePopupPrompt() {
+	popup.style.display = none;
+}
+
 //Activates the clicked item in the list where all elements have the class nameOfList
 function activate(nameOfList) {
 	var activeItem = document.activeElement;
-	//console.log("activate is called with " + nameOfList);
 	listcontent = document.getElementsByClassName(nameOfList);
-	//console.log("activate has " + listcontent.length + " items.");
-	for (var i=0; i<listcontent.length; i++) {
-        listcontent[i].firstChild.className = nameOfList;
-    }
-	activeItem.firstChild.className = nameOfList + " active";
-	//console.log("activate has finished.");
-	updateContextBox(activeItem.firstChild);
+	console.log("Activate has " + nameOfList);
+	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
+	console.log("gSelectSingle is " + gSelectSingle);
+	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
+		if (gSelectSingleAction == "addToGroup") {
+			gSelectSingleAction = "";
+			var all = document.getElementsByTagName("*");
+			var listOfUsers = [];
+			for (var i=0; i<all.length; i++) {
+				if ((all[i].className.includes("active")) && (all[i].parentNode.id.includes("lUsers"))) {
+					console.log("getActiveItem has another item");
+					listOfUsers.push(all[i]);
+				}
+			}
+			var fromGroup = document.activeElement.innerHTML;
+			console.log(fromGroup);
+			updateGroup(fromGroup,listOfUsers);
+		}
+		if (selectMultiple) {
+			for (var i=0; i<listcontent.length; i++) {
+				listcontent[i].firstChild.className = nameOfList;
+			}
+		}
+		if (activeItem.firstChild.className.includes("active")) {
+			activeItem.firstChild.className = nameOfList;
+		} else {
+			activeItem.firstChild.className = nameOfList + " active";
+		}
+		updateContextBox(activeItem.firstChild);
+		gSelectSingle = "";
+	} else {
+		console.log("You can't click this at the moment");
+	}
 }
 
 function updateContextBox(withWhat) {
@@ -570,6 +659,18 @@ function updateContextBox(withWhat) {
 	if (originatingList == "lRepos") {
 		contextBoxTitle.innerHTML = "Users that have access to \"" + withWhat.innerHTML + "\"";
 	}
+}
+
+function getActiveItem(whichClass) { //Returns an array of the selected items
+	var all = document.getElementsByTagName("*");
+	var activeItems = [];
+	for (var i=0; i<all.length; i++) {
+		if ((all[i].className.includes("active")) && (all[i].className.includes(whichClass))) {
+			console.log("getActiveItem has another item");
+			activeItems.push(all[i]);
+		}
+	}
+	return activeItems;
 }
 
 function prepSearch(which) {
@@ -622,6 +723,7 @@ function getInput(prompt, target) { //Opens the modal box to get a string from t
 function closeModal() {
 	var modal = document.getElementById("modalbox");
 	modal.style.display = "none";
+	modalContents.value = "";
 }
 
 function okModal() {
@@ -636,6 +738,13 @@ function okModal() {
 			break;
 	}
 	closeModal();
+}
+
+function interfaceSetup() {
+	modalSetup();
+	UMTabTo('Groups');
+	gSearchableList = null;
+	document.getElementById("multiSelect").checked = true;
 }
 
 /*---------------From here is unused code------------------

@@ -4,7 +4,7 @@
 	<meta charset="UTF-8"/>
 	<title>SVN Permissions Manager</title>
 	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
-	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/>--> <!--alternative colours-->
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/> <!--alternative colours-->
 	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
 	<script type = "text/javascript" src = "scripts/spm.js"></script>
 </head>
@@ -17,6 +17,9 @@
 			<button type="button" id="modalButton" onclick="okModal(); autofocus">OK</button>
 			<button type="button" onclick="closeModal();">Cancel</button>
 		</form>
+	</div>
+	<div id = "popup">
+		<div id="popupText"><p>Oh, bloomin eck.</p></div><br/>
 	</div>
 	<div id = "sideboxes">
 <!--Upper left-hand box-->
@@ -60,8 +63,9 @@
 				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>
 				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
 				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
-				<button type = "button" onclick="addUser('The');">+Add test user</button>
-				<button type="button" onclick="saveFile();">Save File</button>
+				<button type = "button" id="addToGroup" onclick="addUsersPrompt();">+Add users to group</button>
+        <button type="button" onclick="saveFile();">Save File</button>
+				<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple</input>
 			</form>
 		</div>
 	</div>
