@@ -80,7 +80,6 @@ function load() {
 			// addRepoRule("/anotherone", "group9", "rw");
       // deleteUser("user1");
     }
-    }
   });
 }
 
@@ -257,12 +256,11 @@ function addUser(username) {
 }
 
 function deleteUser(username) {
-	{
 	// Delete from users and from group rules and repos
     var nUsers = Rules.ruleSet[1].length;
     var nGroups = Rules.ruleSet[0].length;
     var nRepos = Rules.ruleSet[2].length;
-	
+
     for (var i = 0; i < nUsers; i++)
     {
         if(Rules.ruleSet[1][i] == username)
@@ -270,9 +268,9 @@ function deleteUser(username) {
             Rules.ruleSet[1].splice(i, 1);
             console.log("User deleted from user list");
         }
-    }    
-	for (var i = 0; i < nGroups; i++) 
-    {     
+    }
+	for (var i = 0; i < nGroups; i++)
+    {
         var newGroupLength = Rules.ruleSet[0][i].length;
         for (var j = 0; j < newGroupLength; j++)
         {
@@ -280,10 +278,10 @@ function deleteUser(username) {
             {
                 Rules.ruleSet[0][i][1].splice(j, 1);
                 console.log("User deleted from group");
-            }          
+            }
         }
     }
-    for (var i = 0; i < nRepos; i++) 
+    for (var i = 0; i < nRepos; i++)
     {
         var newReposLength = Rules.ruleSet[2][i][1].length;
         for (var j = 0; j < newReposLength; j++)
@@ -293,17 +291,14 @@ function deleteUser(username) {
                 Rules.ruleSet[2][i][1].splice(j, 1);
                 console.log("User deleted from repos");
             }
-        }      
+        }
     }
     updateLists();
-
-
-
 }
 
 function addRepo(repoLoc) {
 	//Todo add a repo value
-     
+
     if (Rules.ruleSet[2].pushUnique([repoLoc, [["*", ""]]])) {
 		// Message sayiong it worked like a popup notification or something
         console.log("Successfully Added");
@@ -312,7 +307,7 @@ function addRepo(repoLoc) {
 		// Message saying user already present
         console.log("Repo already exists");
 	}
-	
+
 	updateLists();
 }
 
