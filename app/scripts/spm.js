@@ -19,13 +19,10 @@ var Rules = {
 gSearchableList = null; //Global
 gWrapped = 0;
 function startup() {
-	UMTabTo('Groups');
+	interfaceSetup()
 	//loadFile();
 	load();
-	modalSetup();
-	gSearchableList = null; //Global
 }
-
 
 // function loadFile() {
 //   $.ajax({
@@ -536,6 +533,13 @@ function UMTabTo(whichTab) {
 	prepSearch("tabbox");
 }
 
+function addUsersPrompt() {
+	var thisGroup = getActiveItem()[0];
+	if (thisGroup.parentNode.parentNode.id != "lGroups") {
+		window.alert("Select a group to add user to");
+	}
+}
+
 //Activates the clicked item in the list where all elements have the class nameOfList
 function activate(nameOfList) {
 	var activeItem = document.activeElement;
@@ -569,6 +573,18 @@ function updateContextBox(withWhat) {
 	if (originatingList == "lRepos") {
 		contextBoxTitle.innerHTML = "Users that have access to \"" + withWhat.innerHTML + "\"";
 	}
+}
+
+function getActiveItem() { //Returns an array of the selected items
+	var all = document.getElementsByTagName("*");
+	var activeItems = [];
+	for (var i=0; i<all.length; i++) {
+		if (all[i].className.includes("active")) {
+			console.log("getActiveItem has another item");
+			activeItems.push(all[i]);
+		}
+	}
+	return activeItems;
 }
 
 function prepSearch(which) {
@@ -621,6 +637,7 @@ function getInput(prompt, target) { //Opens the modal box to get a string from t
 function closeModal() {
 	var modal = document.getElementById("modalbox");
 	modal.style.display = "none";
+	modalContents.value = "";
 }
 
 function okModal() {
@@ -635,6 +652,13 @@ function okModal() {
 			break;
 	}
 	closeModal();
+}
+
+function interfaceSetup() {
+	modalSetup();
+	UMTabTo('Groups');
+	gSearchableList = null;
+	document.getElementById("multiSelect").checked = true;
 }
 
 /*---------------From here is unused code------------------
