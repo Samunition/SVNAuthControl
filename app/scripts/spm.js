@@ -9,6 +9,7 @@
 }); */
 
 var modalTarget = "";
+var selectMultiple = false;
 
 var Rules = {
 	ruleSet : []
@@ -541,9 +542,11 @@ function activate(nameOfList) {
 	//console.log("activate is called with " + nameOfList);
 	listcontent = document.getElementsByClassName(nameOfList);
 	//console.log("activate has " + listcontent.length + " items.");
-	for (var i=0; i<listcontent.length; i++) {
-        listcontent[i].firstChild.className = nameOfList;
-    }
+	if (selectMultiple) {
+		for (var i=0; i<listcontent.length; i++) {
+			listcontent[i].firstChild.className = nameOfList;
+		}
+	}
 	activeItem.firstChild.className = nameOfList + " active";
 	//console.log("activate has finished.");
 	updateContextBox(activeItem.firstChild);
