@@ -8,16 +8,18 @@
   document.getElementById('content').value = '';
 }); */
 
-var modalTarget = "";
+var modalTarget = ""; //Yes... I know.
 var selectMultiple = false;
+var gSelectSingle = "";
+var gSearchableList = null; //Global
+var gWrapped = 0;
+var gSelectSingleAction = "";
 
 var Rules = {
 	ruleSet : []
 };
 
 //Will be run when page is loaded
-gSearchableList = null; //Global
-gWrapped = 0;
 function startup() {
 	interfaceSetup()
 	//loadFile();
@@ -519,7 +521,10 @@ function repoRuleLoader(repo) {
 //-------------------From here is UI code------------------
 
 function UMTabTo(whichTab) {
-	if (whichTab == 'Users') {
+	if (gSelectSingle != "") {
+		return;
+	}
+	if (whichTab.toUpperCase() == 'USERS') {
 		document.getElementById('usersTab').className = 'activeCurrent';
 		document.getElementById('groupsTab').className = '';
 		document.getElementById('userManagerGroups').style.display = 'none';
@@ -534,26 +539,71 @@ function UMTabTo(whichTab) {
 }
 
 function addUsersPrompt() {
-	var thisGroup = getActiveItem()[0];
-	if (thisGroup.parentNode.parentNode.id != "lGroups") {
-		window.alert("Select a group to add user to");
+	var thisGroup = getActiveItem("contextgroup")[0];
+	if ((!thisGroup) || (thisGroup.parentNode.parentNode.id != "lUsers")) {
+		console.log("Add Users clicked without users. Got: " + thisGroup.parentNode.parentNode.id);
+		window.alert("You'll have to select some users to add first");
+	} else {
+		UMTabTo("GROUPS");
+		console.log("addUsersPrompt is DOING STUFF");
+		gSelectSingle = "lGroups";
+		gSelectSingleAction = "addToGroup"
+		popupPrompt("Add users to which group?",30,10,300,25);
 	}
+}
+
+function popupPrompt(message, x, y, w, h) {
+	popup = document.getElementById("popup");
+	popupText = document.getElementById("popupText");
+	popup.style.left = x + "%";
+	popup.style.top = y + "%";
+	popup.style.width = w + "px";
+	popup.style.height = h + "px";
+	popupText.innerHTML = message;
+	popup.style.display = "block";
+}
+
+function closePopupPrompt() {
+	popup.style.display = none;
 }
 
 //Activates the clicked item in the list where all elements have the class nameOfList
 function activate(nameOfList) {
 	var activeItem = document.activeElement;
-	//console.log("activate is called with " + nameOfList);
 	listcontent = document.getElementsByClassName(nameOfList);
-	//console.log("activate has " + listcontent.length + " items.");
-	if (selectMultiple) {
-		for (var i=0; i<listcontent.length; i++) {
-			listcontent[i].firstChild.className = nameOfList;
+	console.log("Activate has " + nameOfList);
+	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
+	console.log("gSelectSingle is " + gSelectSingle);
+	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
+		if (gSelectSingleAction == "addToGroup") {
+			gSelectSingleAction = "";
+			var all = document.getElementsByTagName("*");
+			var listOfUsers = [];
+			for (var i=0; i<all.length; i++) {
+				if ((all[i].className.includes("active")) && (all[i].parentNode.id.includes("lUsers"))) {
+					console.log("getActiveItem has another item");
+					listOfUsers.push(all[i]);
+				}
+			}
+			var fromGroup = document.activeElement.innerHTML;
+			console.log(fromGroup);
+			updateGroup(fromGroup,listOfUsers);
 		}
+		if (selectMultiple) {
+			for (var i=0; i<listcontent.length; i++) {
+				listcontent[i].firstChild.className = nameOfList;
+			}
+		}
+		if (activeItem.firstChild.className.includes("active")) {
+			activeItem.firstChild.className = nameOfList;
+		} else {
+			activeItem.firstChild.className = nameOfList + " active";
+		}
+		updateContextBox(activeItem.firstChild);
+		gSelectSingle = "";
+	} else {
+		console.log("You can't click this at the moment");
 	}
-	activeItem.firstChild.className = nameOfList + " active";
-	//console.log("activate has finished.");
-	updateContextBox(activeItem.firstChild);
 }
 
 function updateContextBox(withWhat) {
@@ -575,11 +625,11 @@ function updateContextBox(withWhat) {
 	}
 }
 
-function getActiveItem() { //Returns an array of the selected items
+function getActiveItem(whichClass) { //Returns an array of the selected items
 	var all = document.getElementsByTagName("*");
 	var activeItems = [];
 	for (var i=0; i<all.length; i++) {
-		if (all[i].className.includes("active")) {
+		if ((all[i].className.includes("active")) && (all[i].className.includes(whichClass))) {
 			console.log("getActiveItem has another item");
 			activeItems.push(all[i]);
 		}
