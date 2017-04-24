@@ -40,7 +40,7 @@ function startup() {
 function modalSetup() {
 	var modal = document.getElementById('modalbox'); // Get the modal
 	modal.style.display = "none";
-	window.onclick = function(event) { // When the user clicks anywhere outside of the modal, close it
+	window.onclick = function(event) { // When the  user clicks anywhere outside of the modal, close it
 	    if (event.target == modal) {
 	        modal.style.display = "none";
 	    }
@@ -66,10 +66,22 @@ function load() {
 			console.log("Lists populated");
 
 			addUser("Samuel");
-			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
-			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+            
+			 addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+            updateGroup("samsgroup", ["boff", "jeff"]);
+        
+        console.log(Rules.ruleSet[0]);
+        //addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+        addRepoRule("/anotherone", "samsgroup", "rw");
 			// deleteGroup("samsgroup");
-			// deleteGroup("samsgroup");
+        console.log(Rules.ruleSet[2]);
+			 deleteGroup("samsgroup");
+        console.log(Rules.ruleSet[0]);
+        console.log(Rules.ruleSet[2]);
+        deleteRepoRule("/anotherone", "samsgroup");
+           console.log(Rules.ruleSet[2]);     
+        
+
 			// console.log("Load user rules");
 			// userRuleLoader("user1");
 			// rebuildFile();
@@ -166,7 +178,7 @@ function populateGroups() {
 	var ul = document.getElementById("lGroups"); //Get the list
 	var nGroups = groups.length;
 
-	console.log("Adding " + nGroups + " groups to groups list");
+	console.log("Addin g " + nGroups + " groups to groups list");
 
 	for (var i=0; i<nGroups; i++) {
 		litem = document.createElement("li"); //Create & get the new item
@@ -221,8 +233,10 @@ function addGroup(groupName, usernames) {
 }
 
 function deleteGroup(groupName) {
-	var nGroups = Rules.ruleSet[0].length;
-	var found = false;
+    var nUsers = Rules.ruleSet[1].length;
+    var nGroups = Rules.ruleSet[0].length;
+    var nRepos = Rules.ruleSet[2].length;
+	
 
 	for (var i = 0; i < nGroups; i++) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
@@ -231,18 +245,35 @@ function deleteGroup(groupName) {
 			break;
 		}
 	}
+    for (var i = 0; i < nRepos; i++)
+    {
+        var newReposLength = Rules.ruleSet[2][i][1].length;
+        for (var j = 0; j < newReposLength; j++)
+        {
+            if (Rules.ruleSet[2][i][1][j][0] == groupName)
+            {
+                Rules.ruleSet[2][i][1].splice(j,1);
+                
+            }
+        }
+    }
+    
 
-	if (!found) {
-		// Not found
-		console.log("Group not found");
-	}
+	
 
 	// Todo search repos for group and delete rules
 	updateLists();
 }
 
 function updateGroup(groupName, usernames) {
-	// Todo find group, replace user list with new one
+	//usernames is an array
+    var nGroups = Rules.ruleSet[0].length;
+	for (var i = 0; i < nGroups; i++) {
+		if (Rules.ruleSet[0][i][0] == groupName) {
+               Rules.ruleSet[0][i][1] = usernames; 
+        }
+	}
+	updateLists();
 }
 
 function addUser(username) {
@@ -281,6 +312,7 @@ function deleteUser(username) {
             }
         }
     }
+    
     for (var i = 0; i < nRepos; i++)
     {
         var newReposLength = Rules.ruleSet[2][i][1].length;
@@ -293,6 +325,7 @@ function deleteUser(username) {
             }
         }
     }
+    
     updateLists();
 }
 
@@ -326,6 +359,7 @@ function addRepoRule(repoLoc, delegate, perms) {
 				}
 				else {
 					Rules.ruleSet[2][i][1].push([delegate, perms]);
+                    break;
 				}
 			}
 		}
@@ -341,7 +375,7 @@ function deleteRepoRule(repoLoc, delegate) {
 
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
-			var nRules = Rules.ruleSet[2][i].length
+			var nRules = Rules.ruleSet[2][i][1].length
 			console.log("Found Repo");
 			for (var j = 0; j < nRules; j++) {
 				console.log(Rules.ruleSet[2][i][1][j]);
