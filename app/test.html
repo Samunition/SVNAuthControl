@@ -1,20 +1,71 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>Subversion Permissions Manager</title>
-  </head>
-  <body>
-    <!-- Title -->
-    <h1>Subversion Permissions Manager</h1>
-
-    <!-- Main content -->
-    <textarea id="content" style="width:600;height:200;"></textarea>
-    <br/>
-    <button type="button" id="loadFile" onclick="loadFile()">Load File</button>
-    <button type="button" id="loadFile" onclick="loadGroups()">Load Groups</button>
-    <button type="button" id="saveFile" onclick="saveFile()">Save File</button>
-
-    <!-- Script references -->
-    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
-    <script src="/scripts/spm.js"></script>
-   </body>
-</html>
+<head>
+	<meta charset="UTF-8"/>
+	<title>SVN Permissions Manager</title>
+	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/>--> <!--alternative colours-->
+	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
+	<script type = "text/javascript" src = "scripts/spm.js"></script>
+</head>
+<body>
+<div class="wrapper">
+	<div id="modalbox">
+		<div id="modalHeader"><p>Input something</p></div><br/>
+		<form id="modalForm">
+			<input type="text" id="modalContent"/><br/><br/>
+			<button type="button" id="modalButton" onclick="okModal(); autofocus">OK</button>
+			<button type="button" onclick="closeModal();">Cancel</button>
+		</form>
+	</div>
+	<div id = "sideboxes">
+<!--Upper left-hand box-->
+		<div class = "smallbox">
+			<div class = "smallheader tabs" id = "boxTabs">
+				<a href = "#" onclick = "UMTabTo('Groups');" id = "groupsTab">Groups</a>
+				<a href = "#" onclick = "UMTabTo('Users');" id = "usersTab">Users</a>
+				<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('tabbox')" oninput="search()"></input>
+			</div>
+			<div class = "tabList" id = "userManagerUsers">
+				<p><ul id = "lUsers"></ul></p>
+			</div>
+			<div class = "tabList" id = "userManagerGroups">
+				<p><ul id = "lGroups"></ul></p>
+			</div>
+		</div>
+<!--Lower left-hand box-->
+		<div class = "smallbox" id = "lowerbox">
+			<div class = "smallheader">
+				<p>Repositories<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos')" oninput="search()"></input></p>
+			</div>
+			<div class = "tabList">
+				<p><ul id = "lRepos"></ul></p>
+			</div>
+		</div>
+	</div>
+	<div id="rightboxes">
+<!--Upper right-hand box-->
+		<div class = "bigbox">
+			<div class = "smallheader">
+				<p><span id = "contextHeader">contextBox</span><input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lContextBox')" oninput="search()"></input></p>
+			</div>
+			<div class="contextList">
+				<p><ul id = "lContextbox"></ul></p>
+			</div>
+		</div>
+<!--Lower right-hand box-->
+		<div id = "buttonsbox">
+			<form>
+        <!-- TEST BUTTONS GO HERE -->
+				<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
+				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>
+				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
+				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
+				<button type = "button" onclick="addUser('The');">+Add test user</button>
+			</form>
+		</div>
+	</div>
+<!-- Clearfix -->
+	<div class="clear"></div>
+</div>
+</body>
