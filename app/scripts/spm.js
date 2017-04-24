@@ -64,7 +64,7 @@ function load() {
 			console.log("Populating lists");
 			updateLists();
 			console.log("Lists populated");
-			
+
 			addUser("Samuel");
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
@@ -263,11 +263,11 @@ function deleteUser(username) {
 	var found = false;
 
 	for (var i = 0; i < nGroups; i++) {
-		
+
         var newGroup = Rules.ruleSet[0][i];
         var newGroupLength = Rules.ruleSet[0][i].length;
         for (var j = 0; j < newGroupLength; j++){
-            
+
             if (Rules.ruleSet[0][i][1][j] == username)
                 Rules.ruleSet[0][i][1].splice(j, 1);
             console.log("User deleted from group")
@@ -275,17 +275,17 @@ function deleteUser(username) {
         else{
             console.log("Use not found in groups")
         }
-            
-            
+
+
 	}
-    
+
 
 
 	// Todo search repos for group and delete rules
 	updateLists();
-    
-    
-    
+
+
+
 }
 
 function addRepo(repoLoc) {
