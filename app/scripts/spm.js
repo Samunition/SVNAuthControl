@@ -66,7 +66,7 @@ function load() {
 			console.log("Lists populated");
 
 			addUser("Samuel");
-			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			// deleteGroup("samsgroup");
 			// deleteGroup("samsgroup");
@@ -76,7 +76,9 @@ function load() {
 			// deleteRepo("/");
 			// deleteRepo("lol");
 			// deleteRepoRule("/anotherone", "group5");
-			// addRepoRule("/anotherone", "user7", "r");
+			 addRepoRule("/anotherone", "samsgroup", "rw");
+			 deleteRepoRule("/anotherone", "samsgroup");
+			 console.log(Rules.ruleSet[2]);
 			// addRepoRule("/anotherone", "group9", "rw");
       // deleteUser("user1");
     }
@@ -326,6 +328,7 @@ function addRepoRule(repoLoc, delegate, perms) {
 				}
 				else {
 					Rules.ruleSet[2][i][1].push([delegate, perms]);
+					break;
 				}
 			}
 		}
@@ -341,10 +344,9 @@ function deleteRepoRule(repoLoc, delegate) {
 
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
-			var nRules = Rules.ruleSet[2][i].length
-			console.log("Found Repo");
+			var nRules = Rules.ruleSet[2][i][1].length
+			console.log("Found Repo to delete from");
 			for (var j = 0; j < nRules; j++) {
-				console.log(Rules.ruleSet[2][i][1][j]);
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
 					console.log("Found group1 in anotherone");
 					Rules.ruleSet[2][i][1].splice(j, 1);
@@ -397,16 +399,18 @@ function updateLists() {
 	console.log("Screen Updated");
 }
 
-function saveFile(contents) {
+function saveFile() {
+	var jsonStringGroup = JSON.stringify(Rules.ruleSet[0]);
+	var jsonStringRepos = JSON.stringify(Rules.ruleSet[2]);
 	$.ajax({
     url: '/scripts/save-file.php',
     type: 'POST',
     data: {
-      content: contents
+      groups: jsonStringGroup,
+			repos: jsonStringRepos
     },
     success: function(deleted) {
-      console.log("Saved!");
-      console.log(deleted);
+			console.log(deleted);
     }
   });
 }
