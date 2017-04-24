@@ -162,8 +162,20 @@ a:visited {
 	padding:8px;
 }
 
-#pagecover {
-	
+#popup {
+	display:none;
+	float:top;
+	top:0px;
+	left:0px;
+	position:fixed;
+	width:500px;
+	height:500px;
+	text-align:center;
+	background-color:#000;
+	color:#fff;
+	border-color:#000;
+	border-style:outset;
+	padding:8px;
 }
 
 /* clearfix */
