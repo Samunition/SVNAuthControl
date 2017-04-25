@@ -607,7 +607,7 @@ function activate(nameOfList) {
 	var activeItem = document.activeElement;
 	if (nameOfList == "none") {
 		console.log("Deactivating all elements.");
-		var all = document.getElementsByIdName("*");
+		var all = document.getElementsByTagName("*");
 		for (var i=0; i<all.length; i++) {
 			console.log("Deactivating " + all[i].className);
 			all[i].className.replace("active", "");

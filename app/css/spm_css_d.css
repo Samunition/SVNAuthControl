@@ -57,3 +57,9 @@ input[type=button] {
 	background:#666;
 	
 }
+
+#modalbox {
+	color:#fff;
+	background-color:#333;
+	border-color:#f90;
+}
