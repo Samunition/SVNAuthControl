@@ -237,7 +237,6 @@ function deleteGroup(groupName) {
     var nGroups = Rules.ruleSet[0].length;
     var nRepos = Rules.ruleSet[2].length;
 	
-
 	for (var i = 0; i < nGroups; i++) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
 			Rules.ruleSet[0].splice(i, 1);
@@ -558,6 +557,7 @@ function UMTabTo(whichTab) {
 	if (gSelectSingle != "") {
 		return;
 	}
+	activate("none");
 	if (whichTab.toUpperCase() == 'USERS') {
 		document.getElementById('usersTab').className = 'activeCurrent';
 		document.getElementById('groupsTab').className = '';
@@ -581,7 +581,7 @@ function addUsersPrompt() {
 		UMTabTo("GROUPS");
 		console.log("addUsersPrompt is DOING STUFF");
 		gSelectSingle = "lGroups";
-		gSelectSingleAction = "addToGroup"
+		gSelectSingleAction = "addToGroup";
 		popupPrompt("Add users to which group?",30,10,300,25);
 	}
 }
@@ -598,32 +598,50 @@ function popupPrompt(message, x, y, w, h) {
 }
 
 function closePopupPrompt() {
-	popup.style.display = none;
+	popup = document.getElementById("popup");
+	popup.style.display = "none";
 }
 
 //Activates the clicked item in the list where all elements have the class nameOfList
 function activate(nameOfList) {
 	var activeItem = document.activeElement;
+	if (nameOfList == "none") {
+		console.log("Deactivating all elements.");
+		var all = document.getElementsByIdName("*");
+		for (var i=0; i<all.length; i++) {
+			console.log("Deactivating " + all[i].className);
+			all[i].className.replace("active", "");
+		}
+		return;
+	}
 	listcontent = document.getElementsByClassName(nameOfList);
 	console.log("Activate has " + nameOfList);
 	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
 	console.log("gSelectSingle is " + gSelectSingle);
 	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
 		if (gSelectSingleAction == "addToGroup") {
+			console.log("addToGroup selected");
 			gSelectSingleAction = "";
-			var all = document.getElementsByTagName("*");
+			var all = getActiveItem("contextgroup");
 			var listOfUsers = [];
 			for (var i=0; i<all.length; i++) {
-				if ((all[i].className.includes("active")) && (all[i].parentNode.id.includes("lUsers"))) {
-					console.log("getActiveItem has another item");
-					listOfUsers.push(all[i]);
+				console.log(all[i].parentNode.parentNode.id + ", " + all[i].className);
+				if ((all[i].className.includes("active")) && (all[i].parentNode.parentNode.id == "lUsers")) {
+					console.log("A user is being added by activate. It is:");
+					console.log(all[i] + ", " + all[i].innerHTML);
+					listOfUsers.push(all[i].innerText);
 				}
 			}
-			var fromGroup = document.activeElement.innerHTML;
+			var fromGroup = activeItem.innerText;
 			console.log(fromGroup);
+			console.log(listOfUsers);
 			updateGroup(fromGroup,listOfUsers);
+			closePopupPrompt();
+			selectMultiple = true;
+			document.getElementById("multiSelect").checked = false;
+			activate(nameOfList);
 		}
-		if (selectMultiple) {
+		if (!selectMultiple) {
 			for (var i=0; i<listcontent.length; i++) {
 				listcontent[i].firstChild.className = nameOfList;
 			}
@@ -641,7 +659,6 @@ function activate(nameOfList) {
 }
 
 function updateContextBox(withWhat) {
-	console.log(withWhat.parentNode.parentNode.id);
 	var originatingList = withWhat.parentNode.parentNode.id;
 	console.log(originatingList);
 	var contextBoxTitle = document.getElementById("contextHeader");
@@ -742,7 +759,7 @@ function interfaceSetup() {
 	modalSetup();
 	UMTabTo('Groups');
 	gSearchableList = null;
-	document.getElementById("multiSelect").checked = true;
+	document.getElementById("multiSelect").checked = false;
 }
 
 /*---------------From here is unused code------------------
