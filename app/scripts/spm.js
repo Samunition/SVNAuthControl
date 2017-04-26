@@ -1,9 +1,9 @@
+
 /* $(document).ready(function () {
   // Prevent Ajax caching - always get a new result
   $.ajaxSetup({
     cache: false
   });
-
   // Bloomin text area keeps content after refresh
   document.getElementById('content').value = '';
 }); */
@@ -206,7 +206,7 @@ function populateRepos() {
 }
 
 function wrapListItems() {
-	if (gWrapped = 1) {
+	if (gWrapped == 1) {
 		$(".contextgroup a").unwrap();
 	} else {
 		gWrapped = 1;
@@ -501,6 +501,7 @@ function userRuleLoader(username) {
 		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
 		ul.appendChild(litem);
 	}
+	//wrapListItems();
 }
 
 function groupRuleLoader(groupName) {
@@ -528,23 +529,40 @@ function groupRuleLoader(groupName) {
 	 if (repoPerms.length != 0) {
 		 perms.push([Rules.ruleSet[2][i][0], repoPerms]);
 	 }
- }
+}
 
- //  List the results
- var ul = document.getElementById("lContextbox"); // Get the list
- var nPerms = perms.length;
+	//  List the results
+	var ul = document.getElementById("lContextbox"); // Get the list
+	var nPerms = perms.length;
+	// clear the current list
+	ul.innerHTML = "";
+	console.log("Adding " + nPerms + " permissions to the context list");
+	for (var i = 0; i < nPerms; i++) {
+		litem = document.createElement("li");
+		litem.className = "contextgroup";
+		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
+		ul.appendChild(litem);
+	}
+	//wrapListItems();
+}
 
- // clear the current list
- ul.innerHTML = "";
-
- console.log("Adding " + nPerms + " permissions to the context list");
-
- for (var i = 0; i < nPerms; i++) {
-	 litem = document.createElement("li");
-	 litem.className = "contextgroup";
-	 litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
-	 ul.appendChild(litem);
- }
+function groupUsersLoader(groupName) {
+	var ul = document.getElementById("lContextbox");
+	ul.innerHTML = "";
+	var groups = Rules.ruleSet[0]; //Will be the array of groups
+	for (var i=0; i<groups.length; i++) {
+		if (groups[i][0] == groupName) {
+			var thisGroup = groups[i][1]; //Will be the array of members
+			for (var j=0; j<thisGroup.length; j++) {
+				litem = document.createElement("li");
+				litem.className = "contextgroup";
+				litem.innerHTML = thisGroup[j];
+				ul.appendChild(litem);
+			}
+			//wrapListItems();
+			return;
+		}
+	}
 }
 
 function repoRuleLoader(repo) {
@@ -602,14 +620,13 @@ function closePopupPrompt() {
 	popup.style.display = "none";
 }
 
-//Activates the clicked item in the list where all elements have the class nameOfList
-function activate(nameOfList) {
+function activate(nameOfList) { //Activates the clicked item in the list where all elements have the class nameOfList
 	var activeItem = document.activeElement;
 	if (nameOfList == "none") {
 		console.log("Deactivating all elements.");
 		var all = document.getElementsByTagName("*");
 		for (var i=0; i<all.length; i++) {
-			console.log("Deactivating " + all[i].className);
+			//console.log("Deactivating " + all[i].className);
 			all[i].className.replace("active", "");
 		}
 		return;
@@ -639,8 +656,8 @@ function activate(nameOfList) {
 			closePopupPrompt();
 			selectMultiple = true;
 			document.getElementById("multiSelect").checked = false;
-			activate(nameOfList);
 		}
+		activeItem = document.activeElement;
 		if (!selectMultiple) {
 			for (var i=0; i<listcontent.length; i++) {
 				listcontent[i].firstChild.className = nameOfList;
@@ -664,7 +681,7 @@ function updateContextBox(withWhat) {
 	var contextBoxTitle = document.getElementById("contextHeader");
 	if (originatingList == "lGroups") {
 		contextBoxTitle.innerHTML = "Users that are in the group \"" + withWhat.innerHTML + "\"";
-		userRuleLoader(withWhat.id);
+		groupUsersLoader(withWhat.innerText);
 	}
 	if (originatingList == "lUsers") {
 		contextBoxTitle.innerHTML = "Repositories that \"" + withWhat.innerHTML + "\" has access to";
@@ -699,6 +716,7 @@ function prepSearch(which) {
 		}
 	} else {
 		listContainer = document.getElementById(which);
+		console.log("This happens to be " + listContainer);
 	}
 	gSearchableList = listContainer.getElementsByTagName("li");
 }
@@ -736,9 +754,10 @@ function getInput(prompt, target) { //Opens the modal box to get a string from t
 }
 
 function closeModal() {
+	var modalContents = document.getElementById("modalContent");
 	var modal = document.getElementById("modalbox");
-	modal.style.display = "none";
 	modalContents.value = "";
+	modal.style.display = "none";
 }
 
 function okModal() {
