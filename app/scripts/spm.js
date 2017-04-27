@@ -442,6 +442,7 @@ function saveFile() {
 			console.log(deleted);
     }
   });
+  return true;
 }
 
 function userRuleLoader(username) {
@@ -565,8 +566,35 @@ function groupUsersLoader(groupName) {
 	}
 }
 
+function findGroup(name) {
+	for (i=0; i<Rules.ruleSet[0].length; i++) {
+		if (Rules.ruleSet[0][i][0] == name) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 function repoRuleLoader(repo) {
  // load rules for selected repos
+}
+
+function keyPressed(e) {
+	switch (e.keyCode) {
+		case 18: //Alt
+			selectMultiple = true;
+			document.getElementById("multiSelect").checked = true;
+			break;
+	}
+}
+
+function keyReleased(e) {
+	switch (e.keyCode) {
+		case 18: //Alt
+			selectMultiple = false;
+			document.getElementById("multiSelect").checked = false;
+			break;
+	}
 }
 
 //-------------------From here is UI code------------------
@@ -600,19 +628,25 @@ function addUsersPrompt() {
 		console.log("addUsersPrompt is DOING STUFF");
 		gSelectSingle = "lGroups";
 		gSelectSingleAction = "addToGroup";
-		popupPrompt("Add users to which group?",30,10,300,25);
+		popupPrompt("Add users to which group?","30","10","300","25");
 	}
 }
 
-function popupPrompt(message, x, y, w, h) {
+function popupPrompt(message, x, y, w, h, autoclose=false) {
 	popup = document.getElementById("popup");
-	popupText = document.getElementById("popupText");
-	popup.style.left = x + "%";
-	popup.style.top = y + "%";
-	popup.style.width = w + "px";
-	popup.style.height = h + "px";
-	popupText.innerHTML = message;
-	popup.style.display = "block";
+	if (popup.style.display == "none") {
+		popupText = document.getElementById("popupText");
+		popup.style.left = x + "%";
+		popup.style.top = y + "%";
+		popup.style.width = w + "px";
+		popup.style.height = h + "px";
+		popupText.innerHTML = message;
+		popup.style.display = "block";
+		if (autoclose) {
+			$('#popup').delay(2000).fadeOut(500);
+		}
+		return true;
+	} else { return false; }
 }
 
 function closePopupPrompt() {
@@ -639,22 +673,26 @@ function activate(nameOfList) { //Activates the clicked item in the list where a
 		if (gSelectSingleAction == "addToGroup") {
 			console.log("addToGroup selected");
 			gSelectSingleAction = "";
+			var fromGroup = activeItem.innerText;
+			var numAdded = 0;
+			var groupIndex = findGroup(fromGroup);
+			if (groupIndex == -1) { window.alert("No valid group selected"); }
 			var all = getActiveItem("contextgroup");
-			var listOfUsers = [];
+			var listOfUsers = Rules.ruleSet[0][groupIndex][1]; //Prevents overwriting
 			for (var i=0; i<all.length; i++) {
 				console.log(all[i].parentNode.parentNode.id + ", " + all[i].className);
 				if ((all[i].className.includes("active")) && (all[i].parentNode.parentNode.id == "lUsers")) {
 					console.log("A user is being added by activate. It is:");
 					console.log(all[i] + ", " + all[i].innerHTML);
-					listOfUsers.push(all[i].innerText);
+					listOfUsers.pushUnique(all[i].innerText); //numAdded++; //Scrapped because who knows how many pushUnique stopped
 				}
 			}
-			var fromGroup = activeItem.innerText;
 			console.log(fromGroup);
 			console.log(listOfUsers);
 			updateGroup(fromGroup,listOfUsers);
 			closePopupPrompt();
-			selectMultiple = true;
+			popupPrompt("Added users to " + fromGroup,"30","10","400","25",true);
+			selectMultiple = false;
 			document.getElementById("multiSelect").checked = false;
 		}
 		activeItem = document.activeElement;
@@ -774,11 +812,24 @@ function okModal() {
 	closeModal();
 }
 
+function saveButton() {
+	var success = saveFile();
+	if (success == true) {
+		popupPrompt("Saved to file", "50", "50", "320", "24", true);
+	} else {
+		if (!popupPrompt("The file could not be saved.", "50", "50", "320", "24", true)) {
+			window.alert("The file could not be saved.");
+		}
+	}
+}
+
 function interfaceSetup() {
 	modalSetup();
 	UMTabTo('Groups');
 	gSearchableList = null;
 	document.getElementById("multiSelect").checked = false;
+	popup = document.getElementById("popup");
+	popup.style.display = "none";
 }
 
 /*---------------From here is unused code------------------

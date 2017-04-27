@@ -163,6 +163,7 @@ a:visited {
 }
 
 #popup {
+	transform:translate(-50%, -50%);
 	display:none;
 	float:top;
 	top:0px;

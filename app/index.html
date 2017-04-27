@@ -8,7 +8,7 @@
 	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
 	<script type = "text/javascript" src = "scripts/spm.js"></script>
 </head>
-<body onload = "startup();">
+<body onload = "startup();" onkeyup = "keyReleased(event);" onkeydown = "keyPressed(event);">
 <div class="wrapper">
 	<div id="modalbox">
 		<div id="modalHeader"><p>Input something</p></div><br/>
@@ -59,13 +59,13 @@
 <!--Lower right-hand box-->
 		<div id = "buttonsbox">
 			<form>
-				<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
-				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>
+				<!--<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
+				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>-->
 				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
 				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
 				<button type = "button" id="addToGroup" onclick="addUsersPrompt();">+Add users to group</button>
-        <button type="button" onclick="saveFile();">Save File</button>
-				<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple</input>
+				<button type="button" onclick="saveButton();">Save Changes</button>
+				<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple (alt)</input>
 			</form>
 		</div>
 	</div>
