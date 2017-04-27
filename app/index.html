@@ -30,7 +30,7 @@
 				<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('tabbox')" oninput="search()"></input>
 			</div>
 			<div class = "tabList" id = "userManagerUsers">
-				<p><ul id = "lUsers"></ul></p>
+				<p><ul id = "lUsers"><li>Please wait...</li></ul></p>
 			</div>
 			<div class = "tabList" id = "userManagerGroups">
 				<p><ul id = "lGroups"></ul></p>
@@ -66,6 +66,7 @@
 				<button type = "button" id="addToGroup" onclick="addUsersPrompt();">+Add users to group</button>
 				<button type="button" onclick="saveButton();">Save Changes</button>
 				<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple (alt)</input>
+				<input type="checkbox" id="showAllRepos">Show all repositories</input> <!--As opposed to only the ones the current selection has access to-->
 			</form>
 		</div>
 	</div>

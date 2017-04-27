@@ -11,9 +11,12 @@
 var modalTarget = ""; //Yes... I know.
 var selectMultiple = false;
 var gSelectSingle = "";
-var gSearchableList = null; //Global
+var gSearchableList = null;
 var gWrapped = 0;
 var gSelectSingleAction = "";
+
+var giRead = null
+var giReadWrite = null
 
 var Rules = {
 	ruleSet : []
@@ -719,6 +722,7 @@ function updateContextBox(withWhat) {
 	if (originatingList == "lGroups") {
 		contextBoxTitle.innerHTML = "Users that are in the group \"" + withWhat.innerHTML + "\"";
 		groupUsersLoader(withWhat.innerText);
+		//updateReposOverlay(withWhat.innerText);
 	}
 	if (originatingList == "lUsers") {
 		contextBoxTitle.innerHTML = "Repositories that \"" + withWhat.innerHTML + "\" has access to";
@@ -829,6 +833,12 @@ function interfaceSetup() {
 	document.getElementById("multiSelect").checked = false;
 	popup = document.getElementById("popup");
 	popup.style.display = "none";
+	giRead = new Image();
+	giReadWrite = new Image();
+	giRead.src = '..\\img\\read.bmp';
+	giReadWrite.src = '..\\img\\write.bmp';
+	giRead.alt = "Read";
+	giReadWrite.alt = "Read/Write";
 }
 
 /*---------------From here is unused code------------------
@@ -839,6 +849,13 @@ function listGroups(json) {
     console.log("Groups: " + JSON.stringify(groups, null, 4));
     // Remove once function for where this goes is made
     $("#content").val(JSON.stringify(groups, null, 4));
+}
+
+function updateReposOverlay(withWhat) {
+	var list = document.getElementById("lRepos").childNodes;
+	for (var i=0; i<list.length; i++) {
+		if list[i].innerHTML = 
+	}
 }
 
 */

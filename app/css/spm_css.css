@@ -117,15 +117,17 @@ a:visited {
 	color:inherit;
 }
 
-a:hover {
-	background-color:#eee;
-}
-
 a .active {
 	background-color:#09f;
 	color:#fff;
 	transition:0.2s;
 }
+
+a:hover {
+	transition:0s;
+	background-color:#eee;
+}
+
 
 /* ID selectors */
 
