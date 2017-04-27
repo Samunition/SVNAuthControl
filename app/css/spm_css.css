@@ -104,7 +104,7 @@ input[name=searchbar]:focus {
 .tabList {
 	overflow:hidden;
 	overflow-y:scroll;
-	height:calc(100% - 35px); /*The best ability of css ever, end of*/
+	height:calc(100% - 35px);
 }
 
 a:link {
@@ -117,11 +117,11 @@ a:visited {
 	color:inherit;
 }
 
-.tabList a:hover {
+a:hover {
 	background-color:#eee;
 }
 
-.tabList a .active  {
+a .active {
 	background-color:#09f;
 	color:#fff;
 	transition:0.2s;

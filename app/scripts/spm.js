@@ -207,12 +207,11 @@ function populateRepos() {
 
 function wrapListItems() {
 	if (gWrapped == 1) {
-		$(".contextgroup a").unwrap();
+		$("*").unwrap(".contextgroupAnchor");
 	} else {
 		gWrapped = 1;
 	}
-	//The .contextgroup on the li items are only there to serve as identifiers and are unrelated to the anchor's contextgroup
-	$(".contextgroup").wrap('<a class = "contextgroup" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
+	$(".contextgroup").wrap('<a class = "contextgroupAnchor" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
 }
 
 function addGroup(groupName, usernames) {
@@ -502,7 +501,7 @@ function userRuleLoader(username) {
 		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
 		ul.appendChild(litem);
 	}
-	//wrapListItems();
+	wrapListItems();
 }
 
 function groupRuleLoader(groupName) {
@@ -544,7 +543,7 @@ function groupRuleLoader(groupName) {
 		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
 		ul.appendChild(litem);
 	}
-	//wrapListItems();
+	wrapListItems();
 }
 
 function groupUsersLoader(groupName) {
@@ -560,7 +559,7 @@ function groupUsersLoader(groupName) {
 				litem.innerHTML = thisGroup[j];
 				ul.appendChild(litem);
 			}
-			//wrapListItems();
+			wrapListItems();
 			return;
 		}
 	}
@@ -698,7 +697,7 @@ function activate(nameOfList) { //Activates the clicked item in the list where a
 		activeItem = document.activeElement;
 		if (!selectMultiple) {
 			for (var i=0; i<listcontent.length; i++) {
-				listcontent[i].firstChild.className = nameOfList;
+				listcontent[i].className = nameOfList;
 			}
 		}
 		if (activeItem.firstChild.className.includes("active")) {
