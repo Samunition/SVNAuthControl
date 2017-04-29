@@ -13,10 +13,9 @@ var selectMultiple = false;
 var gSelectSingle = "";
 var gSearchableList = null;
 var gWrapped = 0;
-var gSelectSingleAction = "";
 
-var giRead = null
-var giReadWrite = null
+var giRead = null;
+var giReadWrite = null;
 
 var Rules = {
 	ruleSet : []
@@ -24,7 +23,7 @@ var Rules = {
 
 //Will be run when page is loaded
 function startup() {
-	interfaceSetup()
+	interfaceSetup();
 	//loadFile();
 	load();
 }
@@ -47,7 +46,7 @@ function modalSetup() {
 	    if (event.target == modal) {
 	        modal.style.display = "none";
 	    }
-	}
+	};
 }
 
 // Change to load rules
@@ -65,7 +64,6 @@ function load() {
 			console.log("Rules parsed and stored");
 
 			console.log("Populating lists");
-			updateLists();
 			console.log("Lists populated");
 			addUser("Samuel");
 			 addGroup("samsgroup", ["sam", "and", "his", "mates"]);
@@ -158,56 +156,6 @@ function parseFileData(fileData) {
 	return rules;
 }
 
-function populateUsers() {
-	 var users = Rules.ruleSet[1];
-	 var ul = document.getElementById("lUsers"); //Get the user list
-	 var nUsers = users.length;
-
-	 console.log("Adding " + nUsers + " users to users list");
-
-	 for (var i = 0; i < nUsers; i++) {
-		 litem = document.createElement("li");
-		 litem.className = "contextgroup";
-		 litem.id = users[i];
-		 litem.innerHTML = users[i];
-		 ul.appendChild(litem);
-	 }
-}
-
-
-// Populate the groups list with the groups
-function populateGroups() {
-	var groups = Rules.ruleSet[0];
-	var ul = document.getElementById("lGroups"); //Get the list
-	var nGroups = groups.length;
-
-	console.log("Addin g " + nGroups + " groups to groups list");
-
-	for (var i=0; i<nGroups; i++) {
-		litem = document.createElement("li"); //Create & get the new item
-		litem.className = "contextgroup";
-		litem.id = groups[i][0];
-		litem.innerHTML = groups[i][0]; //Put text in the new item
-		ul.appendChild(litem);
-	}
-}
-
-function populateRepos() {
-	var repos = Rules.ruleSet[2];
-	var ul = document.getElementById("lRepos"); //Get the list
-	var nRepos = repos.length;
-
-	console.log("Adding " + nRepos + " repos to repo list");
-
-	for (var i=0; i<nRepos; i++) {
-		litem = document.createElement("li"); //Create & get the new item
-		litem.className = "contextgroup";
-		litem.id = repos[i][0];
-		litem.innerHTML = repos[i][0]; //Put text in the new item
-		ul.appendChild(litem);
-	}
-}
-
 function wrapListItems() {
 	if (gWrapped == 1) {
 		$("*").unwrap(".contextgroupAnchor");
@@ -257,10 +205,6 @@ function deleteGroup(groupName) {
             }
         }
     }
-    
-
-	
-
 	// Todo search repos for group and delete rules
 	updateLists();
 }
@@ -419,17 +363,6 @@ function clearLists() {
 	$(document.getElementById("lRepos")).empty();
 }
 
-function updateLists() {
-	// Clear lists
-	clearLists();
-	// Populate lists
-	populateGroups();
-	populateUsers();
-	populateRepos();
-	wrapListItems();
-	console.log("Screen Updated");
-}
-
 function saveFile() {
 	var jsonStringGroup = JSON.stringify(Rules.ruleSet[0]);
 	var jsonStringRepos = JSON.stringify(Rules.ruleSet[2]);
@@ -508,62 +441,41 @@ function userRuleLoader(username) {
 }
 
 function groupRuleLoader(groupName) {
- // Load rules for the groups
- // Check each repo against the group
- console.log("LOADING GROUP RULES");
- var nRepos = Rules.ruleSet[2].length;
- var perms = []; // perms[i][0] is all the repos with permissions
-
- for (var i = 0; i < nRepos; i++) {
-	 var nRules = Rules.ruleSet[2][i][1].length;
-	 var repoPerms = [];
-	 for (var j = 0; j < nRules; j++) {
-		 // Check to see if all, *, has permissions
-		 if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
-			 repoPerms.push(Rules.ruleSet[2][i][1][j]);
-		 }
-
-		 // Check the checklist against repo rules
-		 if (groupName == Rules.ruleSet[2][i][1][j][0]) {
-			 repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
-		 }
-	 }
-	 // Add the repo perms to perms list
-	 if (repoPerms.length != 0) {
-		 perms.push([Rules.ruleSet[2][i][0], repoPerms]);
-	 }
-}
-
-	//  List the results
-	var ul = document.getElementById("lContextbox"); // Get the list
-	var nPerms = perms.length;
-	// clear the current list
-	ul.innerHTML = "";
-	console.log("Adding " + nPerms + " permissions to the context list");
-	for (var i = 0; i < nPerms; i++) {
-		litem = document.createElement("li");
-		litem.className = "contextgroup";
-		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
-		ul.appendChild(litem);
+	// Load rules for the groups
+	// Check each repo against the group
+	console.log("LOADING GROUP RULES");
+	var nRepos = Rules.ruleSet[2].length;
+	var perms = []; // perms[i][0] is all the repos with permissions
+	for (var i = 0; i < nRepos; i++) {
+		var nRules = Rules.ruleSet[2][i][1].length;
+		var repoPerms = [];
+		for (var j = 0; j < nRules; j++) {
+			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") { // Check to see if all, *, has permissions
+				repoPerms.push(Rules.ruleSet[2][i][1][j]);
+			}
+			if (groupName == Rules.ruleSet[2][i][1][j][0]) { // Check the checklist against repo rules
+				repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+			}
+		}
+		// Add the repo perms to perms list
+		if (repoPerms.length != 0) {
+			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
+		}
 	}
-	wrapListItems();
+	
+	var finalPerms = [];
+	for (var i=0; i<perms.length; i++) { //hopefully temporary hodgepodgery. Sorry, Sam...
+		finalPerms[0][i] = perms[i][0]; //The repository
+		finalPerms[1][i] = perms[i][1][0][0]; //The access (rw or r)
+	}
+	return finalPerms;
 }
 
 function groupUsersLoader(groupName) {
-	var ul = document.getElementById("lContextbox");
-	ul.innerHTML = "";
 	var groups = Rules.ruleSet[0]; //Will be the array of groups
 	for (var i=0; i<groups.length; i++) {
 		if (groups[i][0] == groupName) {
-			var thisGroup = groups[i][1]; //Will be the array of members
-			for (var j=0; j<thisGroup.length; j++) {
-				litem = document.createElement("li");
-				litem.className = "contextgroup";
-				litem.innerHTML = thisGroup[j];
-				ul.appendChild(litem);
-			}
-			wrapListItems();
-			return;
+			return groups[i][1]; //Will be the array of members
 		}
 	}
 }
@@ -599,39 +511,32 @@ function keyReleased(e) {
 	}
 }
 
-//-------------------From here is UI code------------------
 
-function UMTabTo(whichTab) {
-	if (gSelectSingle != "") {
+//-------------------FROM HERE IS UI CODE----------------
+
+
+function addUsers() {
+	var groups = getActiveItems("lGroups");
+	var users = getActiveItems("lUsers");
+	var groupIndex;
+	var listOfUsers;
+	if (groups.length == 0) {
+		window.alert("Please select one or more groups to add the users to. (Hold ALT to select multiple items)");
 		return;
 	}
-	activate("none");
-	if (whichTab.toUpperCase() == 'USERS') {
-		document.getElementById('usersTab').className = 'activeCurrent';
-		document.getElementById('groupsTab').className = '';
-		document.getElementById('userManagerGroups').style.display = 'none';
-		document.getElementById('userManagerUsers').style.display = 'block';
-	} else {
-		document.getElementById('groupsTab').className = 'activeCurrent';
-		document.getElementById('usersTab').className = ''
-		document.getElementById('userManagerUsers').style.display = 'none';
-		document.getElementById('userManagerGroups').style.display = 'block';
+	if (users.length == 0) {
+		window.alert("Please select one or more users to add to the groups. (Hold ALT to select multiple items)");
+		return;
 	}
-	prepSearch("tabbox");
-}
-
-function addUsersPrompt() {
-	var thisGroup = getActiveItem("contextgroup")[0];
-	if ((!thisGroup) || (thisGroup.parentNode.parentNode.id != "lUsers")) {
-		console.log("Add Users clicked without users. Got: " + thisGroup.parentNode.parentNode.id);
-		window.alert("You'll have to select some users to add first");
-	} else {
-		UMTabTo("GROUPS");
-		console.log("addUsersPrompt is DOING STUFF");
-		gSelectSingle = "lGroups";
-		gSelectSingleAction = "addToGroup";
-		popupPrompt("Add users to which group?","30","10","300","25");
+	for (var i=0; i<groups.length; i++) {
+		groupIndex = findGroup(groups[i].innerText);
+		listOfUsers = Rules.ruleSet[0][groupIndex][1]; //Gets the list of users already in the group
+		for (var j=0; j<users.length; j++) {
+			listOfUsers.pushUnique(users[i].innerText); //Adds to that list
+		}
+		updateGroup(groups[i].innerText,listOfUsers); //Writes that list back into the group
 	}
+	popupPrompt("Added "+users.length+" user(s) to "+groups.length+" group(s)","50","50","400","25",true);
 }
 
 function popupPrompt(message, x, y, w, h, autoclose=false) {
@@ -671,75 +576,32 @@ function activate(nameOfList) { //Activates the clicked item in the list where a
 	console.log("Activate has " + nameOfList);
 	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
 	console.log("gSelectSingle is " + gSelectSingle);
+	
 	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
-		if (gSelectSingleAction == "addToGroup") {
-			console.log("addToGroup selected");
-			gSelectSingleAction = "";
-			var fromGroup = activeItem.innerText;
-			var numAdded = 0;
-			var groupIndex = findGroup(fromGroup);
-			if (groupIndex == -1) { window.alert("No valid group selected"); }
-			var all = getActiveItem("contextgroup");
-			var listOfUsers = Rules.ruleSet[0][groupIndex][1]; //Prevents overwriting
-			for (var i=0; i<all.length; i++) {
-				console.log(all[i].parentNode.parentNode.id + ", " + all[i].className);
-				if ((all[i].className.includes("active")) && (all[i].parentNode.parentNode.id == "lUsers")) {
-					console.log("A user is being added by activate. It is:");
-					console.log(all[i] + ", " + all[i].innerHTML);
-					listOfUsers.pushUnique(all[i].innerText); //numAdded++; //Scrapped because who knows how many pushUnique stopped
-				}
-			}
-			console.log(fromGroup);
-			console.log(listOfUsers);
-			updateGroup(fromGroup,listOfUsers);
-			closePopupPrompt();
-			popupPrompt("Added users to " + fromGroup,"30","10","400","25",true);
-			selectMultiple = false;
-			document.getElementById("multiSelect").checked = false;
-		}
 		activeItem = document.activeElement;
-		if (!selectMultiple) {
+		if (!selectMultiple) { //If only one is to be activated, deactivate everything first
 			for (var i=0; i<listcontent.length; i++) {
 				listcontent[i].className = nameOfList;
 			}
 		}
-		if (activeItem.firstChild.className.includes("active")) {
-			activeItem.firstChild.className = nameOfList;
+		if (activeItem.firstChild.className.includes("active")) { //If the item is active already
+			activeItem.firstChild.className = nameOfList; //Deactivate it
 		} else {
-			activeItem.firstChild.className = nameOfList + " active";
+			activeItem.firstChild.className = activeItem.firstChild.className + " active"; //Otherwise activate it
 		}
-		updateContextBox(activeItem.firstChild);
+		updateContext();
 		gSelectSingle = "";
 	} else {
 		console.log("You can't click this at the moment");
 	}
 }
 
-function updateContextBox(withWhat) {
-	var originatingList = withWhat.parentNode.parentNode.id;
-	console.log(originatingList);
-	var contextBoxTitle = document.getElementById("contextHeader");
-	if (originatingList == "lGroups") {
-		contextBoxTitle.innerHTML = "Users that are in the group \"" + withWhat.innerHTML + "\"";
-		groupUsersLoader(withWhat.innerText);
-		//updateReposOverlay(withWhat.innerText);
-	}
-	if (originatingList == "lUsers") {
-		contextBoxTitle.innerHTML = "Repositories that \"" + withWhat.innerHTML + "\" has access to";
-		console.log(withWhat.id);
-		userRuleLoader(withWhat.id);
-	}
-	if (originatingList == "lRepos") {
-		contextBoxTitle.innerHTML = "Users that have access to \"" + withWhat.innerHTML + "\"";
-	}
-}
-
-function getActiveItem(whichClass) { //Returns an array of the selected items
+function getActiveItems(whichList) { //Returns an array of the selected items
 	var all = document.getElementsByTagName("*");
 	var activeItems = [];
 	for (var i=0; i<all.length; i++) {
-		if ((all[i].className.includes("active")) && (all[i].className.includes(whichClass))) {
-			console.log("getActiveItem has another item");
+		if ((all[i].className.includes("active")) && (all[i].parentNode.parentNode.id.includes(whichList))) {
+			console.log("getActiveItems has another item");
 			activeItems.push(all[i]);
 		}
 	}
@@ -749,16 +611,8 @@ function getActiveItem(whichClass) { //Returns an array of the selected items
 function prepSearch(which) {
 	console.log("prepSearch has " + which);
 	var listContainer;
-	if (which == "tabbox") {
-		if (document.getElementById('userManagerUsers').style.display == 'none') {
-			listContainer = document.getElementById('lGroups');
-		} else {
-			listContainer = document.getElementById('lUsers');
-		}
-	} else {
-		listContainer = document.getElementById(which);
-		console.log("This happens to be " + listContainer);
-	}
+	listContainer = document.getElementById(which);
+	console.log("This happens to be " + listContainer);
 	gSearchableList = listContainer.getElementsByTagName("li");
 }
 
@@ -826,19 +680,172 @@ function saveButton() {
 	}
 }
 
+function updateLists() { //Updates what shows in all boxes
+	clearLists();
+	populateGroups();
+	populateUsers();
+	populateRepos();
+	wrapListItems();
+}
+
+function updateContext() {
+	if (document.getElementById("filterGroups").checked) {
+		document.getElementById("lGroupsHeader").innerHTML = "Groups with selection";
+	} else {
+		document.getElementById("lGroupsHeader").innerHTML = "Groups";
+	}
+	if (document.getElementById("filterUsers").checked) {
+		document.getElementById("lUsersHeader").innerHTML = "Users with selection";
+	} else {
+		document.getElementById("lUsersHeader").innerHTML = "Users";
+	}
+	if (document.getElementById("filterRepos").checked) {
+		document.getElementById("lReposHeader").innerHTML = "Repositories that the selection has access to";
+	} else {
+		document.getElementById("lReposHeader").innerHTML = "Repositories";
+	}
+	filterGroupsList();
+	filterUsersList();
+	filterReposList();
+}
+
+function filterGroupsList() {
+	var relevantGroupsOnly = document.getElementById("filterGroups").checked;
+	var ul = document.getElementById("lGroups");
+	var lGroups = ul.getElementsByTagName("li");
+	var groups = Rules.ruleSet[0]; //Get the groups
+	var activeRepos = getActiveItems("lRepos"); //Get selected repos
+	var activeUsers = getActiveItems("lUsers"); //Get selected repos
+	var indexOfAccess = 0;
+	
+	if (relevantGroupsOnly) { //If the groups list should be filtered
+		for (var i=0; i<lGroups.length; i++) {
+			if (activeRepos.length != 0) { //If only groups with access to the selected repositories should appear
+				thisGroup = groupRuleLoader(groups[i][0]); //Get the group's repositories
+				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
+					indexOfAccess = thisGroup[0][j].indexOf(thisRule); //Find where it is in the group's access list (thisGroup[0] is the array of names of repositories)
+					if (indexOfAccess == -1) { //If the group has no access to it at all
+						lGroups[i].style.display = "none";
+					} else {
+						lGroups[i].style.display = "block";
+						if (thisGroup[1][j] == "r") {
+							addReadOnlyImage(lGroups[i]);
+						} else {
+							addReadWriteImage(lGroups[i]);
+						}
+					}
+				}
+			}
+			if (activeUsers.length != 0) { //If only groups containing selected users should appear
+				thisGroup = groupUsersLoader(groups[i][0]); //Get the group's users
+				for (var j=0; j<activeRepos.length; j++) { //For every selected user
+					indexOfAccess = thisGroup.indexOf(thisRule); //Find where it is in the group's list
+					if (indexOfAccess == -1) { //If it isn't there
+						$(litem).remove(); //Delete the list item.
+					}
+				}
+			}
+		}
+	} else { //If the groups list should not be filtered
+		for (var i=0; i<lGroups.length; i++) {
+			lGroups[i].style.display = 'block'; //Just show everything
+		}
+		document.getElementById("searchGroups").value = ""; //Clear searchbox to avoid confusion
+	}
+}
+
+function filterReposList() {
+	var relevantReposOnly = document.getElementById("filterRepos").checked;
+	var ul = document.getElementById("lRepos");
+	var lRepos = ul.getElementsByTagName("li");
+	var groups = Rules.ruleSet[0]; //Get the groups
+	var activeGroups = getActiveItems("lGroups"); //Get selected repos
+	var activeUsers = getActiveItems("lUsers"); //Get selected repos
+	var indexOfAccess = 0;
+	
+	if (relevantReposOnly) { //If the groups list should be filtered
+		//Hide all repos
+		//Show repos with permissions for the selected groups, if any are selected
+		//Show repos with permissions for the selected users, if any are selected
+	} else { //If the groups list should not be filtered
+		for (var i=0; i<lRepos.length; i++) {
+			lRepos[i].style.display = 'block'; //Just show everything
+		}
+		document.getElementById("searchRepos").value = ""; //Clear searchbox to avoid confusion
+	}
+}
+
+function filterUsersList() {
+}
+
+function filterReposList() {
+}
+
+function populateGroups() {
+	var groups = Rules.ruleSet[0];
+	var ul = document.getElementById("lGroups"); //Get the list
+	var groups = Rules.ruleSet[0];
+	var thisGroup;
+
+	for (var i=0; i<groups.length; i++) { //For every group
+		litem = document.createElement("li"); //Make a list item
+		litem.innerHTML = groups[i][0]; //Put the group's name in it
+		litem.className = "contextgroup"; //Prepare it to be added
+		litem.id = groups[i][0];
+		ul.appendChild(litem); //And add it to the HTML list.
+	}
+}
+
+function populateRepos() {
+	var repos = Rules.ruleSet[2];
+	var ul = document.getElementById("lRepos"); //Get the list
+	var nRepos = repos.length;
+
+	console.log("Adding " + nRepos + " repos to repo list");
+
+	for (var i=0; i<nRepos; i++) {
+		litem = document.createElement("li"); //Create & get the new item
+		litem.className = "contextgroup";
+		litem.id = repos[i][0];
+		litem.innerHTML = repos[i][0]; //Put text in the new item
+		ul.appendChild(litem);
+	}
+}
+
+function populateUsers() {
+	 var users = Rules.ruleSet[1];
+	 var ul = document.getElementById("lUsers"); //Get the user list
+	 var nUsers = users.length;
+
+	 console.log("Adding " + nUsers + " users to users list");
+
+	 for (var i = 0; i < nUsers; i++) {
+		 litem = document.createElement("li");
+		 litem.className = "contextgroup";
+		 litem.id = users[i];
+		 litem.innerHTML = users[i];
+		 ul.appendChild(litem);
+	 }
+}
+
+function addReadOnlyImage(toWhat) {
+	toWhat.style.backgroundImage = "url('..\\img\\write.bmp')";
+}
+
+function addReadWriteImage(toWhat) {
+	toWhat.style.backgroundImage = "url('..\\img\\read.bmp')";
+}
+
+function removeReadImage(fromWhat) {
+	toWhat.style.backgroundImage = "none";
+}
+
 function interfaceSetup() {
 	modalSetup();
-	UMTabTo('Groups');
 	gSearchableList = null;
 	document.getElementById("multiSelect").checked = false;
 	popup = document.getElementById("popup");
 	popup.style.display = "none";
-	giRead = new Image();
-	giReadWrite = new Image();
-	giRead.src = '..\\img\\read.bmp';
-	giReadWrite.src = '..\\img\\write.bmp';
-	giRead.alt = "Read";
-	giReadWrite.alt = "Read/Write";
 }
 
 /*---------------From here is unused code------------------
@@ -850,12 +857,4 @@ function listGroups(json) {
     // Remove once function for where this goes is made
     $("#content").val(JSON.stringify(groups, null, 4));
 }
-
-function updateReposOverlay(withWhat) {
-	var list = document.getElementById("lRepos").childNodes;
-	for (var i=0; i<list.length; i++) {
-		if list[i].innerHTML = 
-	}
-}
-
 */

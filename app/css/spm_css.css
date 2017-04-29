@@ -24,6 +24,8 @@ li {
 	text-decoration:none;
 	display:block;
 	margin-left:4px;
+	background-repeat:no-repeat;
+	background-position:right;
 }
 
 form {
@@ -58,16 +60,28 @@ form {
 	margin-top:4px;
 }
 
+.smallboxList {
+	overflow:hidden;
+	overflow-y:scroll;
+	height:calc(100% - 37px);
+}
+
 .smallheader {
-	border-bottom:1px solid black;
 	margin:0;
 	padding:8px;
+	height:18px; 
 	background:#eee;
-	height:18px;
+	border:0px;
+	border-bottom:3px solid black;
+	font-weight:bold;
 }
 
 .buttonsbox {
 	margin:8px;
+}
+
+.headerElement {
+	float:right;
 }
 
 input[name=searchbar] {
@@ -84,27 +98,6 @@ input[name=searchbar] {
 
 input[name=searchbar]:focus {
 	width:45%;
-}
-
-.tabs .activeCurrent {
-	background:#09f;
-	color:#fff;
-	transition:0.2s;
-}
-
-.tabs a:link {
-	display:inline;
-	border:0px;
-	border-bottom:3px;
-	border-style:solid;
-	padding:5px;
-	font-weight:bold;
-}
-
-.tabList {
-	overflow:hidden;
-	overflow-y:scroll;
-	height:calc(100% - 35px);
 }
 
 a:link {
@@ -131,7 +124,7 @@ a:hover {
 
 /* ID selectors */
 
-#sideboxes {
+#sideboxes{
 	width: 302px;
 	float: left;
 }

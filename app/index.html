@@ -6,7 +6,7 @@
 	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
 	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/> <!--alternative colours-->
 	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
-	<script type = "text/javascript" src = "scripts/spm.js"></script>
+	<script type = "text/javascript" src = "scripts/spmFunc.js"></script>
 </head>
 <body onload = "startup();" onkeyup = "keyReleased(event);" onkeydown = "keyPressed(event);">
 <div class="wrapper">
@@ -24,25 +24,24 @@
 	<div id = "sideboxes">
 <!--Upper left-hand box-->
 		<div class = "smallbox">
-			<div class = "smallheader tabs" id = "boxTabs">
-				<a href = "#" onclick = "UMTabTo('Groups');" id = "groupsTab">Groups</a>
-				<a href = "#" onclick = "UMTabTo('Users');" id = "usersTab">Users</a>
-				<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('tabbox')" oninput="search()"></input>
+			<div class = "smallheader">
+				<p><span id = "lGroupsHeader">Groups</span>
+				<input type="checkbox" id="filterGroups" class="headerElement" title="Show only relevant groups" onclick="updateContext();"></input>
+				<input type="text" id="searchGroups" name="searchbar" placeholder="Search" onclick="prepSearch('lGroups')" oninput="search()"></input></p>
 			</div>
-			<div class = "tabList" id = "userManagerUsers">
-				<p><ul id = "lUsers"><li>Please wait...</li></ul></p>
-			</div>
-			<div class = "tabList" id = "userManagerGroups">
-				<p><ul id = "lGroups"></ul></p>
+			<div class = "smallboxList" id = "userManagerGroups">
+				<p><ul id = "lGroups"><li>Please wait...</li></ul></p>
 			</div>
 		</div>
 <!--Lower left-hand box-->
 		<div class = "smallbox" id = "lowerbox">
 			<div class = "smallheader">
-				<p>Repositories<input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos')" oninput="search()"></input></p>
+				<p><span id = "lUsersHeader">Users</span>
+				<input type="checkbox" id="filterUsers" class="headerElement" title="Show only relevant users" onclick="updateContext();"></input>
+				<input type="text" id="searchUsers" name="searchbar" placeholder="Search" onclick="prepSearch('lUsers')" oninput="search()"></input></p>
 			</div>
-			<div class = "tabList">
-				<p><ul id = "lRepos"></ul></p>
+			<div class = "smallboxList">
+				<p><ul id = "lUsers"></ul></p>
 			</div>
 		</div>
 	</div>
@@ -50,10 +49,12 @@
 <!--Upper right-hand box-->
 		<div class = "bigbox">
 			<div class = "smallheader">
-				<p><span id = "contextHeader">Subversion Permissions Manager</span><input type="text" name="searchbar" placeholder="Search" onclick="prepSearch('lContextBox');" oninput="search()"></input></p>
+				<p><span id = "lReposHeader">Repositories</span>
+				<input type="checkbox" id="filterRepos" class="headerElement" title="Show only relevant repositories" onclick="updateContext();"></input>
+				<input type="text" id="searchRepos" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos');" oninput="search()"></input></p>
 			</div>
-			<div class="contextList">
-				<p><ul id = "lContextbox"></ul></p>
+			<div class = "smallboxList">
+				<p><ul id = "lRepos"></ul></p>
 			</div>
 		</div>
 <!--Lower right-hand box-->
@@ -63,10 +64,9 @@
 				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>-->
 				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
 				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
-				<button type = "button" id="addToGroup" onclick="addUsersPrompt();">+Add users to group</button>
+				<button type = "button" id="addToGroup" onclick="addUsers();">+Add users to group</button>
 				<button type="button" onclick="saveButton();">Save Changes</button>
 				<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple (alt)</input>
-				<input type="checkbox" id="showAllRepos">Show all repositories</input> <!--As opposed to only the ones the current selection has access to-->
 			</form>
 		</div>
 	</div>
