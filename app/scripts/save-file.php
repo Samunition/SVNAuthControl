@@ -2,12 +2,14 @@
   if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $groups = json_decode(stripslashes($_POST['groups']));
     $repos = json_decode(stripslashes($_POST['repos']));
+    $groupNames = array();
 
     $file = fopen('../files/new_auth.txt', 'w');
     echo fwrite($file, "[groups]");
     echo fwrite($file, "\n");
     for ($i = 0; $i < count($groups); ++$i) {
       $group = $groups[$i];
+      array_push($groupNames, $group[0]);
       echo fwrite($file, $group[0]);
       echo fwrite($file, " = ");
       for ($j = 0; $j < count($group[1]); ++$j) {
@@ -30,6 +32,9 @@
       echo fwrite($file, "]");
       echo fwrite($file, "\n");
       for($j = 0; $j < count($repos[$i][1]); ++$j) {
+        if(in_array((String)$repos[$i][1][$j][0], $groupNames)) {
+          echo fwrite($file, "@");
+        }
         echo fwrite($file, $repos[$i][1][$j][0]);
         echo fwrite($file, " = ");
         echo fwrite($file, $repos[$i][1][$j][1]);
