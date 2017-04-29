@@ -1,25 +1,49 @@
 <?php
   if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-    $contents = $_POST['content'];
+    $groups = json_decode(stripslashes($_POST['groups']));
+    $repos = json_decode(stripslashes($_POST['repos']));
 
-    //$json_data = json_decode($contents);
+    $file = fopen('../files/new_auth.txt', 'w');
+    echo fwrite($file, "[groups]");
+    echo fwrite($file, "\n");
+    for ($i = 0; $i < count($groups); ++$i) {
+      $group = $groups[$i];
+      echo fwrite($file, $group[0]);
+      echo fwrite($file, " = ");
+      for ($j = 0; $j < count($group[1]); ++$j) {
+        echo fwrite($file, $group[1][$j]);
+        if($j != (count($group[1]) - 1)) {
+          echo fwrite($file, ",");
+        }
+      }
+      echo fwrite($file, "\n");
+    }
 
-    // $res = array();
-    // foreach($contents as $key => $val)
-    // {
-    //     if(is_array($val))
-    //     {
-    //         $res[] = "[$key]";
-    //         foreach($val as $skey => $sval) $res[] = "$skey = ".(is_numeric($sval) ? $sval : '"'.$sval.'"');
-    //     }
-    //     else $res[] = "$key = ".(is_numeric($val) ? $val : '"'.$val.'"');
-    // }
+    // repos [i][0] = repo name
+  	// repos [i][1] = 2D array of rules
+  	// repos [i][1][0] = first rule e.g. "user10", "rw"
+    echo fwrite($file, "\n");
 
-    file_put_contents('../files/auth_copy.txt', $contents);
-    copy('../files/auth.txt', '../files/auth.prev');
-    copy('../files/auth_copy.txt', '../files/auth.txt');
+    for($i = 0; $i < count($repos); ++$i) {
+      echo fwrite($file, "[");
+      echo fwrite($file, $repos[$i][0]);
+      echo fwrite($file, "]");
+      echo fwrite($file, "\n");
+      for($j = 0; $j < count($repos[$i][1]); ++$j) {
+        echo fwrite($file, $repos[$i][1][$j][0]);
+        echo fwrite($file, " = ");
+        echo fwrite($file, $repos[$i][1][$j][1]);
+        echo fwrite($file, "\n");
+      }
+      echo fwrite($file, "\n");
+    }
 
-    if (!unlink('../files/auth_copy.txt')) {
+    fclose($file);
+
+    copy('../files/auth.txt', '../files/auth'.date('m-d-Y_hia').'.prev');
+    copy('../files/new_auth.txt', '../files/auth.txt');
+
+    if (!unlink('../files/new_auth.txt')) {
       echo ("Could not delete copy!");
     }
     else {

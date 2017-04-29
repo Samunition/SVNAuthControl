@@ -24,6 +24,8 @@ li {
 	text-decoration:none;
 	display:block;
 	margin-left:4px;
+	background-repeat:no-repeat;
+	background-position:right;
 }
 
 form {
@@ -58,16 +60,28 @@ form {
 	margin-top:4px;
 }
 
+.smallboxList {
+	overflow:hidden;
+	overflow-y:scroll;
+	height:calc(100% - 37px);
+}
+
 .smallheader {
-	border-bottom:1px solid black;
 	margin:0;
 	padding:8px;
+	height:18px; 
 	background:#eee;
-	height:18px;
+	border:0px;
+	border-bottom:3px solid black;
+	font-weight:bold;
 }
 
 .buttonsbox {
 	margin:8px;
+}
+
+.headerElement {
+	float:right;
 }
 
 input[name=searchbar] {
@@ -86,27 +100,6 @@ input[name=searchbar]:focus {
 	width:45%;
 }
 
-.tabs .activeCurrent {
-	background:#09f;
-	color:#fff;
-	transition:0.2s;
-}
-
-.tabs a:link {
-	display:inline;
-	border:0px;
-	border-bottom:3px;
-	border-style:solid;
-	padding:5px;
-	font-weight:bold;
-}
-
-.tabList {
-	overflow:hidden;
-	overflow-y:scroll;
-	height:calc(100% - 35px); /*The best ability of css ever, end of*/
-}
-
 a:link {
 	display:block;
 	text-decoration:none;
@@ -117,19 +110,21 @@ a:visited {
 	color:inherit;
 }
 
-.tabList a:hover {
-	background-color:#eee;
-}
-
-.tabList a .active  {
+a .active {
 	background-color:#09f;
 	color:#fff;
 	transition:0.2s;
 }
 
+a:hover {
+	transition:0s;
+	background-color:#eee;
+}
+
+
 /* ID selectors */
 
-#sideboxes {
+#sideboxes{
 	width: 302px;
 	float: left;
 }
@@ -162,8 +157,21 @@ a:visited {
 	padding:8px;
 }
 
-#pagecover {
-	
+#popup {
+	transform:translate(-50%, -50%);
+	display:none;
+	float:top;
+	top:0px;
+	left:0px;
+	position:fixed;
+	width:500px;
+	height:500px;
+	text-align:center;
+	background-color:#000;
+	color:#fff;
+	border-color:#000;
+	border-style:outset;
+	padding:8px;
 }
 
 /* clearfix */
