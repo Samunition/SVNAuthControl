@@ -14,9 +14,6 @@ var gSelectSingle = "";
 var gSearchableList = null;
 var gWrapped = 0;
 
-var giRead = null;
-var giReadWrite = null;
-
 var Rules = {
 	ruleSet : []
 };
