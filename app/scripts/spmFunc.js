@@ -728,6 +728,7 @@ function filterGroupsList() {
 		}
 		for (var i=0; i<lGroups.length; i++) { //For every group
 			removeReadImage(lGroups[i]);
+			lGroups[i].style.display = "none";
 			if (activeRepos.length != 0) { //If only groups with access to the selected repositories should appear
 				lGroups[i].style.display = "none"; //Hide the group in the list
 				perms = ruleLoader(groups[i][0]); //Get the group's repositories
@@ -742,8 +743,6 @@ function filterGroupsList() {
 				for (var j=0; j<activeUsers.length; j++) { //For every selected user
 					if (thisGroup.indexOf(activeUsers[j].innerText) != -1) { //If it is there
 						lGroups[i].style.display = "block"; //Show the group
-					} else {
-						lGroups[i].style.display = "none"; //Hide the group
 					}
 				}
 			}
@@ -769,19 +768,8 @@ function filterUsersList() {
 	var perms;
 			
 	if (relevantUsersOnly) { //If the users list should be filtered
-		if (activeRepos.length != 0) { //If any repos are selected
-			perms = ruleLoader(users[i]); //Get the user's repositories
-			for (var j=0; j<activeRepos.length; j++) { //For every selected repository
-				for (var k=0; k<perms.length; k++) { //For every repository that the user has permissions for
-					if (perms[k][1] == "r") { //If the permission is read-only
-						addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the user
-					} else {
-						addReadWriteImage(lUsers[i]); //Show the "WRITE" icon alongside the user
-					}
-				}
-			}
-		}
 		for (var i=0; i<lUsers.length; i++) { //For every user
+			lUsers[i].style.display = "none";
 			removeReadImage(lUsers[i]);
 			if (activeRepos.length != 0) { //If only users with access to the selected repositories should appear
 				lUsers[i].style.display = "none"; //Hide the user in the list
@@ -789,19 +777,14 @@ function filterUsersList() {
 				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
 					for (var k=0; k<perms.length; k++) { //For every repository that the user has permissions for
 						lUsers[i].style.display = "block"; //Show the user
-						console.log("User shown because of repo selection");
 					}
 				}
 			}
 			if (activeGroups.length != 0) { //If only users in selected groups should appear
 				for (var j=0; j<activeGroups.length; j++) { //For every selected group
-					thisGroupsUsers = groupUsersLoader(users[i]);
-					if (thisGroupsUsers != null) { //If it is there
+					thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
+					if (thisGroupsUsers.includes(users[i])) { //If it is there
 						lUsers[i].style.display = "block"; //Show the user
-						console.log("User shown because of selected group");
-					} else {
-						lUsers[i].style.display = "none"; //Hide the user
-						console.log("User hidden because of group selection");
 					}
 				}
 			}
