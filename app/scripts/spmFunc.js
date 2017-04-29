@@ -65,7 +65,7 @@ function load() {
 			addUser("Samuel");
 			 addGroup("samsgroup", ["sam", "and", "his", "mates"]);
             updateGroup("samsgroup", ["boff", "jeff"]);
-        
+
         console.log(Rules.ruleSet[0]);
         //addGroup("samsgroup", ["sam", "and", "his", "mates"]);
         addRepoRule("/anotherone", "samsgroup", "rw");
@@ -75,8 +75,8 @@ function load() {
         console.log(Rules.ruleSet[0]);
         console.log(Rules.ruleSet[2]);
         deleteRepoRule("/anotherone", "samsgroup");
-           console.log(Rules.ruleSet[2]);     
-        
+           console.log(Rules.ruleSet[2]);
+
 
 			// console.log("Load user rules");
 			// userRuleLoader("user1");
@@ -198,7 +198,7 @@ function deleteGroup(groupName) {
             if (Rules.ruleSet[2][i][1][j][0] == groupName)
             {
                 Rules.ruleSet[2][i][1].splice(j,1);
-                
+
             }
         }
     }
@@ -211,7 +211,7 @@ function updateGroup(groupName, usernames) {
     var nGroups = Rules.ruleSet[0].length;
 	for (var i = 0; i < nGroups; i++) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
-               Rules.ruleSet[0][i][1] = usernames; 
+               Rules.ruleSet[0][i][1] = usernames;
         }
 	}
 	updateLists();
@@ -253,7 +253,7 @@ function deleteUser(username) {
             }
         }
     }
-    
+
     for (var i = 0; i < nRepos; i++)
     {
         var newReposLength = Rules.ruleSet[2][i][1].length;
@@ -266,7 +266,7 @@ function deleteUser(username) {
             }
         }
     }
-    
+
     updateLists();
 }
 
@@ -459,7 +459,7 @@ function groupRuleLoader(groupName) {
 			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
 		}
 	}
-	
+
 	var finalPerms = [];
 	for (var i=0; i<perms.length; i++) { //hopefully temporary hodgepodgery. Sorry, Sam...
 		finalPerms[0][i] = perms[i][0]; //The repository
@@ -573,7 +573,7 @@ function activate(nameOfList) { //Activates the clicked item in the list where a
 	console.log("Activate has " + nameOfList);
 	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
 	console.log("gSelectSingle is " + gSelectSingle);
-	
+
 	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
 		activeItem = document.activeElement;
 		if (!selectMultiple) { //If only one is to be activated, deactivate everything first
@@ -714,7 +714,7 @@ function filterGroupsList() {
 	var activeRepos = getActiveItems("lRepos"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
 	var indexOfAccess = 0;
-	
+
 	if (relevantGroupsOnly) { //If the groups list should be filtered
 		for (var i=0; i<lGroups.length; i++) {
 			if (activeRepos.length != 0) { //If only groups with access to the selected repositories should appear
@@ -759,7 +759,7 @@ function filterReposList() {
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
 	var indexOfAccess = 0;
-	
+
 	if (relevantReposOnly) { //If the groups list should be filtered
 		//Hide all repos
 		//Show repos with permissions for the selected groups, if any are selected
@@ -826,11 +826,11 @@ function populateUsers() {
 }
 
 function addReadOnlyImage(toWhat) {
-	toWhat.style.backgroundImage = "url('..\\img\\write.bmp')";
+	toWhat.style.backgroundImage = "url('img/read.bmp')";
 }
 
 function addReadWriteImage(toWhat) {
-	toWhat.style.backgroundImage = "url('..\\img\\read.bmp')";
+	toWhat.style.backgroundImage = "url('img/write.bmp')";
 }
 
 function removeReadImage(fromWhat) {
