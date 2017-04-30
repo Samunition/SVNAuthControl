@@ -377,66 +377,6 @@ function saveFile() {
   return true;
 }
 
-/* old{
-	// Get a list of groups the user is a part of
-	console.log("LOADING USER RULES");
-	var checklist = [username];
-	var nGroups = Rules.ruleSet[0].length;
-
-	for (var i = 0; i < nGroups; i++) {
-		var inGroup = $.inArray(username, Rules.ruleSet[0][i][1]);
-		if (inGroup > -1) {
-			checklist.push(Rules.ruleSet[0][i][0]);
-		}
-	}
-
-	// Check each repo against the checklist
-	var nRepos = Rules.ruleSet[2].length;
-	var nChecklist = checklist.length;
-	var perms = []; // perms[i][0] is all the repos with permissions
-
-	for (var i = 0; i < nRepos; i++) {
-		var nRules = Rules.ruleSet[2][i][1].length;
-		var repoPerms = [];
-		for (var j = 0; j < nRules; j++) {
-
-			// Check to see if all, *, has permissions
-			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
-				repoPerms.push(Rules.ruleSet[2][i][1][j]);
-			}
-
-			// Check the checklist against repo rules
-			for ( var k = 0; k < nChecklist; k++) {
-				if (checklist[k] == Rules.ruleSet[2][i][1][j][0]) {
-					repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
-				}
-			}
-		}
-
-		// Add the repo perms to perms list
-		if (repoPerms.length != 0) {
-			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
-		}
-	}
-
-	//  List the results
-	var ul = document.getElementById("lContextbox"); // Get the list
-	var nPerms = perms.length;
-
-	// clear the current list
-
-	ul.innerHTML = "";
-	console.log("Adding " + nPerms + " permissions to the context list");
-
-	for (var i = 0; i < nPerms; i++) {
-		litem = document.createElement("li");
-		litem.className = "contextgroup";
-		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
-		ul.appendChild(litem);
-	}
-	wrapListItems();
-} */
-
 function ruleLoader(groupName) {
 	// Load rules for the group (or user)
 	// Check each repo against the group
@@ -526,7 +466,7 @@ function addUsers() {
 			listOfUsers = [];
 		}
 		for (var j=0; j<users.length; j++) {
-			listOfUsers.pushUnique(users[i].innerText); //Adds to that list
+			listOfUsers.pushUnique(users[j].innerText); //Adds to that list
 		}
 		updateGroup(groups[i].innerText,listOfUsers); //Writes that list back into the group
 	}
@@ -893,5 +833,65 @@ function listGroups(json) {
     console.log("Groups: " + JSON.stringify(groups, null, 4));
     // Remove once function for where this goes is made
     $("#content").val(JSON.stringify(groups, null, 4));
+}
+
+old{
+	// Get a list of groups the user is a part of
+	console.log("LOADING USER RULES");
+	var checklist = [username];
+	var nGroups = Rules.ruleSet[0].length;
+
+	for (var i = 0; i < nGroups; i++) {
+		var inGroup = $.inArray(username, Rules.ruleSet[0][i][1]);
+		if (inGroup > -1) {
+			checklist.push(Rules.ruleSet[0][i][0]);
+		}
+	}
+
+	// Check each repo against the checklist
+	var nRepos = Rules.ruleSet[2].length;
+	var nChecklist = checklist.length;
+	var perms = []; // perms[i][0] is all the repos with permissions
+
+	for (var i = 0; i < nRepos; i++) {
+		var nRules = Rules.ruleSet[2][i][1].length;
+		var repoPerms = [];
+		for (var j = 0; j < nRules; j++) {
+
+			// Check to see if all, *, has permissions
+			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
+				repoPerms.push(Rules.ruleSet[2][i][1][j]);
+			}
+
+			// Check the checklist against repo rules
+			for ( var k = 0; k < nChecklist; k++) {
+				if (checklist[k] == Rules.ruleSet[2][i][1][j][0]) {
+					repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+				}
+			}
+		}
+
+		// Add the repo perms to perms list
+		if (repoPerms.length != 0) {
+			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
+		}
+	}
+
+	//  List the results
+	var ul = document.getElementById("lContextbox"); // Get the list
+	var nPerms = perms.length;
+
+	// clear the current list
+
+	ul.innerHTML = "";
+	console.log("Adding " + nPerms + " permissions to the context list");
+
+	for (var i = 0; i < nPerms; i++) {
+		litem = document.createElement("li");
+		litem.className = "contextgroup";
+		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
+		ul.appendChild(litem);
+	}
+	wrapListItems();
 }
 */
