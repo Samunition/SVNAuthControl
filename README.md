@@ -1,39 +1,6 @@
 # SVNAuthControl
 Single page app to control a SVN access control list
 
-ad88888ba    8b           d8  888b      88            db                              88                ,ad8888ba,                                                              88           
-d8"     "8b  `8b         d8'  8888b     88           d88b                      ,d     88               d8"'    `"8b                             ,d                              88           
-Y8,           `8b       d8'   88 `8b    88          d8'`8b                     88     88              d8'                                       88                              88           
-`Y8aaaaa,      `8b     d8'    88  `8b   88         d8'  `8b     88       88  MM88MMM  88,dPPYba,      88              ,adPPYba,   8b,dPPYba,  MM88MMM  8b,dPPYba,   ,adPPYba,   88           
-  `"""""8b,     `8b   d8'     88   `8b  88        d8YaaaaY8b    88       88    88     88P'    "8a     88             a8"     "8a  88P'   `"8a   88     88P'   "Y8  a8"     "8a  88           
-        `8b      `8b d8'      88    `8b 88       d8""""""""8b   88       88    88     88       88     Y8,            8b       d8  88       88   88     88          8b       d8  88           
-Y8a     a8P       `888'       88     `8888      d8'        `8b  "8a,   ,a88    88,    88       88      Y8a.    .a8P  "8a,   ,a8"  88       88   88,    88          "8a,   ,a8"  88           
- "Y88888P"         `8'        88      `888     d8'          `8b  `"YbbdP'Y8    "Y888  88       88       `"Y8888Y"'    `"YbbdP"'   88       88   "Y888  88           `"YbbdP"'   88           
-                                                                                                                                                                                             
-                                                                                                                                                                                             
-                                                                                                                                                                                             
-                                                                               88                                                                                                            
-                                                                               88                                                                                                            
-                                                                               88                                                                                                            
-                                                                               88,dPPYba,   8b       d8                                                                                      
-                                                                               88P'    "8a  `8b     d8'                                                                                      
-                                                                               88       d8   `8b   d8'                                                                                       
-                                                                               88b,   ,a8"    `8b,d8'                                                                                        
-                                                                               8Y"Ybbd8"'       Y88'                                                                                         
-                                                                                                d8'                                                                                          
-                                                                                               d8'                                                                                           
-                                                                                                                                                                                             
-88888888888                                                                       88                          88     88b           d88                                                       
-88                                                                                ""                          88     888b         d888                ,d       ,d                            
-88                                                                                                            88     88`8b       d8'88                88       88                            
-88aaaaa      ,adPPYba,  88       88  88,dPYba,,adPYba,    ,adPPYba,  8b,dPPYba,   88   ,adPPYba,  ,adPPYYba,  88     88 `8b     d8' 88  ,adPPYYba,  MM88MMM  MM88MMM  ,adPPYba,  8b,dPPYba,  
-88"""""     a8"     ""  88       88  88P'   "88"    "8a  a8P_____88  88P'   `"8a  88  a8"     ""  ""     `Y8  88     88  `8b   d8'  88  ""     `Y8    88       88    a8P_____88  88P'   "Y8  
-88          8b          88       88  88      88      88  8PP"""""""  88       88  88  8b          ,adPPPPP88  88     88   `8b d8'   88  ,adPPPPP88    88       88    8PP"""""""  88          
-88          "8a,   ,aa  "8a,   ,a88  88      88      88  "8b,   ,aa  88       88  88  "8a,   ,aa  88,    ,88  88     88    `888'    88  88,    ,88    88,      88,   "8b,   ,aa  88          
-88888888888  `"Ybbd8"'   `"YbbdP'Y8  88      88      88   `"Ybbd8"'  88       88  88   `"Ybbd8"'  `"8bbdP"Y8  88     88     `8'     88  `"8bbdP"Y8    "Y888    "Y888  `"Ybbd8"'  88          
-                                                                                                                                                                                             
-
-
 SVN Permissions Manager
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
