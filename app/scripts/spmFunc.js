@@ -217,12 +217,12 @@ function updateGroup(groupName, usernames) {
 function addUser(username) {
 	if (Rules.ruleSet[1].pushUnique(username)) {
 		console.log("User added");
+		updateLists();
 		return true;
 	}
 	else {
 		return false
 	}
-	updateLists();
 }
 
 function deleteUser(username) {
