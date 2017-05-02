@@ -2,10 +2,9 @@
 <html>
 <head>
 	<meta charset="UTF-8"/>
-	<title>SVN Permissions Manager</title>
+	<title>Subversion Permissions Manager</title>
 	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
-	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/> <!--alternative colours-->
-	<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/>--><!--alternative colours-->
 	<script type = "text/javascript" src = "scripts/spmFunc.js"></script>
 </head>
 <body onload = "startup();" onkeyup = "keyReleased(event);" onkeydown = "keyPressed(event);">
@@ -13,7 +12,11 @@
 	<div id="modalbox">
 		<div id="modalHeader"><p>Input something</p></div><br/>
 		<form id="modalForm">
-			<input type="text" id="modalContent"/><br/><br/>
+			<input type="text" id="modalContent"/><br/>
+			<div id="modalRadio">
+				<input type="radio" name="permType" value="r" checked>Read-only
+				<input type="radio" name="permType" value="rw">Read/Write
+			</div><br/>
 			<button type="button" id="modalButton" onclick="okModal(); autofocus">OK</button>
 			<button type="button" onclick="closeModal();">Cancel</button>
 		</form>
@@ -25,20 +28,18 @@
 <!--Upper left-hand box-->
 		<div class = "smallbox">
 			<div class = "smallheader">
-				<p><span id = "lGroupsHeader">Groups</span>
-				<input type="checkbox" id="filterGroups" class="headerElement" title="Show only relevant groups" onclick="updateContext();"></input>
-				<input type="text" id="searchGroups" name="searchbar" placeholder="Search" onclick="prepSearch('lGroups')" oninput="search()"></input></p>
+				<p onclick="relevantGroupsOnly=!relevantGroupsOnly; updateContext();"><span id = "lGroupsHeader"></span>
+				<input type="text" id="searchGroups" name="searchbar" placeholder="Search" onclick="prepSearch('lGroups')" oninput="search()"/></p>
 			</div>
 			<div class = "smallboxList" id = "userManagerGroups">
-				<p><ul id = "lGroups"><li>Please wait...</li></ul></p>
+				<p><ul id = "lGroups"><li id = "pleaseWaitMessage">Please wait...</li></ul></p>
 			</div>
 		</div>
 <!--Lower left-hand box-->
 		<div class = "smallbox" id = "lowerbox">
 			<div class = "smallheader">
-				<p><span id = "lUsersHeader">Users</span>
-				<input type="checkbox" id="filterUsers" class="headerElement" title="Show only relevant users" onclick="updateContext();"></input>
-				<input type="text" id="searchUsers" name="searchbar" placeholder="Search" onclick="prepSearch('lUsers')" oninput="search()"></input></p>
+				<p onclick="relevantUsersOnly=!relevantUsersOnly; updateContext();"><span id = "lUsersHeader"></span>
+				<input type="text" id="searchUsers" name="searchbar" placeholder="Search" onclick="prepSearch('lUsers')" oninput="search()"/></p>
 			</div>
 			<div class = "smallboxList">
 				<p><ul id = "lUsers"></ul></p>
@@ -49,9 +50,8 @@
 <!--Upper right-hand box-->
 		<div class = "bigbox">
 			<div class = "smallheader">
-				<p><span id = "lReposHeader">Repositories</span>
-				<input type="checkbox" id="filterRepos" class="headerElement" title="Show only relevant repositories" onclick="updateContext();"></input>
-				<input type="text" id="searchRepos" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos');" oninput="search()"></input></p>
+				<p onclick="relevantReposOnly=!relevantReposOnly; updateContext();"><span id = "lReposHeader"></span>
+				<input type="text" id="searchRepos" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos');" oninput="search()"/></p>
 			</div>
 			<div class = "smallboxList">
 				<p><ul id = "lRepos"></ul></p>
@@ -59,18 +59,33 @@
 		</div>
 <!--Lower right-hand box-->
 		<div id = "buttonsbox">
-			<form>
-				<!--<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
-				<button type = "button" onclick="ruleLoader('group1')">Load Group rules test</button>-->
-				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
-				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
-				<button type = "button" id="addToGroup" onclick="addUsers();">+Add users to group</button>
-				<button type="button" onclick="saveButton();">Save Changes</button>
-				<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple (alt)</input>
-			</form>
+			<table>
+			<tr>
+				<th>Create</th>
+				<th>Modify <input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple (alt to toggle)</input></th>
+				<th>File</th>
+			</tr>
+			<tr>
+				<form><td>
+					<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+New user</button>
+					<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+New group</button>
+					<button type = "button" id="addAGroup" onclick="getInput('Enter the address of the repository', 'repo');">+New repository rule</button>
+				</form></td>
+				<form><td>
+					<button type = "button" id="addToGroup" onclick="addUsers();">Add selection to group(s)</button>
+					<button type = "button" id="addToGroup" onclick="addRules();">Assign rule(s) to selection</button>
+					<button type = "button" id="addToGroup" onclick="deleteButton();">Delete/remove selection</button>
+				</form></td>
+				<form><td>
+					<button type="button" onclick="saveButton();">Save Changes</button>
+					<button type="button" onclick="revertButton();">Revert Changes</button>
+				</form></td>
+			</tr>
+			</table>
 		</div>
 	</div>
 <!-- Clearfix -->
 	<div class="clear"></div>
 </div>
+<script type = "text/javascript" src = "https://code.jquery.com/jquery-3.1.1.js"></script>
 </body>
