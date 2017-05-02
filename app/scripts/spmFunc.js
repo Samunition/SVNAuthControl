@@ -377,7 +377,7 @@ function saveFile() {
   return true;
 }
 
-function userRuleLoader(username) {
+/* old{
 	// Get a list of groups the user is a part of
 	console.log("LOADING USER RULES");
 	var checklist = [username];
@@ -435,10 +435,10 @@ function userRuleLoader(username) {
 		ul.appendChild(litem);
 	}
 	wrapListItems();
-}
+} */
 
-function groupRuleLoader(groupName) {
-	// Load rules for the groups
+function ruleLoader(groupName) {
+	// Load rules for the group (or user)
 	// Check each repo against the group
 	console.log("LOADING GROUP RULES");
 	var nRepos = Rules.ruleSet[2].length;
@@ -458,14 +458,8 @@ function groupRuleLoader(groupName) {
 		if (repoPerms.length != 0) {
 			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
 		}
-	}
-
-	var finalPerms = [];
-	for (var i=0; i<perms.length; i++) { //hopefully temporary hodgepodgery. Sorry, Sam...
-		finalPerms[0][i] = perms[i][0]; //The repository
-		finalPerms[1][i] = perms[i][1][0][0]; //The access (rw or r)
-	}
-	return finalPerms;
+  }
+	return perms;
 }
 
 function groupUsersLoader(groupName) {
@@ -528,6 +522,9 @@ function addUsers() {
 	for (var i=0; i<groups.length; i++) {
 		groupIndex = findGroup(groups[i].innerText);
 		listOfUsers = Rules.ruleSet[0][groupIndex][1]; //Gets the list of users already in the group
+		if (listOfUsers == null) {
+			listOfUsers = [];
+		}
 		for (var j=0; j<users.length; j++) {
 			listOfUsers.pushUnique(users[i].innerText); //Adds to that list
 		}
@@ -712,33 +709,40 @@ function filterGroupsList() {
 	var lGroups = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0]; //Get the groups
 	var activeRepos = getActiveItems("lRepos"); //Get selected repos
-	var activeUsers = getActiveItems("lUsers"); //Get selected repos
-	var indexOfAccess = 0;
-
+	var activeUsers = getActiveItems("lUsers"); //Get selected users
+	var thisPermission = 0;
+	var perms;
+			
 	if (relevantGroupsOnly) { //If the groups list should be filtered
-		for (var i=0; i<lGroups.length; i++) {
-			if (activeRepos.length != 0) { //If only groups with access to the selected repositories should appear
-				thisGroup = groupRuleLoader(groups[i][0]); //Get the group's repositories
-				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
-					indexOfAccess = thisGroup[0][j].indexOf(thisRule); //Find where it is in the group's access list (thisGroup[0] is the array of names of repositories)
-					if (indexOfAccess == -1) { //If the group has no access to it at all
-						lGroups[i].style.display = "none";
+		if (activeRepos.length != 0) { //If any repos are selected
+			perms = ruleLoader(groups[i][0]); //Get the group's repositories
+			for (var j=0; j<activeRepos.length; j++) { //For every selected repository
+				for (var k=0; k<perms.length; k++) { //For every repository that the group has permissions for
+					if (perms[k][1] == "r") { //If the permission is read-only
+						addReadOnlyImage(lGroups[i]); //Show the "READ" icon alongside the group
 					} else {
-						lGroups[i].style.display = "block";
-						if (thisGroup[1][j] == "r") {
-							addReadOnlyImage(lGroups[i]);
-						} else {
-							addReadWriteImage(lGroups[i]);
-						}
+						addReadWriteImage(lGroups[i]); //Show the "WRITE" icon alongside the group
+					}
+				}
+			}
+		}
+		for (var i=0; i<lGroups.length; i++) { //For every group
+			removeReadImage(lGroups[i]);
+			lGroups[i].style.display = "none";
+			if (activeRepos.length != 0) { //If only groups with access to the selected repositories should appear
+				lGroups[i].style.display = "none"; //Hide the group in the list
+				perms = ruleLoader(groups[i][0]); //Get the group's repositories
+				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
+					for (var k=0; k<perms.length; k++) { //For every repository that the group has permissions for
+						lGroups[i].style.display = "block"; //Show the group
 					}
 				}
 			}
 			if (activeUsers.length != 0) { //If only groups containing selected users should appear
 				thisGroup = groupUsersLoader(groups[i][0]); //Get the group's users
-				for (var j=0; j<activeRepos.length; j++) { //For every selected user
-					indexOfAccess = thisGroup.indexOf(thisRule); //Find where it is in the group's list
-					if (indexOfAccess == -1) { //If it isn't there
-						$(litem).remove(); //Delete the list item.
+				for (var j=0; j<activeUsers.length; j++) { //For every selected user
+					if (thisGroup.indexOf(activeUsers[j].innerText) != -1) { //If it is there
+						lGroups[i].style.display = "block"; //Show the group
 					}
 				}
 			}
@@ -746,6 +750,48 @@ function filterGroupsList() {
 	} else { //If the groups list should not be filtered
 		for (var i=0; i<lGroups.length; i++) {
 			lGroups[i].style.display = 'block'; //Just show everything
+		}
+		document.getElementById("searchGroups").value = ""; //Clear searchbox to avoid confusion
+	}
+}
+
+function filterUsersList() {
+	var relevantUsersOnly = document.getElementById("filterUsers").checked;
+	var ul = document.getElementById("lUsers");
+	var lUsers = ul.getElementsByTagName("li");
+	var groups = Rules.ruleSet[0] //Get the groups
+	var users = Rules.ruleSet[1]; //Get the users
+	var activeRepos = getActiveItems("lRepos"); //Get selected repos
+	var activeGroups = getActiveItems("lGroups"); //Get selected groups
+	var thisPermission = 0;
+	var thisGroupsUsers;
+	var perms;
+			
+	if (relevantUsersOnly) { //If the users list should be filtered
+		for (var i=0; i<lUsers.length; i++) { //For every user
+			lUsers[i].style.display = "none";
+			removeReadImage(lUsers[i]);
+			if (activeRepos.length != 0) { //If only users with access to the selected repositories should appear
+				lUsers[i].style.display = "none"; //Hide the user in the list
+				perms = ruleLoader(users[i]); //Get the user's repositories
+				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
+					for (var k=0; k<perms.length; k++) { //For every repository that the user has permissions for
+						lUsers[i].style.display = "block"; //Show the user
+					}
+				}
+			}
+			if (activeGroups.length != 0) { //If only users in selected groups should appear
+				for (var j=0; j<activeGroups.length; j++) { //For every selected group
+					thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
+					if (thisGroupsUsers.includes(users[i])) { //If it is there
+						lUsers[i].style.display = "block"; //Show the user
+					}
+				}
+			}
+		}
+	} else { //If the groups list should not be filtered
+		for (var i=0; i<lUsers.length; i++) {
+			lUsers[i].style.display = 'block'; //Just show everything
 		}
 		document.getElementById("searchGroups").value = ""; //Clear searchbox to avoid confusion
 	}
@@ -770,12 +816,6 @@ function filterReposList() {
 		}
 		document.getElementById("searchRepos").value = ""; //Clear searchbox to avoid confusion
 	}
-}
-
-function filterUsersList() {
-}
-
-function filterReposList() {
 }
 
 function populateGroups() {
@@ -834,7 +874,7 @@ function addReadWriteImage(toWhat) {
 }
 
 function removeReadImage(fromWhat) {
-	toWhat.style.backgroundImage = "none";
+	//todo
 }
 
 function interfaceSetup() {
