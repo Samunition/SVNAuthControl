@@ -30,6 +30,20 @@ function modalSetup() {
 	};
 }
 
+function diff() {
+	$.ajax({
+		url: '/scripts/diff-files.php',
+		type: 'POST',
+		data: {
+			file1: '../files/auth04-27-2017_0646pm.prev',
+			file2: '../files/auth05-04-2017_0247pm.prev'
+		},
+		success: function(differences) {
+			console.log(differences);
+		}
+	});
+}
+
 // Change to load rules
 function load() {
 	$.ajax({
@@ -275,16 +289,18 @@ function addRepoRule(repoLoc, delegate, perms) {
 	var found = false;
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
-			var nRules = Rules.ruleSet[2][i].length
+			var nRules = Rules.ruleSet[2][i][1].length;
 			console.log("Found Repo");
 			for (var j = 0; j < nRules; j++) { 
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
-					console.log("Rule for delegate already exists");
+					console.log("Rule for delegate already exists so update");
+					found = true;
+					Rules.ruleSet[2][i][1][j][1] = perms;
 				}
-				else {
-					Rules.ruleSet[2][i][1].push([delegate, perms]);
-          break;
-				}
+			}
+			if (!found) {
+				Rules.ruleSet[2][i][1].push([delegate, perms]);
+				break;
 			}
 		}
 	}
