@@ -853,16 +853,21 @@ function filterReposList() {
 	var groups = Rules.ruleSet[0]; //Get the groups
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
+	var activeDelegates = activeUsers.concat(activeGroups());
 	var indexOfAccess = 0;
-
+	
+	for (var i=0; i<lRepos.length; i++) {
+		lRepos[i].style.display = 'block'; //Show everything
+		for (var j=0; j<activeDelegates.length; j++) {
+			
+		}
+	}
 	if (relevantReposOnly) { //If the groups list should be filtered
 		//Hide all repos
 		//Show repos with permissions for the selected groups, if any are selected
 		//Show repos with permissions for the selected users, if any are selected
 	} else { //If the groups list should not be filtered
-		for (var i=0; i<lRepos.length; i++) {
-			lRepos[i].style.display = 'block'; //Just show everything
-		}
+		
 		document.getElementById("searchRepos").value = ""; //Clear searchbox to avoid confusion
 	}
 }
