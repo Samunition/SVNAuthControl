@@ -30,13 +30,13 @@ function modalSetup() {
 	};
 }
 
-function diff() {
+function diff(oldFile, newFile) {
 	$.ajax({
 		url: '/scripts/diff-files.php',
 		type: 'POST',
 		data: {
-			file1: '../files/auth04-27-2017_0646pm.prev',
-			file2: '../files/auth05-04-2017_0247pm.prev'
+			file1: oldFile,
+			file2: newFile
 		},
 		success: function(differences) {
 			console.log(differences);
@@ -367,9 +367,10 @@ function saveFile() {
     },
     success: function(deleted) {
 			console.log(deleted);
+			return deleted;
     }
   });
-  return true;
+	return false;
 }
 
 // function ruleLoader(groupName) {
@@ -861,7 +862,8 @@ function filterUsersList() {
 	var activeGroups = getActiveItems("lGroups"); //Get selected groups
 	var thisPermission = 0;
 	var thisGroupsUsers;
-	var perms = Rules.ruleSet[2];;
+	var perms = Rules.ruleSet[2];
+	console.log(lUsers);
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
