@@ -175,6 +175,11 @@ a:hover {
 	padding:8px;
 }
 
+#modalContent {
+	width:80%;
+	margin:auto;
+}
+
 #popup {
 	transform:translate(-50%, -50%);
 	display:none;
