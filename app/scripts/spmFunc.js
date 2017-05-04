@@ -873,7 +873,7 @@ function filterReposList() {
 						if ((iRules[k][1][l][0]  == 'rw') || (iRules[k][1][l][0]  == 'r')) {
 							console.log("Repos filter has a rule from " + iRules[k][1][l][1]);
 							currentAuthLevel = iRules[k][1][l][0];
-							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText))) { //If it's a user and a gro
+							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText))) {
 								inherited = true;
 							}
 						}
