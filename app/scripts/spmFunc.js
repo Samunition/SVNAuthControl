@@ -854,28 +854,41 @@ function filterUsersList() {
 function filterReposList() {
 	var ul = document.getElementById("lRepos");
 	var lRepos = ul.getElementsByTagName("li");
-	var groups = Rules.ruleSet[0]; //Get the groups
+	var groups = Rules.ruleSet[3]; //Get the groups
+	var users = Rules.ruleSet[1];
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
 	var activeDelegates = activeUsers.concat(activeGroups);
 	var indexOfAccess = 0;
-	var iRules;	
+	var iRules;
+	var currentAuthLevel = "r";
+	var inhereted = false;
 	for (var i=0; i<lRepos.length; i++) {
+		currentAuthLevel = "r";
+		inhereted = false;
 		removeReadImage(lRepos[i]);
 		lRepos[i].style.display = 'block'; //Show everything
 		for (var j=0; j<activeDelegates.length; j++) {
 			iRules = ruleLoader(activeDelegates[j].innerText);
 			for (var k=0; k<iRules.length; k++) {
 				if (iRules[k][0] == lRepos[i].innerText) {
-					console.log(iRules[k][1]);
-					if (iRules[k][1] == 'r') { //Depending on permission
-						addReadOnlyImage(lRepos[i]); //Show the "READ" icon alongside the repo
-					} else {
-						addReadWriteImage(lRepos[i]); //Show the "WRITE" icon alongside the repo
+					for (var l=0; l<iRules[k][1].length; l++) {
+						if (iRules[k][1][l][0]  == 'rw') {
+							currentAuthLevel = "rw";
+							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText))) { //If it's a user and a gro
+								inhereted = true;
+							}
+						}
 					}
 				}
 			}
 		}
+		if (currentAuthLevel = "rw") {
+			if (inhereted) {
+			}
+		} else {
+		}
+		addReadWriteImage(lRepos[i]);
 	}
 	if (relevantReposOnly) { //If the groups list should be filtered
 		if (activeDelegates.length != 0) {

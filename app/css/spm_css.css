@@ -124,6 +124,10 @@ a:visited {
 	color:inherit;
 }
 
+a:nth-child(odd) {
+	background-color:#efefef;
+}
+
 a .active {
 	background-color:#09f;
 	color:#fff;
@@ -132,7 +136,7 @@ a .active {
 
 a:hover {
 	transition:0s;
-	background-color:#eee;
+	background-color:#ccc;
 }
 
 
