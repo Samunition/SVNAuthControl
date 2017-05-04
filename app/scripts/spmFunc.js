@@ -1,4 +1,6 @@
 
+
+
 /* $(document).ready(function () {
   // Prevent Ajax caching - always get a new result
   $.ajaxSetup({
@@ -9,10 +11,14 @@
 }); */
 
 var modalTarget = ""; //Yes... I know.
-var selectMultiple = false;
+var selectMultiple = true;
 var gSelectSingle = "";
 var gSearchableList = null;
 var gWrapped = 0;
+
+var relevantGroupsOnly = false;
+var relevantReposOnly = false;
+var relevantUsersOnly = false;
 
 var Rules = {
 	ruleSet : []
@@ -23,18 +29,8 @@ function startup() {
 	interfaceSetup();
 	//loadFile();
 	load();
+	updateContext(); //Should not be called before load();
 }
-
-// function loadFile() {
-//   $.ajax({
-//     url: '/scripts/load-file.php',
-//     type: 'POST',
-//     success: function(html) {
-//       $("#content").val(html);
-//       console.log("File loaded.");
-//     }
-//   });
-// }
 
 function modalSetup() {
 	var modal = document.getElementById('modalbox'); // Get the modal
@@ -53,42 +49,41 @@ function load() {
     dataType: 'json',
     type: 'POST',
     success: function(rules) {
-      console.log("Rules loaded.");
+		try {
 			console.log("Parsing rules");
-
 			// Rules.ruleSet = [groups, users, repos]
 			Rules.ruleSet = parseFileData(rules);
 			console.log("Rules parsed and stored");
-
 			console.log("Populating lists");
 			console.log("Lists populated");
-			addUser("Samuel");
-			 addGroup("samsgroup", ["sam", "and", "his", "mates"]);
-            updateGroup("samsgroup", ["boff", "jeff"]);
+			//addUser("Samuel");
+			//addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			updateGroup("samsgroup", ["boff", "jeff"]);
 
-        console.log(Rules.ruleSet[0]);
-        //addGroup("samsgroup", ["sam", "and", "his", "mates"]);
-        addRepoRule("/anotherone", "samsgroup", "rw");
+			console.log(Rules.ruleSet[0]);
+			//addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			addRepoRule("/anotherone", "samsgroup", "rw");
 			// deleteGroup("samsgroup");
-        console.log(Rules.ruleSet[2]);
-			 deleteGroup("samsgroup");
-        console.log(Rules.ruleSet[0]);
-        console.log(Rules.ruleSet[2]);
-        deleteRepoRule("/anotherone", "samsgroup");
-           console.log(Rules.ruleSet[2]);
-
-
-			// console.log("Load user rules");
-			// userRuleLoader("user1");
-			// rebuildFile();
-			// deleteRepo("/");
-			// deleteRepo("lol");
-			// deleteRepoRule("/anotherone", "group5");
-			 addRepoRule("/anotherone", "samsgroup", "rw");
-			 deleteRepoRule("/anotherone", "samsgroup");
-			 console.log(Rules.ruleSet[2]);
-			// addRepoRule("/anotherone", "group9", "rw");
-      // deleteUser("user1");
+			console.log(Rules.ruleSet[2]);
+			console.log(Rules.ruleSet[0]);
+			console.log(Rules.ruleSet[2]);
+			deleteRepoRule("/anotherone", "samsgroup");
+			   console.log(Rules.ruleSet[2]);
+				// console.log("Load user rules");
+				// userRuleLoader("user1");
+				// rebuildFile();
+				// deleteRepo("/");
+				// deleteRepo("lol");
+				// deleteRepoRule("/anotherone", "group5");
+				 addRepoRule("/anotherone", "samsgroup", "rw");
+				 deleteRepoRule("/anotherone", "samsgroup");
+				 console.log(Rules.ruleSet[2]);
+				// addRepoRule("/anotherone", "group9", "rw");
+		  // deleteUser("user1");
+		} catch(err) {
+			document.getElementById("pleaseWaitMessage").innerHTML = "";
+			popupPrompt("Failed to load, "+err.message+".","50","50","800","300");
+		}
     }
   });
 }
@@ -170,6 +165,7 @@ function addGroup(groupName, usernames) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
 			// Group already exists
 			found = true;
+			return false
 			break;
 		}
 	}
@@ -177,6 +173,7 @@ function addGroup(groupName, usernames) {
 		Rules.ruleSet[0].push([groupName, usernames]);
 	}
 	updateLists();
+	return true;
 }
 
 function deleteGroup(groupName) {
@@ -220,11 +217,12 @@ function updateGroup(groupName, usernames) {
 function addUser(username) {
 	if (Rules.ruleSet[1].pushUnique(username)) {
 		console.log("User added");
+		updateLists();
+		return true;
 	}
 	else {
-		window.alert("There's already a user called " + username);
+		return false
 	}
-	updateLists();
 }
 
 function deleteUser(username) {
@@ -270,19 +268,14 @@ function deleteUser(username) {
     updateLists();
 }
 
-function addRepo(repoLoc) {
-	//Todo add a repo value
-
+function addRepo(repoLoc, perms) {
     if (Rules.ruleSet[2].pushUnique([repoLoc, [["*", ""]]])) {
-		// Message sayiong it worked like a popup notification or something
-        console.log("Successfully Added");
+		updateLists();
+		return true;
 	}
 	else {
-		// Message saying user already present
-        console.log("Repo already exists");
+		return false;
 	}
-
-	updateLists();
 }
 
 function addRepoRule(repoLoc, delegate, perms) {
@@ -377,66 +370,6 @@ function saveFile() {
   return true;
 }
 
-/* old{
-	// Get a list of groups the user is a part of
-	console.log("LOADING USER RULES");
-	var checklist = [username];
-	var nGroups = Rules.ruleSet[0].length;
-
-	for (var i = 0; i < nGroups; i++) {
-		var inGroup = $.inArray(username, Rules.ruleSet[0][i][1]);
-		if (inGroup > -1) {
-			checklist.push(Rules.ruleSet[0][i][0]);
-		}
-	}
-
-	// Check each repo against the checklist
-	var nRepos = Rules.ruleSet[2].length;
-	var nChecklist = checklist.length;
-	var perms = []; // perms[i][0] is all the repos with permissions
-
-	for (var i = 0; i < nRepos; i++) {
-		var nRules = Rules.ruleSet[2][i][1].length;
-		var repoPerms = [];
-		for (var j = 0; j < nRules; j++) {
-
-			// Check to see if all, *, has permissions
-			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
-				repoPerms.push(Rules.ruleSet[2][i][1][j]);
-			}
-
-			// Check the checklist against repo rules
-			for ( var k = 0; k < nChecklist; k++) {
-				if (checklist[k] == Rules.ruleSet[2][i][1][j][0]) {
-					repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
-				}
-			}
-		}
-
-		// Add the repo perms to perms list
-		if (repoPerms.length != 0) {
-			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
-		}
-	}
-
-	//  List the results
-	var ul = document.getElementById("lContextbox"); // Get the list
-	var nPerms = perms.length;
-
-	// clear the current list
-
-	ul.innerHTML = "";
-	console.log("Adding " + nPerms + " permissions to the context list");
-
-	for (var i = 0; i < nPerms; i++) {
-		litem = document.createElement("li");
-		litem.className = "contextgroup";
-		litem.innerHTML = perms[i][0] + " " + perms[i][1][0][0];
-		ul.appendChild(litem);
-	}
-	wrapListItems();
-} */
-
 function ruleLoader(groupName) {
 	// Load rules for the group (or user)
 	// Check each repo against the group
@@ -487,18 +420,18 @@ function repoRuleLoader(repo) {
 function keyPressed(e) {
 	switch (e.keyCode) {
 		case 18: //Alt
-			selectMultiple = true;
-			document.getElementById("multiSelect").checked = true;
+			selectMultiple=!selectMultiple;
+			document.getElementById("multiSelect").checked = selectMultiple;
 			break;
 	}
 }
 
 function keyReleased(e) {
 	switch (e.keyCode) {
-		case 18: //Alt
+		/* case 18: //Alt
 			selectMultiple = false;
-			document.getElementById("multiSelect").checked = false;
-			break;
+			document.getElementById("multiSelect").checked = selectMultiple;
+			break; */
 	}
 }
 
@@ -512,11 +445,11 @@ function addUsers() {
 	var groupIndex;
 	var listOfUsers;
 	if (groups.length == 0) {
-		window.alert("Please select one or more groups to add the users to. (Hold ALT to select multiple items)");
+		window.alert("Please select one or more groups to add the users to. (Use ALT to select multiple items)");
 		return;
 	}
 	if (users.length == 0) {
-		window.alert("Please select one or more users to add to the groups. (Hold ALT to select multiple items)");
+		window.alert("Please select one or more users to add to the groups. (Use ALT to select multiple items)");
 		return;
 	}
 	for (var i=0; i<groups.length; i++) {
@@ -526,16 +459,17 @@ function addUsers() {
 			listOfUsers = [];
 		}
 		for (var j=0; j<users.length; j++) {
-			listOfUsers.pushUnique(users[i].innerText); //Adds to that list
+			listOfUsers.pushUnique(users[j].innerText); //Adds to that list
 		}
 		updateGroup(groups[i].innerText,listOfUsers); //Writes that list back into the group
 	}
 	popupPrompt("Added "+users.length+" user(s) to "+groups.length+" group(s)","50","50","400","25",true);
 }
 
+//Shows the small black text overlay.
 function popupPrompt(message, x, y, w, h, autoclose=false) {
 	popup = document.getElementById("popup");
-	if (popup.style.display == "none") {
+	//if (popup.style.display == "none") {
 		popupText = document.getElementById("popupText");
 		popup.style.left = x + "%";
 		popup.style.top = y + "%";
@@ -547,15 +481,17 @@ function popupPrompt(message, x, y, w, h, autoclose=false) {
 			$('#popup').delay(2000).fadeOut(500);
 		}
 		return true;
-	} else { return false; }
+	//} else { return false; }
 }
 
+//Hides the small black text overlay.
 function closePopupPrompt() {
 	popup = document.getElementById("popup");
 	popup.style.display = "none";
 }
 
-function activate(nameOfList) { //Activates the clicked item in the list where all elements have the class nameOfList
+//Activates the clicked item in the list where all elements have the class nameOfList
+function activate(nameOfList) {
 	var activeItem = document.activeElement;
 	if (nameOfList == "none") {
 		console.log("Deactivating all elements.");
@@ -590,23 +526,23 @@ function activate(nameOfList) { //Activates the clicked item in the list where a
 	}
 }
 
-function getActiveItems(whichList) { //Returns an array of the selected items
+//Returns an array of the items currently selected by the user
+function getActiveItems(whichList) {
 	var all = document.getElementsByTagName("*");
 	var activeItems = [];
 	for (var i=0; i<all.length; i++) {
-		if ((all[i].className.includes("active")) && (all[i].parentNode.parentNode.id.includes(whichList))) {
-			console.log("getActiveItems has another item");
-			activeItems.push(all[i]);
+		if (all[i].className.includes("active")) {
+			if ((all[i].parentNode.parentNode.id.includes(whichList)) || (whichList == "*")) {
+				activeItems.push(all[i]);
+			}
 		}
 	}
 	return activeItems;
 }
 
 function prepSearch(which) {
-	console.log("prepSearch has " + which);
 	var listContainer;
 	listContainer = document.getElementById(which);
-	console.log("This happens to be " + listContainer);
 	gSearchableList = listContainer.getElementsByTagName("li");
 }
 
@@ -633,13 +569,26 @@ function endSearch() {
 	gSearchableList = null;
 }
 
-function getInput(prompt, target) { //Opens the modal box to get a string from the user
+//Opens the modal box to get a string from the user
+function getInput(prompt, target) {
 	modalTarget = target;
 	var modal = document.getElementById("modalbox");
 	var modalHead = document.getElementById("modalHeader");
 	var modalButton = document.getElementById("modalButton");
+	var modalRadio = document.getElementById("modalRadio");
 	modal.style.display = "block";
 	modalHead.innerHTML = prompt;
+	if (target == "repo") {
+		modalRadio.style.display = "block";
+		modalButton.innerText = "Create rule";
+	} else {
+		modalRadio.style.display = "none";
+		if (target == "rename") {
+			modalButton.innerText="Rename";
+		} else {
+			modalButton.innerText="Create";
+		}
+	}
 }
 
 function closeModal() {
@@ -654,10 +603,27 @@ function okModal() {
 	var modalContents = document.getElementById("modalContent");
 	switch (modalTarget) {
 		case "user":
-			addUser(modalContents.value);
+			if (!addUser(modalContents.value)) {
+				popupPrompt("That user already exists", "50", "50", "320", "24", true)
+			}
 			break;
 		case "group":
-			addGroup(modalContents.value);
+			if (!addGroup(modalContents.value)) {
+				popupPrompt("That group already exists", "50", "50", "320", "24", true)
+			}
+			break;
+		case "repo":
+			if (!addRepo(modalContents.value)) {
+				popupPrompt("That repository rule already exists", "50", "50", "320", "24", true)
+			}
+			break;
+		case "rename":
+			var active = getActiveItems("*");
+			if (active.length > 1) {
+				popupPrompt("Error renaming - only one item at a time can be renamed", "50", "50", "320", "40", true);
+			} else {
+				active[0].innerText = modalContents.value;
+			}
 			break;
 	}
 	closeModal();
@@ -674,89 +640,147 @@ function saveButton() {
 	}
 }
 
-function updateLists() { //Updates what shows in all boxes
+function revertButton() {
+	if (window.confirm("This will undo all changes since you last saved the file.")) {
+		load();
+		updateLists();
+		popupPrompt("Reverted", "50", "50", "320", "24", true);
+	}
+}
+
+function deleteButton() {
+	var deletableGroups = getActiveItems("lGroups");
+	var deletableUsers = getActiveItems("lUsers");
+	var deletableRepos = getActiveItems("lRepos");
+	var messageinfo = "";
+	if (deletableGroups.length != 0) {
+		messageinfo = messageinfo + deletableGroups.length + " group(s)";
+	}
+	if (deletableUsers.length != 0) {
+		if (messageinfo != "") { messageinfo = messageinfo + ", " }
+		messageinfo = messageinfo + deletableUsers.length + " user(s)";
+	}
+	if (deletableRepos.length != 0) {
+		if (messageinfo != "") { messageinfo = messageinfo + ", " }
+		messageinfo = messageinfo + deletableRepos.length + " repository rule(s)";
+	}
+
+	if (messageinfo == "") {
+		popupPrompt("Nothing is selected", "50", "50", "320", "24", true);
+		return;
+	}
+	if (window.confirm("Ready to delete " + messageinfo + ". Continue?")) { //If the user definately wants them deleted
+		var i=0;
+		console.log("Deleting " +deletableGroups.length+ " groups...");
+		for (i=0; i<deletableGroups.length; i++) {
+			deleteGroup(deletableGroups[i].innerText);
+		}
+		console.log("Deleting " +deletableUsers.length+ " users...");
+		for (i=0; i<deletableUsers.length; i++) {
+			deleteUser(deletableUsers[i].innerText);
+		}
+		console.log("Deleting " +deletableRepos.length+ " repos...");
+		for (i=0; i<deletableRepos.length; i++) {
+			deleteRepo(deletableRepos[i].innerText);
+		}
+		popupPrompt("Deleted", "50", "50", "320", "24", true);
+	}
+}
+
+function renameButton() {
+	var active = getActiveItems("*");
+	if (active.length > 1) {
+		popupPrompt("Please select just one item", "50", "50", "320", "24", true);
+		return;
+	}
+	getInput("Enter the new name for " + active[0].innerText,"rename");
+}
+
+//Updates the contents of all boxes.
+function updateLists() {
 	clearLists();
 	populateGroups();
 	populateUsers();
 	populateRepos();
 	wrapListItems();
+	updateContext();
 }
 
 function updateContext() {
-	if (document.getElementById("filterGroups").checked) {
+	if (relevantGroupsOnly) {
 		document.getElementById("lGroupsHeader").innerHTML = "Groups with selection";
 	} else {
-		document.getElementById("lGroupsHeader").innerHTML = "Groups";
+		document.getElementById("lGroupsHeader").innerHTML = "All Groups";
 	}
-	if (document.getElementById("filterUsers").checked) {
-		document.getElementById("lUsersHeader").innerHTML = "Users with selection";
+	if (relevantUsersOnly) {
+		document.getElementById("lUsersHeader").innerHTML = "Users with/in selection";
 	} else {
-		document.getElementById("lUsersHeader").innerHTML = "Users";
+		document.getElementById("lUsersHeader").innerHTML = "All Users";
 	}
-	if (document.getElementById("filterRepos").checked) {
+	if (relevantReposOnly) {
 		document.getElementById("lReposHeader").innerHTML = "Repositories that the selection has access to";
 	} else {
-		document.getElementById("lReposHeader").innerHTML = "Repositories";
+		document.getElementById("lReposHeader").innerHTML = "All Repositories";
 	}
 	filterGroupsList();
 	filterUsersList();
 	filterReposList();
 }
 
+//Shows/hides items in the groups list based on selected filtering options and applies read/write icons to them
 function filterGroupsList() {
-	var relevantGroupsOnly = document.getElementById("filterGroups").checked;
+	console.log("Filter Groups called");
 	var ul = document.getElementById("lGroups");
 	var lGroups = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0]; //Get the groups
 	var activeRepos = getActiveItems("lRepos"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected users
 	var thisPermission = 0;
-	var perms;
-			
-	if (relevantGroupsOnly) { //If the groups list should be filtered
-		if (activeRepos.length != 0) { //If any repos are selected
-			perms = ruleLoader(groups[i][0]); //Get the group's repositories
-			for (var j=0; j<activeRepos.length; j++) { //For every selected repository
-				for (var k=0; k<perms.length; k++) { //For every repository that the group has permissions for
-					if (perms[k][1] == "r") { //If the permission is read-only
-						addReadOnlyImage(lGroups[i]); //Show the "READ" icon alongside the group
-					} else {
-						addReadWriteImage(lGroups[i]); //Show the "WRITE" icon alongside the group
+	var perms = Rules.ruleSet[2];
+
+	for (var i = 0; i < lGroups.length; i++) {
+		lGroups[i].style.display = 'block'; //Show everything
+		removeReadImage(lGroups[i]);
+		if (activeRepos.length != 0) {
+			for (var j = 0; j < activeRepos.length; j++) { // For all selected repos
+				for (var k = 0; k < perms.length; k++) { //For all permissions
+					if (activeRepos[j].innerText == perms[k][0]) { // If they match get current groups rule if exist
+						for (var n = 0; n < perms[k][1].length; n++) {
+							//console.log(perms[k][1][n][0] + " == " + lGroups[i].innerText);
+							if (perms[k][1][n][0] == lGroups[i].innerText) { //If the group has permission
+								if (perms[k][1][n][1] == 'r') { //Depending on permission
+									addReadOnlyImage(lGroups[i]); //Show the "READ" icon alongside the group
+								} else {
+									addReadWriteImage(lGroups[i]); //Show the "WRITE" icon alongside the group
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-		for (var i=0; i<lGroups.length; i++) { //For every group
-			removeReadImage(lGroups[i]);
-			lGroups[i].style.display = "none";
-			if (activeRepos.length != 0) { //If only groups with access to the selected repositories should appear
-				lGroups[i].style.display = "none"; //Hide the group in the list
-				perms = ruleLoader(groups[i][0]); //Get the group's repositories
-				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
-					for (var k=0; k<perms.length; k++) { //For every repository that the group has permissions for
-						lGroups[i].style.display = "block"; //Show the group
-					}
-				}
-			}
+		if (relevantGroupsOnly) {
 			if (activeUsers.length != 0) { //If only groups containing selected users should appear
 				thisGroup = groupUsersLoader(groups[i][0]); //Get the group's users
 				for (var j=0; j<activeUsers.length; j++) { //For every selected user
-					if (thisGroup.indexOf(activeUsers[j].innerText) != -1) { //If it is there
-						lGroups[i].style.display = "block"; //Show the group
+					if (thisGroup.indexOf(activeUsers[j].innerText) == -1) { //If it is not there
+						lGroups[i].style.display = "none"; //Hide the group
+					}
+				}
+			}
+			if (activeRepos.length != 0) {
+				for (var k=0; k<lGroups.length; k++) {
+					if (lGroups[k].style.backgroundImage == "none") { //If it has no permissions
+						lGroups[k].style.display = "none"; //Hide the group
 					}
 				}
 			}
 		}
-	} else { //If the groups list should not be filtered
-		for (var i=0; i<lGroups.length; i++) {
-			lGroups[i].style.display = 'block'; //Just show everything
-		}
-		document.getElementById("searchGroups").value = ""; //Clear searchbox to avoid confusion
 	}
 }
 
 function filterUsersList() {
-	var relevantUsersOnly = document.getElementById("filterUsers").checked;
+	console.log("Filter users called");
 	var ul = document.getElementById("lUsers");
 	var lUsers = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0] //Get the groups
@@ -765,40 +789,50 @@ function filterUsersList() {
 	var activeGroups = getActiveItems("lGroups"); //Get selected groups
 	var thisPermission = 0;
 	var thisGroupsUsers;
-	var perms;
-			
-	if (relevantUsersOnly) { //If the users list should be filtered
-		for (var i=0; i<lUsers.length; i++) { //For every user
-			lUsers[i].style.display = "none";
-			removeReadImage(lUsers[i]);
-			if (activeRepos.length != 0) { //If only users with access to the selected repositories should appear
-				lUsers[i].style.display = "none"; //Hide the user in the list
-				perms = ruleLoader(users[i]); //Get the user's repositories
-				for (var j=0; j<activeRepos.length; j++) { //For every selected repository
-					for (var k=0; k<perms.length; k++) { //For every repository that the user has permissions for
-						lUsers[i].style.display = "block"; //Show the user
+	var perms = Rules.ruleSet[2];;
+
+	for (var i=0; i<lUsers.length; i++) { //For every user
+		lUsers[i].style.display = "block";
+		removeReadImage(lUsers[i]);
+		if (activeRepos.length != 0) { //If only users with access to the selected repositories should appear
+			for (var j = 0; j < activeRepos.length; j++) { // For all selected repos
+				for (var k = 0; k < perms.length; k++) { //For all permissions
+					if (activeRepos[j].innerText == perms[k][0]) { // If they match, get current rules if exist
+						for (var n = 0; n < perms[k][1].length; n++) {
+							// console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
+							if (perms[k][1][n][0] == lUsers[i].innerText) { //If the group has permission
+								if (perms[k][1][n][1] == 'r') { //Depending on permission
+									addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the group
+								} else {
+									addReadWriteImage(lUsers[i]); //Show the "WRITE" icon alongside the group
+								}
+							}
+						}
 					}
 				}
 			}
+		}
+		if (relevantUsersOnly) { //If the users list should be filtered
 			if (activeGroups.length != 0) { //If only users in selected groups should appear
 				for (var j=0; j<activeGroups.length; j++) { //For every selected group
 					thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
-					if (thisGroupsUsers.includes(users[i])) { //If it is there
-						lUsers[i].style.display = "block"; //Show the user
+					if (!thisGroupsUsers.includes(users[i])) { //If it is not there
+						lUsers[i].style.display = "none"; //Hide the user
+					}
+				}
+			}
+			if (activeRepos.length != 0) {
+				for (var i=0; i<lUsers.length; i++) {
+					if (lUsers[i].style.backgroundImage == "none") { //If it has no permissions
+						lUsers[i].style.display = "none"; //Hide the user
 					}
 				}
 			}
 		}
-	} else { //If the groups list should not be filtered
-		for (var i=0; i<lUsers.length; i++) {
-			lUsers[i].style.display = 'block'; //Just show everything
-		}
-		document.getElementById("searchGroups").value = ""; //Clear searchbox to avoid confusion
 	}
 }
 
 function filterReposList() {
-	var relevantReposOnly = document.getElementById("filterRepos").checked;
 	var ul = document.getElementById("lRepos");
 	var lRepos = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0]; //Get the groups
@@ -823,7 +857,6 @@ function populateGroups() {
 	var ul = document.getElementById("lGroups"); //Get the list
 	var groups = Rules.ruleSet[0];
 	var thisGroup;
-
 	for (var i=0; i<groups.length; i++) { //For every group
 		litem = document.createElement("li"); //Make a list item
 		litem.innerHTML = groups[i][0]; //Put the group's name in it
@@ -837,9 +870,6 @@ function populateRepos() {
 	var repos = Rules.ruleSet[2];
 	var ul = document.getElementById("lRepos"); //Get the list
 	var nRepos = repos.length;
-
-	console.log("Adding " + nRepos + " repos to repo list");
-
 	for (var i=0; i<nRepos; i++) {
 		litem = document.createElement("li"); //Create & get the new item
 		litem.className = "contextgroup";
@@ -853,9 +883,6 @@ function populateUsers() {
 	 var users = Rules.ruleSet[1];
 	 var ul = document.getElementById("lUsers"); //Get the user list
 	 var nUsers = users.length;
-
-	 console.log("Adding " + nUsers + " users to users list");
-
 	 for (var i = 0; i < nUsers; i++) {
 		 litem = document.createElement("li");
 		 litem.className = "contextgroup";
@@ -874,13 +901,13 @@ function addReadWriteImage(toWhat) {
 }
 
 function removeReadImage(fromWhat) {
-	//todo
+	fromWhat.style.backgroundImage = "none";
 }
 
 function interfaceSetup() {
 	modalSetup();
 	gSearchableList = null;
-	document.getElementById("multiSelect").checked = false;
+	document.getElementById("multiSelect").checked = true;
 	popup = document.getElementById("popup");
 	popup.style.display = "none";
 }
@@ -894,4 +921,15 @@ function listGroups(json) {
     // Remove once function for where this goes is made
     $("#content").val(JSON.stringify(groups, null, 4));
 }
-*/
+
+// function loadFile() {
+//   $.ajax({
+//     url: '/scripts/load-file.php',
+//     type: 'POST',
+//     success: function(html) {
+//       $("#content").val(html);
+//       console.log("File loaded.");
+//     }
+//   });
+// }
+}*/
