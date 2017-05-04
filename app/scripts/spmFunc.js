@@ -445,11 +445,11 @@ function addUsers() {
 	var groupIndex;
 	var listOfUsers;
 	if (groups.length == 0) {
-		window.alert("Please select one or more groups to add the users to. (Hold ALT to select multiple items)");
+		window.alert("Please select one or more groups to add the users to. (Use ALT to select multiple items)");
 		return;
 	}
 	if (users.length == 0) {
-		window.alert("Please select one or more users to add to the groups. (Hold ALT to select multiple items)");
+		window.alert("Please select one or more users to add to the groups. (Use ALT to select multiple items)");
 		return;
 	}
 	for (var i=0; i<groups.length; i++) {
@@ -469,7 +469,7 @@ function addUsers() {
 //Shows the small black text overlay.
 function popupPrompt(message, x, y, w, h, autoclose=false) {
 	popup = document.getElementById("popup");
-	if (popup.style.display == "none") {
+	//if (popup.style.display == "none") {
 		popupText = document.getElementById("popupText");
 		popup.style.left = x + "%";
 		popup.style.top = y + "%";
@@ -481,7 +481,7 @@ function popupPrompt(message, x, y, w, h, autoclose=false) {
 			$('#popup').delay(2000).fadeOut(500);
 		}
 		return true;
-	} else { return false; }
+	//} else { return false; }
 }
 
 //Hides the small black text overlay.
