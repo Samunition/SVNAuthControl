@@ -477,7 +477,7 @@ function removeUsers() {
 	} else {
 		for (var i=0; i<aUsers.length; i++) {
 			for (var j=0;  j<aGroups.length; j++) {
-				deleteUser(aGroups[j].innerText, aUsers[i].innerText);
+				removeUser(aGroups[j].innerText, aUsers[i].innerText);
 			}
 		}
 	}
