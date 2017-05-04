@@ -45,7 +45,7 @@ function load() {
 			console.log("Populating lists");
 			console.log("Lists populated");
 			//addUser("Samuel");
-			//addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			updateGroup("samsgroup", ["boff", "jeff"]);
 
 			console.log(Rules.ruleSet[0]);
@@ -56,7 +56,7 @@ function load() {
 			console.log(Rules.ruleSet[0]);
 			console.log(Rules.ruleSet[2]);
 			deleteRepoRule("/anotherone", "samsgroup");
-			   console.log(Rules.ruleSet[2]);
+			console.log(Rules.ruleSet[2]);
 				// console.log("Load user rules");
 				// userRuleLoader("user1");
 				// rebuildFile();
@@ -300,7 +300,7 @@ function deleteRepoRule(repoLoc, delegate) {
 			console.log("Found Repo to delete from");
 			for (var j = 0; j < nRules; j++) {
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
-					console.log("Found group1 in anotherone");
+					console.log("Found" + delegate + " in " + repoLoc);
 					Rules.ruleSet[2][i][1].splice(j, 1);
 				}
 			}
@@ -930,4 +930,27 @@ function interfaceSetup() {
 	document.getElementById("multiSelect").checked = true;
 	popup = document.getElementById("popup");
 	popup.style.display = "none";
+}
+
+function deauthButton() {
+	console.log("Deauthing inputs");
+	activeDelegates = getActiveItems("lGroups").concat(getActiveItems("lUsers"));
+	activeRepos = getActiveItems("lRepos");
+
+	if (activeDelegates.length == 0) {
+		window.alert("Please select one or more users/groups to authorise (Use ALT to select multiple items)");
+		return;
+	}
+	if (activeRepos.length == 0) {
+		window.alert("Please select one or more repositories to authorise access to (Use ALT to select multiple items)");
+		return;
+	}
+
+	for (var i = 0; i < activeRepos.length; i++) {
+		for (var j = 0; j < activeDelegates.length; j++) {
+			console.log("Deleting " + activeDelegates[j].innerText + " from " + activeRepos[i].innerText);
+			deleteRepoRule(activeRepos[i].innerText, activeDelegates[j].innerText);
+		}
+	}
+	updateContext();
 }
