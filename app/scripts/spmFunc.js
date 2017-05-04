@@ -1,15 +1,3 @@
-
-
-
-/* $(document).ready(function () {
-  // Prevent Ajax caching - always get a new result
-  $.ajaxSetup({
-    cache: false
-  });
-  // Bloomin text area keeps content after refresh
-  document.getElementById('content').value = '';
-}); */
-
 var modalTarget = ""; //Yes... I know.
 var selectMultiple = true;
 var gSelectSingle = "";
@@ -282,7 +270,6 @@ function addRepoRule(repoLoc, delegate, perms) {
 	// Todo add a rule to the repo
 	var nRepos = Rules.ruleSet[2].length;
 	var found = false;
-
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
 			var nRules = Rules.ruleSet[2][i].length
@@ -502,7 +489,6 @@ function activate(nameOfList) {
 	console.log("Activate has " + nameOfList);
 	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
 	console.log("gSelectSingle is " + gSelectSingle);
-
 	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
 		activeItem = document.activeElement;
 		if (!selectMultiple) { //If only one is to be activated, deactivate everything first
@@ -707,7 +693,7 @@ function renameButton() {
 }
 
 function authButton(permission) {
-	activeDelegates = getActiveItems("lGroups") + getActiveItems("lUsers");
+	activeDelegates = getActiveItems("lGroups").concat(getActiveItems("lUsers"));
 	activeRepos = getActiveItems("lRepos");
 	if (activeDelegates.length == 0) {
 		window.alert("Please select one or more users/groups to authorise (Use ALT to select multiple items)");
@@ -722,10 +708,10 @@ function authButton(permission) {
 	}
 	for (var i=0; i<activeRepos.length; i++) {
 		for (var j=0; j<activeDelegates.length; j++) {
-			addRepoRule(activeRepos[i], activeDelegates[j], permission);
+			addRepoRule(activeRepos[i].innerText, activeDelegates[j].innerText, permission);
 		}
 	}
-	popupPrompt("Authorised " +getActiveItems("lGroups")+ " group(s) as well as " +getActiveItems("lUsers")+ " individual user(s)<br>to access " +activeRepos.length+ " repositories", "50", "50", "320", "24", true);
+	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "24", true);
 }
 
 //Updates the contents of all boxes.
