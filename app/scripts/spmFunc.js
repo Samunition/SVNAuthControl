@@ -205,6 +205,20 @@ function updateGroup(groupName, usernames) {
 	updateLists();
 }
 
+function removeUser(groupName, username) { //Removes a user from a group
+	var newUserSet;
+	for (var i=0; i<Rules.ruleSet[0].length; i++) {
+		if (Rules.ruleSet[0][i][0] == groupName) {
+			for (var j=0; j<Rules.ruleSet[0][i][1].length; j++) {
+               if (Rules.ruleSet[0][i][1][j] != username) { //If the member is not the deletable one
+				newUserSet.push(Rules.ruleSet[0][i][1][j]); //Add it to newUserSet
+			   }
+			}
+			Rules.ruleSet[0][i][1] = newUserSet; //Replace the group with newUserSet
+        }
+	}
+}
+
 function addUser(username) {
 	if (Rules.ruleSet[1].pushUnique(username)) {
 		console.log("User added");
@@ -376,7 +390,7 @@ function ruleLoader(groupName) {
 		if (repoPerms.length != 0) {
 			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
 		}
-  }
+	}
 	return perms;
 }
 
@@ -449,6 +463,25 @@ function addUsers() {
 		updateGroup(groups[i].innerText,listOfUsers); //Writes that list back into the group
 	}
 	popupPrompt("Added "+users.length+" user(s) to "+groups.length+" group(s)","50","50","400","25",true);
+}
+
+function removeUsers() {
+	var aUsers = getActiveItems("lUsers");
+	var aGroups = getActiveItems("lGroups");
+	if (aUsers.length == 0) {
+		window.alert("Please select one or more users to remove from groups. (ALT to select multiple)");
+		return;
+	}
+	if (aGroups.length == 0) { //No groups are selected, remove them from everything!!!
+		//Remove user from all groups
+	} else {
+		for (var i=0; i<aUsers.length; i++) {
+			for (var j=0;  j<aGroups.length; j++) {
+				deleteUser(aGroups[j].innerText, aUsers[i].innerText);
+			}
+		}
+	}
+	updateLists();
 }
 
 //Shows the small black text overlay.
@@ -829,20 +862,20 @@ function filterUsersList() {
 				}
 			}
 		}
-	}
-	if (relevantUsersOnly) { //If the users list should be filtered
-		if (activeGroups.length != 0) { //If only users in selected groups should appear
-			for (var j=0; j<activeGroups.length; j++) { //For every selected group
-				thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
-				if (!thisGroupsUsers.includes(users[i])) { //If it is not there
-					lUsers[i].style.display = "none"; //Hide the user
+		if (relevantUsersOnly) { //If the users list should be filtered
+			if (activeGroups.length != 0) { //If only users in selected groups should appear
+				for (var j=0; j<activeGroups.length; j++) { //For every selected group
+					thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
+					if (!thisGroupsUsers.includes(users[i])) { //If it is not there
+						lUsers[i].style.display = "none"; //Hide the user
+					}
 				}
 			}
-		}
-		if (activeRepos.length != 0) {
-			for (var i=0; i<lUsers.length; i++) {
-				if (lUsers[i].style.backgroundImage == "none") { //If it has no permissions
-					lUsers[i].style.display = "none"; //Hide the user
+			if (activeRepos.length != 0) {
+				for (var i=0; i<lUsers.length; i++) {
+					if (lUsers[i].style.backgroundImage == "none") { //If it has no permissions
+						lUsers[i].style.display = "none"; //Hide the user
+					}
 				}
 			}
 		}
