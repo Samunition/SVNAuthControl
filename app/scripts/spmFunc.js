@@ -768,7 +768,7 @@ function filterGroupsList() {
 	var activeUsers = getActiveItems("lUsers"); //Get selected users
 	var thisPermission = 0;
 	var perms = Rules.ruleSet[2];
-	
+
 	for (var i = 0; i < lGroups.length; i++) {
 		lGroups[i].style.display = 'block'; //Show everything
 		removeReadImage(lGroups[i]);
@@ -777,7 +777,7 @@ function filterGroupsList() {
 				for (var k = 0; k < perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match get current groups rule if exist
 						for (var n = 0; n < perms[k][1].length; n++) {
-							console.log(perms[k][1][n][0] + " == " + lGroups[i].innerText);
+							//console.log(perms[k][1][n][0] + " == " + lGroups[i].innerText);
 							if (perms[k][1][n][0] == lGroups[i].innerText) { //If the group has permission
 								if (perms[k][1][n][1] == 'r') { //Depending on permission
 									addReadOnlyImage(lGroups[i]); //Show the "READ" icon alongside the group
@@ -800,9 +800,9 @@ function filterGroupsList() {
 				}
 			}
 			if (activeRepos.length != 0) {
-				for (var i=0; i<lGroups.length; i++) {
-					if (lGroups[i].style.backgroundImage == "none") { //If it has no permissions
-						lGroups[i].style.display = "none"; //Hide the group
+				for (var k=0; k<lGroups.length; k++) {
+					if (lGroups[k].style.backgroundImage == "none") { //If it has no permissions
+						lGroups[k].style.display = "none"; //Hide the group
 					}
 				}
 			}
@@ -820,7 +820,6 @@ function filterUsersList() {
 	var thisPermission = 0;
 	var thisGroupsUsers;
 	var perms = Rules.ruleSet[2];;
-			
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
@@ -829,7 +828,7 @@ function filterUsersList() {
 				for (var k = 0; k < perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match, get current rules if exist
 						for (var n = 0; n < perms[k][1].length; n++) {
-							console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
+							// console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
 							if (perms[k][1][n][0] == lUsers[i].innerText) { //If the group has permission
 								if (perms[k][1][n][1] == 'r') { //Depending on permission
 									addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the group
