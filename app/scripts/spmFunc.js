@@ -220,7 +220,7 @@ function updateGroup(groupName, usernames) {
 }
 
 function removeUser(groupName, username) { //Removes a user from a group
-	var newUserSet;
+	var newUserSet = [];
 	for (var i=0; i<Rules.ruleSet[0].length; i++) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
 			for (var j=0; j<Rules.ruleSet[0][i][1].length; j++) {
@@ -231,6 +231,15 @@ function removeUser(groupName, username) { //Removes a user from a group
 			Rules.ruleSet[0][i][1] = newUserSet; //Replace the group with newUserSet
         }
 	}
+}
+
+function emptyGroup(groupName) {
+	for (var i=0; i<Rules.ruleSet[0].length; i++) {
+		if (Rules.ruleSet[0][i][0] == groupName) {
+			Rules.ruleSet[0][i][1] = [];
+        }
+	}
+	updateLists();
 }
 
 function addUser(username) {
@@ -522,16 +531,27 @@ function addUsers() {
 function removeUsers() {
 	var aUsers = getActiveItems("lUsers");
 	var aGroups = getActiveItems("lGroups");
-	if (aUsers.length == 0) {
-		window.alert("Please select one or more users to remove from groups. (ALT to select multiple)");
+	var lGroups = document.getElementById("lGroups").getElementsByTagName("li");
+	if ((aUsers.length == 0) && (aGroups.length == 0)) {
+		window.alert("Please select either:\n• One or more users to remove from all groups\n• One or more groups to empty completely\n• One or more of both to remove selected users only from selected groups only");
 		return;
 	}
-	if (aGroups.length == 0) { //No groups are selected, remove them from everything!!!
-		//Remove user from all groups
-	} else {
+	if (aGroups.length == 0) { //No groups are selected, remove the users from everything
 		for (var i=0; i<aUsers.length; i++) {
-			for (var j=0;  j<aGroups.length; j++) {
-				removeUser(aGroups[j].innerText, aUsers[i].innerText);
+			for (var j=0; j<lGroups.length; j++) {
+				removeUser(lGroups[j].innerText, aUsers[i].innerText);
+			}
+		}
+	} else { //there are selected groups
+		if (aUsers.length == 0) { //If there are no selected users, however
+			for (var j=0; j<aGroups.length; j++) {
+				emptyGroup(aGroups[j].innerText); //Empty the selected groups
+			}
+		} else { //Users AND groups are selected.
+			for (var i=0; i<aUsers.length; i++) {
+				for (var j=0; j<aGroups.length; j++) {
+					removeUser(aGroups[j].innerText, aUsers[i].innerText);
+				}
 			}
 		}
 	}
