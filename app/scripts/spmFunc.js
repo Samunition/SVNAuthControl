@@ -355,7 +355,7 @@ function saveFile() {
 }
 
 function ruleLoader(groupName) {
-	// Load rules for the group (or user), check each repo against the group
+	// Load rules for the passed group (or user), check each repo against the group
 	console.log("LOADING GROUP RULES");
 	var nRepos = Rules.ruleSet[2].length;
 	var perms = []; // perms[i][0] is all the repos with permissions
@@ -827,20 +827,20 @@ function filterUsersList() {
 				}
 			}
 		}
-		if (relevantUsersOnly) { //If the users list should be filtered
-			if (activeGroups.length != 0) { //If only users in selected groups should appear
-				for (var j=0; j<activeGroups.length; j++) { //For every selected group
-					thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
-					if (!thisGroupsUsers.includes(users[i])) { //If it is not there
-						lUsers[i].style.display = "none"; //Hide the user
-					}
+	}
+	if (relevantUsersOnly) { //If the users list should be filtered
+		if (activeGroups.length != 0) { //If only users in selected groups should appear
+			for (var j=0; j<activeGroups.length; j++) { //For every selected group
+				thisGroupsUsers = groupUsersLoader(activeGroups[j].innerText);
+				if (!thisGroupsUsers.includes(users[i])) { //If it is not there
+					lUsers[i].style.display = "none"; //Hide the user
 				}
 			}
-			if (activeRepos.length != 0) {
-				for (var i=0; i<lUsers.length; i++) {
-					if (lUsers[i].style.backgroundImage == "none") { //If it has no permissions
-						lUsers[i].style.display = "none"; //Hide the user
-					}
+		}
+		if (activeRepos.length != 0) {
+			for (var i=0; i<lUsers.length; i++) {
+				if (lUsers[i].style.backgroundImage == "none") { //If it has no permissions
+					lUsers[i].style.display = "none"; //Hide the user
 				}
 			}
 		}
@@ -848,28 +848,40 @@ function filterUsersList() {
 }
 
 function filterReposList() {
-	/* var ul = document.getElementById("lRepos");
+	var ul = document.getElementById("lRepos");
 	var lRepos = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0]; //Get the groups
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
-	var activeDelegates = activeUsers.concat(activeGroups());
+	var activeDelegates = activeUsers.concat(activeGroups);
 	var indexOfAccess = 0;
-	
+	var iRules;	
 	for (var i=0; i<lRepos.length; i++) {
+		removeReadImage(lRepos[i]);
 		lRepos[i].style.display = 'block'; //Show everything
 		for (var j=0; j<activeDelegates.length; j++) {
-			
+			iRules = ruleLoader(activeDelegates[j].innerText);
+			for (var k=0; k<iRules.length; k++) {
+				if (iRules[k][0] == lRepos[i].innerText) {
+					console.log(iRules[k][1]);
+					if (iRules[k][1] == 'r') { //Depending on permission
+						addReadOnlyImage(lRepos[i]); //Show the "READ" icon alongside the repo
+					} else {
+						addReadWriteImage(lRepos[i]); //Show the "WRITE" icon alongside the repo
+					}
+				}
+			}
 		}
 	}
 	if (relevantReposOnly) { //If the groups list should be filtered
-		//Hide all repos
-		//Show repos with permissions for the selected groups, if any are selected
-		//Show repos with permissions for the selected users, if any are selected
-	} else { //If the groups list should not be filtered
-		
-		document.getElementById("searchRepos").value = ""; //Clear searchbox to avoid confusion
-	} */
+		if (activeDelegates.length != 0) {
+			for (var i=0; i<lRepos.length; i++) {
+				if (lRepos[i].style.backgroundImage == "none") { //If it has no permissions
+					lRepos[i].style.display = "none"; //Hide the repo
+				}
+			}
+		}
+	}
 }
 
 function populateGroups() {
