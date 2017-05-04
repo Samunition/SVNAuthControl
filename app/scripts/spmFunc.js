@@ -653,7 +653,6 @@ function deleteButton() {
 	var deletableUsers = getActiveItems("lUsers");
 	var deletableRepos = getActiveItems("lRepos");
 	var messageinfo = "";
-	
 	if (deletableGroups.length != 0) {
 		messageinfo = messageinfo + deletableGroups.length + " group(s)";
 	}
@@ -670,7 +669,20 @@ function deleteButton() {
 		popupPrompt("Nothing is selected", "50", "50", "320", "24", true);
 		return;
 	}
-	if (window.confirm("Ready to delete " + messageinfo + ". Continue?")) {
+	if (window.confirm("Ready to delete " + messageinfo + ". Continue?")) { //If the user definately wants them deleted
+		var i=0;
+		console.log("Deleting " +deletableGroups.length+ " groups...");
+		for (i=0; i<deletableGroups.length; i++) {
+			deleteGroup(deletableGroups[i].innerText);
+		}
+		console.log("Deleting " +deletableUsers.length+ " users...");
+		for (i=0; i<deletableUsers.length; i++) {
+			deleteUser(deletableUsers[i].innerText);
+		}
+		console.log("Deleting " +deletableRepos.length+ " repos...");
+		for (i=0; i<deletableRepos.length; i++) {
+			deleteRepo(deletableRepos[i].innerText);
+		}
 		popupPrompt("Deleted", "50", "50", "320", "24", true);
 	}
 }
