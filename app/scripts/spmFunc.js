@@ -848,7 +848,7 @@ function filterUsersList() {
 }
 
 function filterReposList() {
-	var ul = document.getElementById("lRepos");
+	/* var ul = document.getElementById("lRepos");
 	var lRepos = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0]; //Get the groups
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
@@ -869,7 +869,7 @@ function filterReposList() {
 	} else { //If the groups list should not be filtered
 		
 		document.getElementById("searchRepos").value = ""; //Clear searchbox to avoid confusion
-	}
+	} */
 }
 
 function populateGroups() {
