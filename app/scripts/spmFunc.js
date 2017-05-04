@@ -57,7 +57,7 @@ function load() {
 			console.log("Populating lists");
 			console.log("Lists populated");
 			//addUser("Samuel");
-			//addGroup("samsgroup", ["sam", "and", "his", "mates"]);
+			addGroup("samsgroup", ["sam", "and", "his", "mates"]);
 			updateGroup("samsgroup", ["boff", "jeff"]);
 
 			console.log(Rules.ruleSet[0]);
@@ -68,7 +68,7 @@ function load() {
 			console.log(Rules.ruleSet[0]);
 			console.log(Rules.ruleSet[2]);
 			deleteRepoRule("/anotherone", "samsgroup");
-			   console.log(Rules.ruleSet[2]);
+			console.log(Rules.ruleSet[2]);
 				// console.log("Load user rules");
 				// userRuleLoader("user1");
 				// rebuildFile();
@@ -313,7 +313,7 @@ function deleteRepoRule(repoLoc, delegate) {
 			console.log("Found Repo to delete from");
 			for (var j = 0; j < nRules; j++) {
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
-					console.log("Found group1 in anotherone");
+					console.log("Found" + delegate + " in " + repoLoc);
 					Rules.ruleSet[2][i][1].splice(j, 1);
 				}
 			}
@@ -323,7 +323,6 @@ function deleteRepoRule(repoLoc, delegate) {
 
 function updateRepoRule(repoLoc, delegate, perms) {
 	// Todo update given repo rule
-
 }
 
 function deleteRepo(repoLoc) {
@@ -337,12 +336,10 @@ function deleteRepo(repoLoc) {
 			break;
 		}
 	}
-
 	if (!found) {
 		// Not found
 		console.log("Repo not found");
 	}
-
 	// Todo search repos for group and delete rules
 	updateLists();
 }
@@ -371,8 +368,7 @@ function saveFile() {
 }
 
 function ruleLoader(groupName) {
-	// Load rules for the group (or user)
-	// Check each repo against the group
+	// Load rules for the group (or user), check each repo against the group
 	console.log("LOADING GROUP RULES");
 	var nRepos = Rules.ruleSet[2].length;
 	var perms = []; // perms[i][0] is all the repos with permissions
@@ -414,7 +410,7 @@ function findGroup(name) {
 }
 
 function repoRuleLoader(repo) {
- // load rules for selected repos
+	//Load rules for selected repos
 }
 
 function keyPressed(e) {
@@ -576,17 +572,19 @@ function getInput(prompt, target) {
 	var modalHead = document.getElementById("modalHeader");
 	var modalButton = document.getElementById("modalButton");
 	var modalRadio = document.getElementById("modalRadio");
+	var modalText = document.getElementById("modalContent");
 	modal.style.display = "block";
+	modalText.style.display = "block";
 	modalHead.innerHTML = prompt;
-	if (target == "repo") {
-		modalRadio.style.display = "block";
-		modalButton.innerText = "Create rule";
+	if (target == "repoRule") {
+		modalButton.innerText = "Authorise";
+		modalText.style.display = "none";
 	} else {
 		modalRadio.style.display = "none";
 		if (target == "rename") {
-			modalButton.innerText="Rename";
+			modalButton.innerText = "Rename";
 		} else {
-			modalButton.innerText="Create";
+			modalButton.innerText = "Create";
 		}
 	}
 }
@@ -624,6 +622,19 @@ function okModal() {
 			} else {
 				active[0].innerText = modalContents.value;
 			}
+			break;
+		case "repoRule":
+			var ruletype = "obh";
+			if (document.getElementById("permr").checked) {
+				ruletype = "r";
+			}
+			if (document.getElementById("permrw").checked) {
+				ruletype = "rw";
+			}
+			authButton(ruletype);
+			break;
+		default:
+			window.alert("Modal box error - it was passed something unknown. Bloomin eck indeed..");
 			break;
 	}
 	closeModal();
@@ -664,7 +675,6 @@ function deleteButton() {
 		if (messageinfo != "") { messageinfo = messageinfo + ", " }
 		messageinfo = messageinfo + deletableRepos.length + " repository rule(s)";
 	}
-
 	if (messageinfo == "") {
 		popupPrompt("Nothing is selected", "50", "50", "320", "24", true);
 		return;
@@ -694,6 +704,28 @@ function renameButton() {
 		return;
 	}
 	getInput("Enter the new name for " + active[0].innerText,"rename");
+}
+
+function authButton(permission) {
+	activeDelegates = getActiveItems("lGroups") + getActiveItems("lUsers");
+	activeRepos = getActiveItems("lRepos");
+	if (activeDelegates.length == 0) {
+		window.alert("Please select one or more users/groups to authorise (Use ALT to select multiple items)");
+		return;
+	}
+	if (activeRepos.length == 0) {
+		window.alert("Please select one or more repositories to authorise access to (Use ALT to select multiple items)");
+		return;
+	}
+	if (permission == "obh") {
+		window.alert("Invalid permission");
+	}
+	for (var i=0; i<activeRepos.length; i++) {
+		for (var j=0; j<activeDelegates.length; j++) {
+			addRepoRule(activeRepos[i], activeDelegates[j], permission);
+		}
+	}
+	popupPrompt("Authorised " +getActiveItems("lGroups")+ " group(s) as well as " +getActiveItems("lUsers")+ " individual user(s)<br>to access " +activeRepos.length+ " repositories", "50", "50", "320", "24", true);
 }
 
 //Updates the contents of all boxes.
@@ -909,24 +941,25 @@ function interfaceSetup() {
 	popup.style.display = "none";
 }
 
-/*---------------From here is unused code------------------
+function deauthButton() {
+	console.log("Deauthing inputs");
+	activeDelegates = getActiveItems("lGroups").concat(getActiveItems("lUsers"));
+	activeRepos = getActiveItems("lRepos");
 
-function listGroups(json) {
-    // Groups
-    var groups = json.groups;
-    console.log("Groups: " + JSON.stringify(groups, null, 4));
-    // Remove once function for where this goes is made
-    $("#content").val(JSON.stringify(groups, null, 4));
+	if (activeDelegates.length == 0) {
+		window.alert("Please select one or more users/groups to authorise (Use ALT to select multiple items)");
+		return;
+	}
+	if (activeRepos.length == 0) {
+		window.alert("Please select one or more repositories to authorise access to (Use ALT to select multiple items)");
+		return;
+	}
+
+	for (var i = 0; i < activeRepos.length; i++) {
+		for (var j = 0; j < activeDelegates.length; j++) {
+			console.log("Deleting " + activeDelegates[j].innerText + " from " + activeRepos[i].innerText);
+			deleteRepoRule(activeRepos[i].innerText, activeDelegates[j].innerText);
+		}
+	}
+	updateContext();
 }
-
-// function loadFile() {
-//   $.ajax({
-//     url: '/scripts/load-file.php',
-//     type: 'POST',
-//     success: function(html) {
-//       $("#content").val(html);
-//       console.log("File loaded.");
-//     }
-//   });
-// }
-}*/
