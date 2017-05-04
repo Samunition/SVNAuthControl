@@ -285,7 +285,6 @@ function addRepoRule(repoLoc, delegate, perms) {
 			}
 		}
 	}
-	updateLists();
 }
 
 function deleteRepoRule(repoLoc, delegate) {
@@ -711,7 +710,9 @@ function authButton(permission) {
 			addRepoRule(activeRepos[i].innerText, activeDelegates[j].innerText, permission);
 		}
 	}
-	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "24", true);
+	updateContext();
+	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "40", true);
+
 }
 
 //Updates the contents of all boxes.
@@ -855,11 +856,11 @@ function filterReposList() {
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
 	var activeDelegates = activeUsers.concat(activeGroups());
 	var indexOfAccess = 0;
-	
+
 	for (var i=0; i<lRepos.length; i++) {
 		lRepos[i].style.display = 'block'; //Show everything
 		for (var j=0; j<activeDelegates.length; j++) {
-			
+
 		}
 	}
 	if (relevantReposOnly) { //If the groups list should be filtered
@@ -867,7 +868,7 @@ function filterReposList() {
 		//Show repos with permissions for the selected groups, if any are selected
 		//Show repos with permissions for the selected users, if any are selected
 	} else { //If the groups list should not be filtered
-		
+
 		document.getElementById("searchRepos").value = ""; //Clear searchbox to avoid confusion
 	} */
 }
