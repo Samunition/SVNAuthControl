@@ -729,7 +729,6 @@ function updateContext() {
 
 //Shows/hides items in the groups list based on selected filtering options and applies read/write icons to them
 function filterGroupsList() {
-	console.log("Filter Groups called");
 	var ul = document.getElementById("lGroups");
 	var lGroups = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0]; //Get the groups
@@ -780,7 +779,6 @@ function filterGroupsList() {
 }
 
 function filterUsersList() {
-	console.log("Filter users called");
 	var ul = document.getElementById("lUsers");
 	var lUsers = ul.getElementsByTagName("li");
 	var groups = Rules.ruleSet[0] //Get the groups
@@ -790,7 +788,6 @@ function filterUsersList() {
 	var thisPermission = 0;
 	var thisGroupsUsers;
 	var perms = Rules.ruleSet[2];;
-
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
