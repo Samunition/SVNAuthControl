@@ -94,6 +94,7 @@ function parseFileData(fileData) {
 	var groups = []; // Group names and member array pairings
 	var users = []; // Array of unique users
 	var repos = []; // Array of unique repos
+	var groupNames = [];
 
 	// Loop through all the keys
 	for (var key in fileData) {
@@ -105,6 +106,7 @@ function parseFileData(fileData) {
 
 				// Add the key and value to groups
 				groups.push([subkey, groupMembers]);
+				groupNames.push(subkey);
 
 				// Add unique users to user array
 				for (var i = 0; i < groupMembers.length; i++) {
@@ -132,7 +134,7 @@ function parseFileData(fileData) {
 		}
 	}
 
-	var rules = [groups, users, repos];
+	var rules = [groups, users, repos, groupNames];
 	return rules;
 }
 
@@ -159,6 +161,7 @@ function addGroup(groupName, usernames) {
 	}
 	if (!found) {
 		Rules.ruleSet[0].push([groupName, usernames]);
+		Rules.ruleSet[3].push(groupName);
 	}
 	updateLists();
 	return true;
@@ -285,7 +288,6 @@ function addRepoRule(repoLoc, delegate, perms) {
 			}
 		}
 	}
-	updateLists();
 }
 
 function deleteRepoRule(repoLoc, delegate) {
@@ -711,7 +713,9 @@ function authButton(permission) {
 			addRepoRule(activeRepos[i].innerText, activeDelegates[j].innerText, permission);
 		}
 	}
-	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "24", true);
+	updateContext();
+	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "40", true);
+
 }
 
 //Updates the contents of all boxes.
