@@ -850,19 +850,18 @@ function filterUsersList() {
 }
 
 function filterReposList() {
-	var ul = document.getElementById("lRepos");
-	var lRepos = ul.getElementsByTagName("li");
+	var lRepos = document.getElementById("lRepos").getElementsByTagName("li");
 	var groups = Rules.ruleSet[3]; //Get the groups
 	var users = Rules.ruleSet[1];
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
 	var activeDelegates = activeUsers.concat(activeGroups);
-	var indexOfAccess = 0;
+	console.log("Repos filter has " + activeDelegates.length + " active delegates");
 	var iRules;
-	var currentAuthLevel = "r";
+	var currentAuthLevel = "";
 	var inherited = false;
 	for (var i=0; i<lRepos.length; i++) {
-		currentAuthLevel = "r";
+		currentAuthLevel = "";
 		inherited = false;
 		removeReadImage(lRepos[i]);
 		lRepos[i].style.display = 'block'; //Show everything
@@ -871,8 +870,9 @@ function filterReposList() {
 			for (var k=0; k<iRules.length; k++) {
 				if (iRules[k][0] == lRepos[i].innerText) {
 					for (var l=0; l<iRules[k][1].length; l++) {
-						if (iRules[k][1][l][0]  == 'rw') {
-							currentAuthLevel = "rw";
+						if ((iRules[k][1][l][0]  == 'rw') || (iRules[k][1][l][0]  == 'r')) {
+							console.log("Repos filter has a rule from " + iRules[k][1][l][1]);
+							currentAuthLevel = iRules[k][1][l][0];
 							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText))) { //If it's a user and a gro
 								inherited = true;
 							}
@@ -881,13 +881,14 @@ function filterReposList() {
 				}
 			}
 		}
-		if (currentAuthLevel = "rw") {
+		if (currentAuthLevel == "rw") {
 			if (inherited) {
 				addReadWriteInheritImage(lRepos[i]);
 			} else {
 				addReadWriteImage(lRepos[i]);
 			}
-		} else {
+		}
+		if (currentAuthLevel == "r") {
 			if (inherited) {
 				addReadOnlyInheritImage(lRepos[i]);
 			} else {
@@ -895,7 +896,7 @@ function filterReposList() {
 			}
 		}
 	}
-	if (relevantReposOnly) { //If the groups list should be filtered
+	if (relevantReposOnly) { //If the list should be filtered (as in, unimportant ones are hidden)
 		if (activeDelegates.length != 0) {
 			for (var i=0; i<lRepos.length; i++) {
 				if (lRepos[i].style.backgroundImage == "none") { //If it has no permissions
