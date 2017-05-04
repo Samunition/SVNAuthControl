@@ -291,7 +291,7 @@ function addRepoRule(repoLoc, delegate, perms) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
 			var nRules = Rules.ruleSet[2][i][1].length;
 			console.log("Found Repo");
-			for (var j = 0; j < nRules; j++) { 
+			for (var j = 0; j < nRules; j++) {
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
 					console.log("Rule for delegate already exists so update");
 					found = true;
@@ -372,27 +372,65 @@ function saveFile() {
   return true;
 }
 
-function ruleLoader(groupName) {
-	// Load rules for the passed group (or user), check each repo against the group
-	console.log("LOADING GROUP RULES");
+// function ruleLoader(groupName) {
+// 	// Load rules for the passed group (or user), check each repo against the group
+// 	console.log("LOADING GROUP RULES");
+// 	var nRepos = Rules.ruleSet[2].length;
+// 	var perms = []; // perms[i][0] is all the repos with permissions
+// 	for (var i = 0; i < nRepos; i++) {
+// 		var nRules = Rules.ruleSet[2][i][1].length;
+// 		var repoPerms = [];
+// 		for (var j = 0; j < nRules; j++) {
+// 			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") { // Check to see if all, *, has permissions
+// 				repoPerms.push(Rules.ruleSet[2][i][1][j]);
+// 			}
+// 			if (groupName == Rules.ruleSet[2][i][1][j][0]) { // Check the checklist against repo rules
+// 				repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+// 			}
+// 		}
+// 		// Add the repo perms to perms list
+// 		if (repoPerms.length != 0) {
+// 			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
+// 		}
+//   }
+// 	return perms;
+// }
+
+function ruleLoader(username) {
+	// Get a list of groups the user is a part of
+	console.log("LOADING USER RULES");
+	var checklist = [username];
+	var nGroups = Rules.ruleSet[0].length;
+	for (var i = 0; i < nGroups; i++) {
+		var inGroup = $.inArray(username, Rules.ruleSet[0][i][1]);
+		if (inGroup > -1) {
+			checklist.push(Rules.ruleSet[0][i][0]);
+		}
+	}
+	// Check each repo against the checklist
 	var nRepos = Rules.ruleSet[2].length;
+	var nChecklist = checklist.length;
 	var perms = []; // perms[i][0] is all the repos with permissions
 	for (var i = 0; i < nRepos; i++) {
 		var nRules = Rules.ruleSet[2][i][1].length;
 		var repoPerms = [];
 		for (var j = 0; j < nRules; j++) {
-			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") { // Check to see if all, *, has permissions
+			// Check to see if all, *, has permissions
+			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") {
 				repoPerms.push(Rules.ruleSet[2][i][1][j]);
 			}
-			if (groupName == Rules.ruleSet[2][i][1][j][0]) { // Check the checklist against repo rules
-				repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+			// Check the checklist against repo rules
+			for ( var k = 0; k < nChecklist; k++) {
+				if (checklist[k] == Rules.ruleSet[2][i][1][j][0]) {
+					repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
+				}
 			}
 		}
 		// Add the repo perms to perms list
 		if (repoPerms.length != 0) {
 			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
 		}
-  }
+	}
 	return perms;
 }
 
@@ -878,19 +916,31 @@ function filterReposList() {
 	var inherited = false;
 	for (var i=0; i<lRepos.length; i++) {
 		currentAuthLevel = "";
-		inherited = false;
 		removeReadImage(lRepos[i]);
 		lRepos[i].style.display = 'block'; //Show everything
 		for (var j=0; j<activeDelegates.length; j++) {
 			iRules = ruleLoader(activeDelegates[j].innerText);
+			console.log(iRules);
 			for (var k=0; k<iRules.length; k++) {
 				if (iRules[k][0] == lRepos[i].innerText) {
 					for (var l=0; l<iRules[k][1].length; l++) {
 						if ((iRules[k][1][l][0]  == 'rw') || (iRules[k][1][l][0]  == 'r')) {
 							console.log("Repos filter has a rule from " + iRules[k][1][l][1]);
-							currentAuthLevel = iRules[k][1][l][0];
-							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText))) {
+
+							console.log(groups.includes(iRules[k][1][l][1]) + " " + users.includes(activeDelegates[j].innerText) + currentAuthLevel != "rw");
+							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText)) && currentAuthLevel != "rw") {
+								console.log("Inherited set to true");
+								currentAuthLevel = iRules[k][1][l][0];
 								inherited = true;
+							}
+							else if(!groups.includes(iRules[k][1][l][1]) && users.includes(activeDelegates[j].innerText) && currentAuthLevel != "rw") {
+								console.log("Inherited set to false");
+								currentAuthLevel = iRules[k][1][l][0];
+								inherited = false;
+							}
+							else {
+								console.log("group");
+								currentAuthLevel = iRules[k][1][l][0];
 							}
 						}
 					}
@@ -907,6 +957,7 @@ function filterReposList() {
 		if (currentAuthLevel == "r") {
 			if (inherited) {
 				addReadOnlyInheritImage(lRepos[i]);
+				inherited = false;
 			} else {
 				addReadOnlyImage(lRepos[i]);
 			}

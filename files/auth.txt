@@ -1,14 +1,17 @@
 [groups]
 group1 = user1,user2,user3
-group2 = user2,user4, user7
+group2 = user2,user4,user7
 group3 = user1,user2
 group4 = user22,user6
-ecumenical = adam,rob
+ecumenical = adam,rob,Samuel
 group5 = user9,user11
 group6 = user2,user1,user16
 group7 = user14,user15,user12
-group8 = user7,user8,user9
+group8 = user7,user8,user9,rob
 group9 = user20,user21,user22
+Added By Interface = Adder,user8,user20,user21
+Penguins = user7,rob,adam,user9,user11
+jeff = adam
 
 [/]
 * =
@@ -25,5 +28,6 @@ user1 = r
 [/anotherone]
 * =
 @group5 = r
+@ecumenical = r
 adam = rw
 rob = r
