@@ -445,11 +445,11 @@ function addUsers() {
 	var groupIndex;
 	var listOfUsers;
 	if (groups.length == 0) {
-		window.alert("Please select one or more groups to add the users to. (Hold ALT to select multiple items)");
+		window.alert("Please select one or more groups to add the users to. (Use ALT to select multiple items)");
 		return;
 	}
 	if (users.length == 0) {
-		window.alert("Please select one or more users to add to the groups. (Hold ALT to select multiple items)");
+		window.alert("Please select one or more users to add to the groups. (Use ALT to select multiple items)");
 		return;
 	}
 	for (var i=0; i<groups.length; i++) {
@@ -469,7 +469,7 @@ function addUsers() {
 //Shows the small black text overlay.
 function popupPrompt(message, x, y, w, h, autoclose=false) {
 	popup = document.getElementById("popup");
-	if (popup.style.display == "none") {
+	//if (popup.style.display == "none") {
 		popupText = document.getElementById("popupText");
 		popup.style.left = x + "%";
 		popup.style.top = y + "%";
@@ -481,7 +481,7 @@ function popupPrompt(message, x, y, w, h, autoclose=false) {
 			$('#popup').delay(2000).fadeOut(500);
 		}
 		return true;
-	} else { return false; }
+	//} else { return false; }
 }
 
 //Hides the small black text overlay.
@@ -664,7 +664,7 @@ function deleteButton() {
 		if (messageinfo != "") { messageinfo = messageinfo + ", " }
 		messageinfo = messageinfo + deletableRepos.length + " repository rule(s)";
 	}
-	
+
 	if (messageinfo == "") {
 		popupPrompt("Nothing is selected", "50", "50", "320", "24", true);
 		return;
@@ -736,7 +736,7 @@ function filterGroupsList() {
 	var activeUsers = getActiveItems("lUsers"); //Get selected users
 	var thisPermission = 0;
 	var perms = Rules.ruleSet[2];
-	
+
 	for (var i = 0; i < lGroups.length; i++) {
 		lGroups[i].style.display = 'block'; //Show everything
 		removeReadImage(lGroups[i]);
@@ -745,7 +745,7 @@ function filterGroupsList() {
 				for (var k = 0; k < perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match get current groups rule if exist
 						for (var n = 0; n < perms[k][1].length; n++) {
-							console.log(perms[k][1][n][0] + " == " + lGroups[i].innerText);
+							//console.log(perms[k][1][n][0] + " == " + lGroups[i].innerText);
 							if (perms[k][1][n][0] == lGroups[i].innerText) { //If the group has permission
 								if (perms[k][1][n][1] == 'r') { //Depending on permission
 									addReadOnlyImage(lGroups[i]); //Show the "READ" icon alongside the group
@@ -768,9 +768,9 @@ function filterGroupsList() {
 				}
 			}
 			if (activeRepos.length != 0) {
-				for (var i=0; i<lGroups.length; i++) {
-					if (lGroups[i].style.backgroundImage == "none") { //If it has no permissions
-						lGroups[i].style.display = "none"; //Hide the group
+				for (var k=0; k<lGroups.length; k++) {
+					if (lGroups[k].style.backgroundImage == "none") { //If it has no permissions
+						lGroups[k].style.display = "none"; //Hide the group
 					}
 				}
 			}
@@ -788,7 +788,6 @@ function filterUsersList() {
 	var thisPermission = 0;
 	var thisGroupsUsers;
 	var perms = Rules.ruleSet[2];;
-			
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
@@ -797,7 +796,7 @@ function filterUsersList() {
 				for (var k = 0; k < perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match, get current rules if exist
 						for (var n = 0; n < perms[k][1].length; n++) {
-							console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
+							// console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
 							if (perms[k][1][n][0] == lUsers[i].innerText) { //If the group has permission
 								if (perms[k][1][n][1] == 'r') { //Depending on permission
 									addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the group
