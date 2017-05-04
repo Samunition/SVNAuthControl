@@ -28,7 +28,7 @@
 <!--Upper left-hand box-->
 		<div class = "smallbox">
 			<div class = "smallheader">
-				<p onclick="relevantGroupsOnly=!relevantGroupsOnly; updateContext();"><span id = "lGroupsHeader"></span>
+				<p><span id = "lGroupsHeader" onclick="relevantGroupsOnly=!relevantGroupsOnly; updateContext();"></span>
 				<input type="text" id="searchGroups" name="searchbar" placeholder="Search" onclick="prepSearch('lGroups')" oninput="search()"/></p>
 			</div>
 			<div class = "smallboxList" id = "userManagerGroups">
@@ -50,19 +50,19 @@
 <!--Upper right-hand box-->
 		<div class = "bigbox">
 			<div class = "smallheader">
-				<p onclick="relevantReposOnly=!relevantReposOnly; updateContext();"><span id = "lReposHeader"></span>
+				<p><span id = "lReposHeader" onclick="relevantReposOnly=!relevantReposOnly; updateContext();"></span>
 				<input type="text" id="searchRepos" name="searchbar" placeholder="Search" onclick="prepSearch('lRepos');" oninput="search()"/></p>
 			</div>
 			<div class = "smallboxList">
 				<p><ul id = "lRepos"></ul></p>
 			</div>
 		</div>
-<!--Lower right-hand box -->
+<!--Lower right-hand box-->
 		<div id = "buttonsbox">
 			<table>
 			<tr>
 				<th>Create</th>
-				<th>Modify <input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Select multiple (alt to toggle)</input></th>
+				<th>Modify</th>
 				<th>File</th>
 			</tr>
 			<tr>
@@ -72,6 +72,7 @@
 					<button type = "button" id="addARepo" onclick="getInput('Enter the address of the repository', 'repo');">+New repository</button>
 				</form></td>
 				<form><td>
+					<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Multiselect (ALT)</input>
 					<button type = "button" id="removeSelection" onclick="deleteButton();">Delete/remove selection</button>
 					<button type = "button" id="renameSelection" onclick="renameButton();">Rename selection</button><br/>
 					<button type = "button" id="addToGroup" onclick="addUsers();">Add selection to group(s)</button>

@@ -124,6 +124,10 @@ a:visited {
 	color:inherit;
 }
 
+a:nth-child(odd) {
+	background-color:#efefef;
+}
+
 a .active {
 	background-color:#09f;
 	color:#fff;
@@ -132,7 +136,7 @@ a .active {
 
 a:hover {
 	transition:0s;
-	background-color:#eee;
+	background-color:#ccc;
 }
 
 
@@ -169,6 +173,11 @@ a:hover {
 	border-color:#000;
 	border-style:outset;
 	padding:8px;
+}
+
+#modalContent {
+	width:80%;
+	margin:auto;
 }
 
 #popup {
