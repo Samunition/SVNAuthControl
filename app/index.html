@@ -4,7 +4,7 @@
 	<meta charset="UTF-8"/>
 	<title>Subversion Permissions Manager</title>
 	<link rel = "stylesheet" type = "text/css" href = "css\spm_css.css"/>
-	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/>--><!--alternative colours-->
+	<!--<link rel = "stylesheet" type = "text/css" href = "css\spm_css_d.css"/><!--alternative colours-->
 	<script type = "text/javascript" src = "scripts/spmFunc.js"></script>
 </head>
 <body onload = "startup();" onkeyup = "keyReleased(event);" onkeydown = "keyPressed(event);">
@@ -62,20 +62,24 @@
 			<table>
 			<tr>
 				<th>Create</th>
-				<th>Modify</th>
+				<th>Edit</th>
+				<th>Auth</th>
 				<th>File</th>
 			</tr>
 			<tr>
 				<form><td>
 					<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+New user</button>
-					<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+New group</button><br/>
+					<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+New group</button>
 					<button type = "button" id="addARepo" onclick="getInput('Enter the address of the repository', 'repo');">+New repository</button>
 				</form></td>
 				<form><td>
 					<input type="checkbox" id="multiSelect" onclick="selectMultiple=!selectMultiple">Multiselect (ALT)</input>
-					<button type = "button" id="removeSelection" onclick="deleteButton();">Delete/remove selection</button>
-					<button type = "button" id="renameSelection" onclick="renameButton();">Rename selection</button><br/>
+					<button type = "button" id="renameSelection" onclick="renameButton();">Rename</button>
+					<button type = "button" id="removeSelection" onclick="deleteButton();">Delete/remove</button>
 					<button type = "button" id="addToGroup" onclick="addUsers();">Add selection to group(s)</button>
+					<button type = "button" id="removeFromGroup" onclick="removeUsers();">Remove from group(s)</button>
+				</form></td>
+				<form><td>
 					<button type = "button" id="allowSelection" onclick="getInput('Authorise selection to do what?', 'repoRule');">Authorise selection</button>
 					<button type = "button" id="disallowSelection" onclick="deauthButton();">Deauthorise selection</button>
 				</form></td>
