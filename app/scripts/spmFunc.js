@@ -277,7 +277,7 @@ function addRepoRule(repoLoc, delegate, perms) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
 			var nRules = Rules.ruleSet[2][i].length
 			console.log("Found Repo");
-			for (var j = 0; j < nRules; j++) {
+			for (var j = 0; j < nRules; j++) { 
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
 					console.log("Rule for delegate already exists");
 				}
@@ -715,7 +715,6 @@ function authButton(permission) {
 	}
 	updateContext();
 	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "40", true);
-
 }
 
 //Updates the contents of all boxes.
@@ -758,7 +757,6 @@ function filterGroupsList() {
 	var activeUsers = getActiveItems("lUsers"); //Get selected users
 	var thisPermission = 0;
 	var perms = Rules.ruleSet[2];
-
 	for (var i = 0; i < lGroups.length; i++) {
 		lGroups[i].style.display = 'block'; //Show everything
 		removeReadImage(lGroups[i]);
@@ -862,10 +860,10 @@ function filterReposList() {
 	var indexOfAccess = 0;
 	var iRules;
 	var currentAuthLevel = "r";
-	var inhereted = false;
+	var inherited = false;
 	for (var i=0; i<lRepos.length; i++) {
 		currentAuthLevel = "r";
-		inhereted = false;
+		inherited = false;
 		removeReadImage(lRepos[i]);
 		lRepos[i].style.display = 'block'; //Show everything
 		for (var j=0; j<activeDelegates.length; j++) {
@@ -876,7 +874,7 @@ function filterReposList() {
 						if (iRules[k][1][l][0]  == 'rw') {
 							currentAuthLevel = "rw";
 							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText))) { //If it's a user and a gro
-								inhereted = true;
+								inherited = true;
 							}
 						}
 					}
@@ -884,11 +882,18 @@ function filterReposList() {
 			}
 		}
 		if (currentAuthLevel = "rw") {
-			if (inhereted) {
+			if (inherited) {
+				addReadWriteInheritImage(lRepos[i]);
+			} else {
+				addReadWriteImage(lRepos[i]);
 			}
 		} else {
+			if (inherited) {
+				addReadOnlyInheritImage(lRepos[i]);
+			} else {
+				addReadOnlyImage(lRepos[i]);
+			}
 		}
-		addReadWriteImage(lRepos[i]);
 	}
 	if (relevantReposOnly) { //If the groups list should be filtered
 		if (activeDelegates.length != 0) {
@@ -947,6 +952,14 @@ function addReadOnlyImage(toWhat) {
 
 function addReadWriteImage(toWhat) {
 	toWhat.style.backgroundImage = "url('img/write.bmp')";
+}
+
+function addReadOnlyInheritImage(toWhat) {
+	toWhat.style.backgroundImage = "url('img/readInherit.bmp')";
+}
+
+function addReadWriteInheritImage(toWhat) {
+	toWhat.style.backgroundImage = "url('img/writeInherit.bmp')";
 }
 
 function removeReadImage(fromWhat) {
