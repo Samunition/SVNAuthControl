@@ -486,6 +486,12 @@ function keyPressed(e) {
 			selectMultiple=!selectMultiple;
 			document.getElementById("multiSelect").checked = selectMultiple;
 			break;
+		case 13: //Carriage return
+			modalthing = document.getElementById("modalbox");
+			if (modalthing.style.display == "block") {
+				okModal();
+			}
+			break;
 	}
 }
 
@@ -717,8 +723,35 @@ function okModal() {
 			if (active.length > 1) {
 				popupPrompt("Error renaming - only one item at a time can be renamed", "50", "50", "320", "40", true);
 			} else {
-				active[0].innerText = modalContents.value;
+				if (active[0].parentNode.parentNode.id == "lGroups") { //If it's a group to rename
+					console.log("Renaming a group.");
+					for (var i=0; i<Rules.ruleSet[0].length; i++) {
+						if (Rules.ruleSet[0][i][0] == active[0].innerText) {
+							Rules.ruleSet[0][i][0] = modalContents.value;
+							break;
+						}
+					}
+				}
+				if (active[0].parentNode.parentNode.id == "lUsers") { //If it's a user to rename
+					console.log("Renaming a user.");
+					for (var i=0; i<Rules.ruleSet[1].length; i++) {
+						if (Rules.ruleSet[1][i] == active[0].innerText) {
+							Rules.ruleSet[1][i] = modalContents.value;
+							break;
+						}
+					}
+				}
+				if (active[0].parentNode.parentNode.id == "lRepos") { //If it's a repo to rename
+					console.log("Renaming a repo.");
+					for (var i=0; i<Rules.ruleSet[2].length; i++) {
+						if (Rules.ruleSet[2][i][0] == active[0].innerText) {
+							Rules.ruleSet[2][i][0] = modalContents.value;
+							break;
+						}
+					}
+				}
 			}
+			updateLists();
 			break;
 		case "repoRule":
 			var ruletype = "obh";
@@ -826,6 +859,10 @@ function authButton(permission) {
 	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "40", true);
 }
 
+function diffButton() {
+	window.alert("Placeholder");
+}
+
 //Updates the contents of all boxes.
 function updateLists() {
 	clearLists();
@@ -838,19 +875,19 @@ function updateLists() {
 
 function updateContext() {
 	if (relevantGroupsOnly) {
-		document.getElementById("lGroupsHeader").innerHTML = "Groups with selection";
+		document.getElementById("lGroupsHeader").innerHTML = "►Filtered Groups";
 	} else {
-		document.getElementById("lGroupsHeader").innerHTML = "All Groups";
+		document.getElementById("lGroupsHeader").innerHTML = "▼All Groups";
 	}
 	if (relevantUsersOnly) {
-		document.getElementById("lUsersHeader").innerHTML = "Users with/in selection";
+		document.getElementById("lUsersHeader").innerHTML = "►Filtered Users";
 	} else {
-		document.getElementById("lUsersHeader").innerHTML = "All Users";
+		document.getElementById("lUsersHeader").innerHTML = "▼All Users";
 	}
 	if (relevantReposOnly) {
-		document.getElementById("lReposHeader").innerHTML = "Repositories that the selection has access to";
+		document.getElementById("lReposHeader").innerHTML = "►Repositories that the selection has access to";
 	} else {
-		document.getElementById("lReposHeader").innerHTML = "All Repositories";
+		document.getElementById("lReposHeader").innerHTML = "▼All Repositories";
 	}
 	filterGroupsList();
 	filterUsersList();
