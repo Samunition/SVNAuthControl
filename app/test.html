@@ -57,11 +57,21 @@
 		<div id = "buttonsbox">
 			<form>
         <!-- TEST BUTTONS GO HERE -->
-				<button type = "button" onclick="userRuleLoader('adam')">Load User rules test</button>
-				<button type = "button" onclick="groupRuleLoader('group1')">Load Group rules test</button>
-				<button type = "button" id="addAUser" onclick="getInput('Enter the name of the new user', 'user');">+Add new user</button>
-				<button type = "button" id="addAGroup" onclick="getInput('Enter the name of the new group', 'group');">+Add new group</button>
-				<button type = "button" onclick="addUser('The');">+Add test user</button>
+				<button type = "button" onclick = "startup()">Call load</button>
+				<button type = "button" onclick = "deleteGroup('group1')">Delete group 1</button>
+				<button type = "button" onclick = "addGroup('testGroup', ['testUser1', 'testUser2'])">Add test group</button>
+				<button type = "button" onclick = "addUser('testUser')">Add user</button>
+				<button type = "button" onclick = "deleteUser('testUser')">Delete user</button>
+				<button type = "button" onclick = "addRepo('/rob/test')">Add repository</button>
+				<button type = "button" onclick = "deleteRepo('/rob/test')">Delete repository</button>
+				<button type = "button" onclick = "addRepoRule('/anotherone', 'group1', 'r')">Add repo rule</button>
+				<button type = "button" onclick = "deleteRepoRule('/anotherone', 'group1')">Delete repo rule</button>
+				<button type = "button" onclick = "clearLists()">Clear lists</button>
+				<button type = "button" onclick = "updateLists()">Update lists</button>
+				<button type = "button" onclick = "userRuleLoader('rob')">User rule loader</button>
+				<button type = "button" onclick = "groupRuleLoader('group2')">Group rule loader</button>
+				<button type = "button" onclick = "UMTabTo('Users')">Tab to users</button>
+				
 			</form>
 		</div>
 	</div>
