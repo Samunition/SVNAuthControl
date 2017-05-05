@@ -20,7 +20,7 @@ ul {
 }
 
 li {
-	transition:0.2s; /* From selected to unselected */
+	transition:0.5s; /* From selected to unselected */
 	text-decoration:none;
 	display:block;
 	margin-left:4px;
