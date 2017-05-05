@@ -10,8 +10,10 @@ group7 = user14,user15,user12
 group8 = user7,user8,user9,rob
 group9 = user20,user21,user22
 Added By Interface = Adder,user8,user20,user21
-Penguins = user7,rob,adam,user9,user11
+Pongweens = user7,rob,adam,user9,user11
 jeff = adam
+jimsgroup = jim
+samsgroup = boff,jeff
 
 [/]
 * =
@@ -30,4 +32,7 @@ user1 = r
 @group5 = r
 @ecumenical = r
 adam = rw
-rob = r
+
+[/jimbobrepo]
+* =
+@jimsgroup = r

@@ -7,6 +7,7 @@ var gWrapped = 0;
 var relevantGroupsOnly = false;
 var relevantReposOnly = false;
 var relevantUsersOnly = false;
+var files;
 
 var Rules = {
 	ruleSet : []
@@ -39,9 +40,24 @@ function diff(oldFile, newFile) {
 			file2: newFile
 		},
 		success: function(differences) {
-			console.log(differences);
+			alert(differences);
+
 		}
 	});
+}
+
+function loadDirectory() {
+	$.ajax({
+		url: '/scripts/read-dir.php',
+		type: 'GET'
+	}).done(function(rfiles) {
+			var fileList = rfiles;
+			fileList = fileList.replace("\[", "");
+			fileList = fileList.replace("\]", "");
+			fileList = fileList.replace(/\"/g, '');
+			files = fileList.split(",");
+			console.log(files);
+		});
 }
 
 // Change to load rules
@@ -82,6 +98,7 @@ function load() {
 				 console.log(Rules.ruleSet[2]);
 				// addRepoRule("/anotherone", "group9", "rw");
 		  // deleteUser("user1");
+			loadDirectory();
 		} catch(err) {
 			document.getElementById("pleaseWaitMessage").innerHTML = "";
 			popupPrompt("Failed to load, "+err.message+".","50","50","800","300");
@@ -389,6 +406,7 @@ function saveFile() {
       groups: jsonStringGroup,
 			repos: jsonStringRepos
     }}).done(function(deleted) {
+			loadDirectory();
 			if (deleted == "true") {
 				popupPrompt("Saved to file", "50", "50", "320", "24", true);
 			}
@@ -677,9 +695,13 @@ function getInput(prompt, target) {
 	var modalButton = document.getElementById("modalButton");
 	var modalRadio = document.getElementById("modalRadio");
 	var modalText = document.getElementById("modalContent");
+	var oldDropDown = document.getElementById("oldDropDown");
+	var newDropDown = document.getElementById("newDropDown");
 	modal.style.display = "block";
 	modalText.style.display = "block";
 	modalHead.innerHTML = prompt;
+	oldDropDown.style.display = "none";
+	newDropDown.style.display = "none";
 	if (target == "repoRule") {
 		modalButton.innerText = "Authorise";
 		modalText.style.display = "none";
@@ -691,6 +713,28 @@ function getInput(prompt, target) {
 		} else {
 			modalButton.innerText = "Create";
 		}
+	} if (target == "diff") {
+			modalButton.innerText = "Diff files";
+			modalText.style.display = "none";
+			oldDropDown.style.display = "inline";
+			newDropDown.style.display = "inline";
+			populateFiles();
+	}
+}
+
+function populateFiles() {
+	var oSelect = document.getElementById("oldDropDown");
+	var nSelect = document.getElementById("newDropDown");
+	for(var i = 2; i < files.length; i++) {
+		var opt = document.createElement("option");
+   	opt.value = files[i];
+   	opt.innerHTML = files[i];
+		oSelect.appendChild(opt);
+
+		var opt = document.createElement("option");
+   	opt.value = files[i];
+   	opt.innerHTML = files[i];
+		nSelect.appendChild(opt);
 	}
 }
 
@@ -764,6 +808,13 @@ function okModal() {
 				ruletype = "rw";
 			}
 			authButton(ruletype);
+			break;
+		case "diff":
+			var oldFile = document.getElementById("oldDropDown");
+			var newFile = document.getElementById("newDropDown");
+			var oldStr = "../files/" + oldFile.options[oldFile.selectedIndex].text;
+			var newStr = "../files/" + newFile.options[newFile.selectedIndex].text;
+			diff(oldStr, newStr);
 			break;
 		default:
 			window.alert("Modal box error - it was passed something unknown. Bloomin eck indeed..");
@@ -862,7 +913,7 @@ function authButton(permission) {
 }
 
 function diffButton() {
-	window.alert("Placeholder");
+	getInput('Select Files to diff', 'diff');
 }
 
 //Updates the contents of all boxes.
