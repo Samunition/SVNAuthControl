@@ -1,4 +1,4 @@
-var modalTarget = ""; //Yes... I know.
+var modalTarget = "";
 var selectMultiple = true;
 var gSelectSingle = "";
 var gSearchableList = null;
@@ -1000,28 +1000,47 @@ function filterGroupsList() {
 function filterUsersList() {
 	var ul = document.getElementById("lUsers");
 	var lUsers = ul.getElementsByTagName("li");
-	var groups = Rules.ruleSet[0] //Get the groups
+	var groups = Rules.ruleSet[0]; //Get the groups
 	var users = Rules.ruleSet[1]; //Get the users
+	var perms = Rules.ruleSet[2];
 	var activeRepos = getActiveItems("lRepos"); //Get selected repos
 	var activeGroups = getActiveItems("lGroups"); //Get selected groups
-	var thisPermission = 0;
 	var thisGroupsUsers;
-	var perms = Rules.ruleSet[2];
+	var thisGroupsRules;
+	var inherited=false;
 	console.log(lUsers);
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
 		if (activeRepos.length != 0) { //If only users with access to the selected repositories should appear
-			for (var j = 0; j < activeRepos.length; j++) { // For all selected repos
-				for (var k = 0; k < perms.length; k++) { //For all permissions
+			for (var j=0; j<activeRepos.length; j++) { // For all selected repos
+				for (var k=0; k<perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match, get current rules if exist
-						for (var n = 0; n < perms[k][1].length; n++) {
-							// console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
-							if (perms[k][1][n][0] == lUsers[i].innerText) { //If the group has permission
-								if (perms[k][1][n][1] == 'r') { //Depending on permission
-									addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the group
-								} else {
-									addReadWriteImage(lUsers[i]); //Show the "WRITE" icon alongside the group
+						for (var l=0; l<perms[k][1].length; l++) { //For each permission
+						inherited=false;
+							for (var p=0; p<groups.length; p++) { //Check all the groups to see if any have it
+								thisGroupsRules = ruleLoader(groups[p][0]);
+								for (var q=0; q<thisGroupsRules.length; q++) {
+									if (thisGroupsRules[q][1][0][1] == perms[k][1][l][0]) { //if there IS a group with the permission
+										thisGroupsUsers = groupUsersLoader(groups[p][0]);
+										if (thisGroupsUsers.includes(lUsers[i].innerText)) { //And if it contains this user
+											inherited=true;
+											if (perms[k][1][l][1] == 'r') { //Depending on permission
+												addReadOnlyInheritImage(lUsers[i]); //Show the "READ" icon alongside the user
+											} else {
+												addReadWriteInheritImage(lUsers[i]); //Show the "WRITE" icon alongside the user
+											}
+										}
+									}
+								}
+							}
+							if (!inherited) {
+								if (perms[k][1][l][0] == lUsers[i].innerText) { //If the user has permission
+									if (perms[k][1][l][1] == 'r') { //Depending on permission
+										addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the user
+									} else {
+										addReadWriteImage(lUsers[i]); //Show the "WRITE" icon alongside the user
+									}
 								}
 							}
 						}
@@ -1046,7 +1065,7 @@ function filterUsersList() {
 				}
 			}
 		}
-	}
+	}	
 }
 
 function filterReposList() {
@@ -1072,7 +1091,6 @@ function filterReposList() {
 					for (var l=0; l<iRules[k][1].length; l++) {
 						if ((iRules[k][1][l][0]  == 'rw') || (iRules[k][1][l][0]  == 'r')) {
 							console.log("Repos filter has a rule from " + iRules[k][1][l][1]);
-
 							console.log(groups.includes(iRules[k][1][l][1]) + " " + users.includes(activeDelegates[j].innerText) + currentAuthLevel != "rw");
 							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText)) && currentAuthLevel != "rw") {
 								console.log("Inherited set to true");
