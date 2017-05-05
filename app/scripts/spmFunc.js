@@ -675,6 +675,7 @@ function getInput(prompt, target) {
 	if (target == "repoRule") {
 		modalButton.innerText = "Authorise";
 		modalText.style.display = "none";
+		modalRadio.style.display = "block";
 	} else {
 		modalRadio.style.display = "none";
 		if (target == "rename") {
