@@ -1,4 +1,4 @@
-var modalTarget = "";
+var modalTarget = ""; //Yes... I know.
 var selectMultiple = true;
 var gSelectSingle = "";
 var gSearchableList = null;
@@ -7,6 +7,7 @@ var gWrapped = 0;
 var relevantGroupsOnly = false;
 var relevantReposOnly = false;
 var relevantUsersOnly = false;
+var files;
 
 var Rules = {
 	ruleSet : []
@@ -39,9 +40,24 @@ function diff(oldFile, newFile) {
 			file2: newFile
 		},
 		success: function(differences) {
-			console.log(differences);
+			alert(differences);
+
 		}
 	});
+}
+
+function loadDirectory() {
+	$.ajax({
+		url: '/scripts/read-dir.php',
+		type: 'GET'
+	}).done(function(rfiles) {
+			var fileList = rfiles;
+			fileList = fileList.replace("\[", "");
+			fileList = fileList.replace("\]", "");
+			fileList = fileList.replace(/\"/g, '');
+			files = fileList.split(",");
+			console.log(files);
+		});
 }
 
 // Change to load rules
@@ -82,6 +98,7 @@ function load() {
 				 console.log(Rules.ruleSet[2]);
 				// addRepoRule("/anotherone", "group9", "rw");
 		  // deleteUser("user1");
+			loadDirectory();
 		} catch(err) {
 			document.getElementById("pleaseWaitMessage").innerHTML = "";
 			popupPrompt("Failed to load, "+err.message+".","50","50","800","300");
@@ -185,7 +202,7 @@ function deleteGroup(groupName) {
     var nUsers = Rules.ruleSet[1].length;
     var nGroups = Rules.ruleSet[0].length;
     var nRepos = Rules.ruleSet[2].length;
-	for (var i = 0; i < nGroups; i++) {
+	for (var i = nGroups - 1; i >= 0; i--) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
 			Rules.ruleSet[0].splice(i, 1);
 			console.log("deleted");
@@ -195,7 +212,7 @@ function deleteGroup(groupName) {
     for (var i = 0; i < nRepos; i++)
     {
         var newReposLength = Rules.ruleSet[2][i][1].length;
-        for (var j = 0; j < newReposLength; j++)
+        for (var j = newReposLength - 1; j >= 0; j--)
         {
             if (Rules.ruleSet[2][i][1][j][0] == groupName)
             {
@@ -259,7 +276,7 @@ function deleteUser(username) {
     var nGroups = Rules.ruleSet[0].length;
     var nRepos = Rules.ruleSet[2].length;
 
-    for (var i = 0; i < nUsers; i++)
+    for (var i = nUsers-1; i >= 0; i--)
     {
         if(Rules.ruleSet[1][i] == username)
         {
@@ -267,10 +284,10 @@ function deleteUser(username) {
             console.log("User deleted from user list");
         }
     }
-	for (var i = 0; i < nGroups; i++)
+	for (var i = nGroups - 1; i >= 0; i--)
     {
         var newGroupLength = Rules.ruleSet[0][i].length;
-        for (var j = 0; j < newGroupLength; j++)
+        for (var j = newGroupLength - 1; j >= 0; j--)
         {
             if (Rules.ruleSet[0][i][1][j] == username)
             {
@@ -280,10 +297,10 @@ function deleteUser(username) {
         }
     }
 
-    for (var i = 0; i < nRepos; i++)
+    for (var i = nRepos - 1; i >= 0; i--)
     {
         var newReposLength = Rules.ruleSet[2][i][1].length;
-        for (var j = 0; j < newReposLength; j++)
+        for (var j = newReposLength - 1; j >= 0; j--)
         {
             if (Rules.ruleSet[2][i][1][j][0] == username)
             {
@@ -389,6 +406,7 @@ function saveFile() {
       groups: jsonStringGroup,
 			repos: jsonStringRepos
     }}).done(function(deleted) {
+			loadDirectory();
 			if (deleted == "true") {
 				popupPrompt("Saved to file", "50", "50", "320", "24", true);
 			}
@@ -677,9 +695,13 @@ function getInput(prompt, target) {
 	var modalButton = document.getElementById("modalButton");
 	var modalRadio = document.getElementById("modalRadio");
 	var modalText = document.getElementById("modalContent");
+	var oldDropDown = document.getElementById("oldDropDown");
+	var newDropDown = document.getElementById("newDropDown");
 	modal.style.display = "block";
 	modalText.style.display = "block";
 	modalHead.innerHTML = prompt;
+	oldDropDown.style.display = "none";
+	newDropDown.style.display = "none";
 	if (target == "repoRule") {
 		modalButton.innerText = "Authorise";
 		modalText.style.display = "none";
@@ -691,6 +713,28 @@ function getInput(prompt, target) {
 		} else {
 			modalButton.innerText = "Create";
 		}
+	} if (target == "diff") {
+			modalButton.innerText = "Diff files";
+			modalText.style.display = "none";
+			oldDropDown.style.display = "inline";
+			newDropDown.style.display = "inline";
+			populateFiles();
+	}
+}
+
+function populateFiles() {
+	var oSelect = document.getElementById("oldDropDown");
+	var nSelect = document.getElementById("newDropDown");
+	for(var i = 2; i < files.length; i++) {
+		var opt = document.createElement("option");
+   	opt.value = files[i];
+   	opt.innerHTML = files[i];
+		oSelect.appendChild(opt);
+
+		var opt = document.createElement("option");
+   	opt.value = files[i];
+   	opt.innerHTML = files[i];
+		nSelect.appendChild(opt);
 	}
 }
 
@@ -764,6 +808,13 @@ function okModal() {
 				ruletype = "rw";
 			}
 			authButton(ruletype);
+			break;
+		case "diff":
+			var oldFile = document.getElementById("oldDropDown");
+			var newFile = document.getElementById("newDropDown");
+			var oldStr = "../files/" + oldFile.options[oldFile.selectedIndex].text;
+			var newStr = "../files/" + newFile.options[newFile.selectedIndex].text;
+			diff(oldStr, newStr);
 			break;
 		default:
 			window.alert("Modal box error - it was passed something unknown. Bloomin eck indeed..");
@@ -862,7 +913,7 @@ function authButton(permission) {
 }
 
 function diffButton() {
-	window.alert("Placeholder");
+	getInput('Select Files to diff', 'diff');
 }
 
 //Updates the contents of all boxes.
@@ -949,47 +1000,28 @@ function filterGroupsList() {
 function filterUsersList() {
 	var ul = document.getElementById("lUsers");
 	var lUsers = ul.getElementsByTagName("li");
-	var groups = Rules.ruleSet[0]; //Get the groups
+	var groups = Rules.ruleSet[0] //Get the groups
 	var users = Rules.ruleSet[1]; //Get the users
-	var perms = Rules.ruleSet[2];
 	var activeRepos = getActiveItems("lRepos"); //Get selected repos
 	var activeGroups = getActiveItems("lGroups"); //Get selected groups
+	var thisPermission = 0;
 	var thisGroupsUsers;
-	var thisGroupsRules;
-	var inherited=false;
+	var perms = Rules.ruleSet[2];
 	console.log(lUsers);
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
 		if (activeRepos.length != 0) { //If only users with access to the selected repositories should appear
-			for (var j=0; j<activeRepos.length; j++) { // For all selected repos
-				for (var k=0; k<perms.length; k++) { //For all permissions
+			for (var j = 0; j < activeRepos.length; j++) { // For all selected repos
+				for (var k = 0; k < perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match, get current rules if exist
-						for (var l=0; l<perms[k][1].length; l++) { //For each permission
-						inherited=false;
-							for (var p=0; p<groups.length; p++) { //Check all the groups to see if any have it
-								thisGroupsRules = ruleLoader(groups[p][0]);
-								for (var q=0; q<thisGroupsRules.length; q++) {
-									if (thisGroupsRules[q][1][0][1] == perms[k][1][l][0]) { //if there IS a group with the permission
-										thisGroupsUsers = groupUsersLoader(groups[p][0]);
-										if (thisGroupsUsers.includes(lUsers[i].innerText)) { //And if it contains this user
-											inherited=true;
-											if (perms[k][1][l][1] == 'r') { //Depending on permission
-												addReadOnlyInheritImage(lUsers[i]); //Show the "READ" icon alongside the user
-											} else {
-												addReadWriteInheritImage(lUsers[i]); //Show the "WRITE" icon alongside the user
-											}
-										}
-									}
-								}
-							}
-							if (!inherited) {
-								if (perms[k][1][l][0] == lUsers[i].innerText) { //If the user has permission
-									if (perms[k][1][l][1] == 'r') { //Depending on permission
-										addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the user
-									} else {
-										addReadWriteImage(lUsers[i]); //Show the "WRITE" icon alongside the user
-									}
+						for (var n = 0; n < perms[k][1].length; n++) {
+							// console.log(perms[k][1][n][0] + " == " + lUsers[i].innerText);
+							if (perms[k][1][n][0] == lUsers[i].innerText) { //If the group has permission
+								if (perms[k][1][n][1] == 'r') { //Depending on permission
+									addReadOnlyImage(lUsers[i]); //Show the "READ" icon alongside the group
+								} else {
+									addReadWriteImage(lUsers[i]); //Show the "WRITE" icon alongside the group
 								}
 							}
 						}
@@ -1014,7 +1046,7 @@ function filterUsersList() {
 				}
 			}
 		}
-	}	
+	}
 }
 
 function filterReposList() {
@@ -1040,6 +1072,7 @@ function filterReposList() {
 					for (var l=0; l<iRules[k][1].length; l++) {
 						if ((iRules[k][1][l][0]  == 'rw') || (iRules[k][1][l][0]  == 'r')) {
 							console.log("Repos filter has a rule from " + iRules[k][1][l][1]);
+
 							console.log(groups.includes(iRules[k][1][l][1]) + " " + users.includes(activeDelegates[j].innerText) + currentAuthLevel != "rw");
 							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText)) && currentAuthLevel != "rw") {
 								console.log("Inherited set to true");
