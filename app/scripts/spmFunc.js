@@ -1,4 +1,11 @@
-var modalTarget = ""; //Yes... I know.
+/*
+	AUTHORS
+	Sam Lee (eeu6b2)
+	Jamie Dayan (eeu6ab)
+	DEBUGGING - Adam Tattersall (eeu694)
+*/
+
+var modalTarget = "";
 var selectMultiple = true;
 var gSelectSingle = "";
 var gSearchableList = null;
@@ -9,18 +16,21 @@ var relevantReposOnly = false;
 var relevantUsersOnly = false;
 var files;
 
+/*
+	Rules data structure that holds the ruleset
+	Author: Sam Lee (eeu6b2)
+*/
 var Rules = {
 	ruleSet : []
 };
 
-//Will be run when page is loaded
+// Will be run when page is loaded
 function startup() {
 	interfaceSetup();
-	//loadFile();
 	load();
-	updateContext(); //Should not be called before load();
+	updateContext();
 }
-
+// Prepares the modal for use
 function modalSetup() {
 	var modal = document.getElementById('modalbox'); // Get the modal
 	modal.style.display = "none";
@@ -30,7 +40,10 @@ function modalSetup() {
 	    }
 	};
 }
-
+/*
+	Calls the diff-files php script with two arguments that are paths to the files
+	Author: Sam Lee (eeu6b2)
+*/
 function diff(oldFile, newFile) {
 	$.ajax({
 		url: '/scripts/diff-files.php',
@@ -45,7 +58,10 @@ function diff(oldFile, newFile) {
 		}
 	});
 }
-
+/*
+	Calls the read-dir.php script and strips unwanted characters
+	Author: Sam Lee (eeu6b2)
+*/
 function loadDirectory() {
 	$.ajax({
 		url: '/scripts/read-dir.php',
@@ -56,11 +72,14 @@ function loadDirectory() {
 			fileList = fileList.replace("\]", "");
 			fileList = fileList.replace(/\"/g, '');
 			files = fileList.split(",");
-			console.log(files);
+			
 		});
 }
 
-// Change to load rules
+/*
+	Calls the load-groups.php script which loads the rules
+	Author: Sam Lee (eeu6b2)
+*/
 function load() {
 	$.ajax({
     url: '/scripts/load-groups.php',
@@ -68,36 +87,7 @@ function load() {
     type: 'POST',
     success: function(rules) {
 		try {
-			console.log("Parsing rules");
-			// Rules.ruleSet = [groups, users, repos]
 			Rules.ruleSet = parseFileData(rules);
-			console.log("Rules parsed and stored");
-			console.log("Populating lists");
-			console.log("Lists populated");
-			//addUser("Samuel");
-			addGroup("samsgroup", ["sam", "and", "his", "mates"]);
-			updateGroup("samsgroup", ["boff", "jeff"]);
-
-			console.log(Rules.ruleSet[0]);
-			//addGroup("samsgroup", ["sam", "and", "his", "mates"]);
-			addRepoRule("/anotherone", "samsgroup", "rw");
-			// deleteGroup("samsgroup");
-			console.log(Rules.ruleSet[2]);
-			console.log(Rules.ruleSet[0]);
-			console.log(Rules.ruleSet[2]);
-			deleteRepoRule("/anotherone", "samsgroup");
-			console.log(Rules.ruleSet[2]);
-				// console.log("Load user rules");
-				// userRuleLoader("user1");
-				// rebuildFile();
-				// deleteRepo("/");
-				// deleteRepo("lol");
-				// deleteRepoRule("/anotherone", "group5");
-				 addRepoRule("/anotherone", "samsgroup", "rw");
-				 deleteRepoRule("/anotherone", "samsgroup");
-				 console.log(Rules.ruleSet[2]);
-				// addRepoRule("/anotherone", "group9", "rw");
-		  // deleteUser("user1");
 			loadDirectory();
 		} catch(err) {
 			document.getElementById("pleaseWaitMessage").innerHTML = "";
@@ -107,7 +97,10 @@ function load() {
   });
 }
 
-// Checks if an item exists in and if not pushes it
+/*
+	Checks if an item exists in and, if not, pushes it
+	Author: Sam Lee (eeu6b2)
+*/
 Array.prototype.pushUnique = function(item) {
 	if (this.indexOf(item) == -1) {
 		this.push(item);
@@ -116,6 +109,10 @@ Array.prototype.pushUnique = function(item) {
 	return false;
 };
 
+/*
+	Parses the JSON that is returned from the load-groups.php script
+	Author: Sam Lee (eeu6b2)
+*/
 function parseFileData(fileData) {
 	// groups[i][0] to get the group names
 	// groups[i][1] to get the group members array
@@ -169,6 +166,10 @@ function parseFileData(fileData) {
 	return rules;
 }
 
+/*
+	Wraps all list items with context anchors to aid user interface interaction management
+	Author: Jamie Dayan (eeu6ab)
+*/
 function wrapListItems() {
 	if (gWrapped == 1) {
 		$("*").unwrap(".contextgroupAnchor");
@@ -178,6 +179,10 @@ function wrapListItems() {
 	$(".contextgroup").wrap('<a class = "contextgroupAnchor" href = "#" onclick = "activate(\'contextgroup\');"></a>'); //This need only run once whenever stuff is added
 }
 
+/*
+	Checks if the group exists and, if not, creates it
+	Author: Sam Lee (eeu6b2)
+*/
 function addGroup(groupName, usernames) {
 	var nGroups = Rules.ruleSet[0].length;
 	var found = false;
@@ -198,6 +203,10 @@ function addGroup(groupName, usernames) {
 	return true;
 }
 
+/*
+	Deletes the given group and associated rules
+	Author: Sam Lee (eeu6b2)
+*/
 function deleteGroup(groupName) {
     var nUsers = Rules.ruleSet[1].length;
     var nGroups = Rules.ruleSet[0].length;
@@ -205,7 +214,7 @@ function deleteGroup(groupName) {
 	for (var i = nGroups - 1; i >= 0; i--) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
 			Rules.ruleSet[0].splice(i, 1);
-			console.log("deleted");
+			
 			break;
 		}
 	}
@@ -225,6 +234,10 @@ function deleteGroup(groupName) {
 	updateLists();
 }
 
+/*
+	Updates group with passed usernames
+	Author: Sam Lee (eeu6b2)
+*/
 function updateGroup(groupName, usernames) {
 	//usernames is an array
     var nGroups = Rules.ruleSet[0].length;
@@ -236,6 +249,10 @@ function updateGroup(groupName, usernames) {
 	updateLists();
 }
 
+/*
+	Removes the passed user from a group
+	Author: Jamie Dayan (eeu6ab)
+*/
 function removeUser(groupName, username) { //Removes a user from a group
 	var newUserSet = [];
 	for (var i=0; i<Rules.ruleSet[0].length; i++) {
@@ -250,6 +267,10 @@ function removeUser(groupName, username) { //Removes a user from a group
 	}
 }
 
+/*
+	Removes all users from a group
+	Author: Jamie Dayan (eeu6ab)
+*/
 function emptyGroup(groupName) {
 	for (var i=0; i<Rules.ruleSet[0].length; i++) {
 		if (Rules.ruleSet[0][i][0] == groupName) {
@@ -259,9 +280,12 @@ function emptyGroup(groupName) {
 	updateLists();
 }
 
+/*
+	Adds a user if it does not exist
+	Author: Sam Lee (eeu6b2)
+*/
 function addUser(username) {
 	if (Rules.ruleSet[1].pushUnique(username)) {
-		console.log("User added");
 		updateLists();
 		return true;
 	}
@@ -270,6 +294,10 @@ function addUser(username) {
 	}
 }
 
+/*
+	Deletes the user and associated rules
+	Author: Sam Lee (eeu6b2)
+*/
 function deleteUser(username) {
 	// Delete from users and from group rules and repos
     var nUsers = Rules.ruleSet[1].length;
@@ -281,7 +309,7 @@ function deleteUser(username) {
         if(Rules.ruleSet[1][i] == username)
         {
             Rules.ruleSet[1].splice(i, 1);
-            console.log("User deleted from user list");
+            
         }
     }
 	for (var i = nGroups - 1; i >= 0; i--)
@@ -292,7 +320,7 @@ function deleteUser(username) {
             if (Rules.ruleSet[0][i][1][j] == username)
             {
                 Rules.ruleSet[0][i][1].splice(j, 1);
-                console.log("User deleted from group");
+                
             }
         }
     }
@@ -305,7 +333,7 @@ function deleteUser(username) {
             if (Rules.ruleSet[2][i][1][j][0] == username)
             {
                 Rules.ruleSet[2][i][1].splice(j, 1);
-                console.log("User deleted from repos");
+                
             }
         }
     }
@@ -313,6 +341,10 @@ function deleteUser(username) {
     updateLists();
 }
 
+/*
+	Checks if the group exists and, if not, creates it
+	Author: Adam Tattersall (eeu694)
+*/
 function addRepo(repoLoc, perms) {
     if (Rules.ruleSet[2].pushUnique([repoLoc, [["*", ""]]])) {
 		updateLists();
@@ -323,6 +355,10 @@ function addRepo(repoLoc, perms) {
 	}
 }
 
+/*
+	Associates a repository rule with the passed delegate
+	Author: Adam Tattersall (eeu694)
+*/
 function addRepoRule(repoLoc, delegate, perms) {
 	// Todo add a rule to the repo
 	var nRepos = Rules.ruleSet[2].length;
@@ -330,10 +366,10 @@ function addRepoRule(repoLoc, delegate, perms) {
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
 			var nRules = Rules.ruleSet[2][i][1].length;
-			console.log("Found Repo");
+			
 			for (var j = 0; j < nRules; j++) {
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
-					console.log("Rule for delegate already exists so update");
+					
 					found = true;
 					Rules.ruleSet[2][i][1][j][1] = perms;
 				}
@@ -346,6 +382,10 @@ function addRepoRule(repoLoc, delegate, perms) {
 	}
 }
 
+/*
+	Deletes a repository rule
+	Author: Adam Tattersall (eeu694)
+*/
 function deleteRepoRule(repoLoc, delegate) {
 	// Todo delete the given repo rule
 	// repos [i][1] = 2D array of rules
@@ -355,10 +395,10 @@ function deleteRepoRule(repoLoc, delegate) {
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
 			var nRules = Rules.ruleSet[2][i][1].length
-			console.log("Found Repo to delete from");
+			
 			for (var j = 0; j < nRules; j++) {
 				if (Rules.ruleSet[2][i][1][j][0] == delegate) {
-					console.log("Found" + delegate + " in " + repoLoc);
+					
 					Rules.ruleSet[2][i][1].splice(j, 1);
 				}
 			}
@@ -366,10 +406,18 @@ function deleteRepoRule(repoLoc, delegate) {
 	}
 }
 
+/*
+	Updates a repository rule
+	Author: Adam Tattersall (eeu694)
+*/
 function updateRepoRule(repoLoc, delegate, perms) {
 	// Todo update given repo rule
 }
 
+/*
+	Deletes a repository rule
+	Author: Adam Tattersall (eeu694)
+*/
 function deleteRepo(repoLoc) {
 	var nRepos = Rules.ruleSet[2].length;
 	var found = false;
@@ -377,24 +425,32 @@ function deleteRepo(repoLoc) {
 	for (var i = 0; i < nRepos; i++) {
 		if (Rules.ruleSet[2][i][0] == repoLoc) {
 			Rules.ruleSet[2].splice(i, 1);
-			console.log("deleted");
+			
 			break;
 		}
 	}
 	if (!found) {
 		// Not found
-		console.log("Repo not found");
+		
 	}
 	// Todo search repos for group and delete rules
 	updateLists();
 }
 
+/*
+	Clears the onscreen lists
+	Author: Sam Lee (eeu6b2)
+*/
 function clearLists() {
 	$(document.getElementById("lGroups")).empty();
 	$(document.getElementById("lUsers")).empty();
 	$(document.getElementById("lRepos")).empty();
 }
 
+/*
+	Calls save-file.php and passes the ruleset
+	Author: Sam Lee (eeu6b2)
+*/
 function saveFile() {
 	var jsonStringGroup = JSON.stringify(Rules.ruleSet[0]);
 	var jsonStringRepos = JSON.stringify(Rules.ruleSet[2]);
@@ -416,33 +472,13 @@ function saveFile() {
     });
 }
 
-// function ruleLoader(groupName) {
-// 	// Load rules for the passed group (or user), check each repo against the group
-// 	console.log("LOADING GROUP RULES");
-// 	var nRepos = Rules.ruleSet[2].length;
-// 	var perms = []; // perms[i][0] is all the repos with permissions
-// 	for (var i = 0; i < nRepos; i++) {
-// 		var nRules = Rules.ruleSet[2][i][1].length;
-// 		var repoPerms = [];
-// 		for (var j = 0; j < nRules; j++) {
-// 			if (Rules.ruleSet[2][i][1][j][0] == ["*"] && Rules.ruleSet[2][i][1][j][1] != "") { // Check to see if all, *, has permissions
-// 				repoPerms.push(Rules.ruleSet[2][i][1][j]);
-// 			}
-// 			if (groupName == Rules.ruleSet[2][i][1][j][0]) { // Check the checklist against repo rules
-// 				repoPerms.push([Rules.ruleSet[2][i][1][j][1], Rules.ruleSet[2][i][1][j][0]]);
-// 			}
-// 		}
-// 		// Add the repo perms to perms list
-// 		if (repoPerms.length != 0) {
-// 			perms.push([Rules.ruleSet[2][i][0], repoPerms]);
-// 		}
-//   }
-// 	return perms;
-// }
-
+/*
+	Loads the repository rules for a passed user or group
+	Author: Sam Lee (eeu6b2)
+*/
 function ruleLoader(username) {
 	// Get a list of groups the user is a part of
-	console.log("LOADING USER RULES");
+	
 	var checklist = [username];
 	var nGroups = Rules.ruleSet[0].length;
 	for (var i = 0; i < nGroups; i++) {
@@ -478,6 +514,10 @@ function ruleLoader(username) {
 	return perms;
 }
 
+/*
+	Returns an array of the users in a given group
+	Author: Jamie Dayan (eeu6ab)
+*/
 function groupUsersLoader(groupName) {
 	var groups = Rules.ruleSet[0]; //Will be the array of groups
 	for (var i=0; i<groups.length; i++) {
@@ -487,6 +527,10 @@ function groupUsersLoader(groupName) {
 	}
 }
 
+/*
+	Locates the group with the passed name's location in the rule set
+	Author: Jamie Dayan (eeu6ab)
+*/
 function findGroup(name) {
 	for (i=0; i<Rules.ruleSet[0].length; i++) {
 		if (Rules.ruleSet[0][i][0] == name) {
@@ -496,10 +540,10 @@ function findGroup(name) {
 	return -1;
 }
 
-function repoRuleLoader(repo) {
-	//Load rules for selected repos
-}
-
+/*
+	Handles keypress events
+	Author: Jamie Dayan (eeu6ab)
+*/
 function keyPressed(e) {
 	switch (e.keyCode) {
 		case 18: //Alt
@@ -515,6 +559,10 @@ function keyPressed(e) {
 	}
 }
 
+/*
+	Handles keyrelease events
+	Author: Jamie Dayan (eeu6ab)
+*/
 function keyReleased(e) {
 	switch (e.keyCode) {
 		/* case 18: //Alt
@@ -524,10 +572,10 @@ function keyReleased(e) {
 	}
 }
 
-
-//-------------------FROM HERE IS UI CODE----------------
-
-
+/*
+	Handles "Add User" button press
+	Author: Jamie Dayan (eeu6ab)
+*/
 function addUsers() {
 	var groups = getActiveItems("lGroups");
 	var users = getActiveItems("lUsers");
@@ -555,6 +603,10 @@ function addUsers() {
 	popupPrompt("Added "+users.length+" user(s) to "+groups.length+" group(s)","50","50","400","25",true);
 }
 
+/*
+	Handles removal of users
+	Author: Jamie Dayan (eeu6ab)
+*/
 function removeUsers() {
 	var aUsers = getActiveItems("lUsers");
 	var aGroups = getActiveItems("lGroups");
@@ -585,7 +637,10 @@ function removeUsers() {
 	updateLists();
 }
 
-//Shows the small black text overlay.
+/*
+	Presents a popup message to the user
+	Author: Jamie Dayan (eeu6ab)
+*/
 function popupPrompt(message, x, y, w, h, autoclose=false) {
 	popup = document.getElementById("popup");
 	//if (popup.style.display == "none") {
@@ -603,28 +658,29 @@ function popupPrompt(message, x, y, w, h, autoclose=false) {
 	//} else { return false; }
 }
 
-//Hides the small black text overlay.
+/*
+	Hides the popup message
+	Author: Jamie Dayan (eeu6ab)
+*/
 function closePopupPrompt() {
 	popup = document.getElementById("popup");
 	popup.style.display = "none";
 }
 
-//Activates the clicked item in the list where all elements have the class nameOfList
+/*
+	Handles selection of list items
+	Author: Jamie Dayan (eeu6ab)
+*/
 function activate(nameOfList) {
 	var activeItem = document.activeElement;
 	if (nameOfList == "none") {
-		console.log("Deactivating all elements.");
 		var all = document.getElementsByTagName("*");
 		for (var i=0; i<all.length; i++) {
-			//console.log("Deactivating " + all[i].className);
 			all[i].className.replace("active", "");
 		}
 		return;
 	}
 	listcontent = document.getElementsByClassName(nameOfList);
-	console.log("Activate has " + nameOfList);
-	console.log("Parentally active thingy is " + document.activeElement.parentNode.id);
-	console.log("gSelectSingle is " + gSelectSingle);
 	if ((gSelectSingle == "") || (gSelectSingle == document.activeElement.parentNode.id)) {
 		activeItem = document.activeElement;
 		if (!selectMultiple) { //If only one is to be activated, deactivate everything first
@@ -639,12 +695,13 @@ function activate(nameOfList) {
 		}
 		updateContext();
 		gSelectSingle = "";
-	} else {
-		console.log("You can't click this at the moment");
 	}
 }
 
-//Returns an array of the items currently selected by the user
+/*
+	Returns an array of the items currently selected by the user
+	Author: Jamie Dayan (eeu6ab)
+*/
 function getActiveItems(whichList) {
 	var all = document.getElementsByTagName("*");
 	var activeItems = [];
@@ -658,16 +715,24 @@ function getActiveItems(whichList) {
 	return activeItems;
 }
 
+/*
+	Prepares the search functionality for the passed list
+	Author: Jamie Dayan (eeu6ab)
+*/
 function prepSearch(which) {
 	var listContainer;
 	listContainer = document.getElementById(which);
 	gSearchableList = listContainer.getElementsByTagName("li");
 }
 
+/*
+	Searches the prepared list
+	Author: Jamie Dayan (eeu6ab)
+*/
 function search() {
 	var results = 0;
 	var currentItem;
-	console.log("Searching list " + gSearchableList);
+	
 	for (var i=0; i<gSearchableList.length; i++) {
 		currentItem = gSearchableList[i].innerHTML;
 		if (currentItem.toUpperCase().includes(document.activeElement.value.toUpperCase())) {
@@ -677,9 +742,13 @@ function search() {
 			gSearchableList[i].style.display = 'none';
 		}
 	}
-	console.log("Search returned " + results + " results.");
+	
 }
 
+/*
+	Ends the search of the prepared list
+	Author: Jamie Dayan (eeu6ab)
+*/
 function endSearch() {
 	for (var i=0; i<gSearchableList.length; i++) {
 		gSearchableList[i].style.display = 'block';
@@ -687,7 +756,10 @@ function endSearch() {
 	gSearchableList = null;
 }
 
-//Opens the modal box to get a string from the user
+/*
+	Opens the modal box to get various input from the user
+	Author: Jamie Dayan (eeu6ab)
+*/
 function getInput(prompt, target) {
 	modalTarget = target;
 	var modal = document.getElementById("modalbox");
@@ -722,22 +794,29 @@ function getInput(prompt, target) {
 	}
 }
 
+/*
+	Populates the dropdown menus with the list of files in the diff modal
+	Author: Sam Lee (eeu6b2)
+*/
 function populateFiles() {
 	var oSelect = document.getElementById("oldDropDown");
 	var nSelect = document.getElementById("newDropDown");
 	for(var i = 2; i < files.length; i++) {
 		var opt = document.createElement("option");
-   	opt.value = files[i];
-   	opt.innerHTML = files[i];
+		opt.value = files[i];
+		opt.innerHTML = files[i];
 		oSelect.appendChild(opt);
-
 		var opt = document.createElement("option");
-   	opt.value = files[i];
-   	opt.innerHTML = files[i];
+		opt.value = files[i];
+		opt.innerHTML = files[i];
 		nSelect.appendChild(opt);
 	}
 }
 
+/*
+	Closes the modal box
+	Author: Jamie Dayan (eeu6ab)
+*/
 function closeModal() {
 	var modalContents = document.getElementById("modalContent");
 	var modal = document.getElementById("modalbox");
@@ -745,8 +824,12 @@ function closeModal() {
 	modal.style.display = "none";
 }
 
+/*
+	Handles the input aquired from the user through the modal box
+	Author: Jamie Dayan (eeu6ab)
+*/
 function okModal() {
-	console.log("okModal has " + modalTarget);
+	
 	var modalContents = document.getElementById("modalContent");
 	switch (modalTarget) {
 		case "user":
@@ -770,7 +853,7 @@ function okModal() {
 				popupPrompt("Error renaming - only one item at a time can be renamed", "50", "50", "320", "40", true);
 			} else {
 				if (active[0].parentNode.parentNode.id == "lGroups") { //If it's a group to rename
-					console.log("Renaming a group.");
+					
 					for (var i=0; i<Rules.ruleSet[0].length; i++) {
 						if (Rules.ruleSet[0][i][0] == active[0].innerText) {
 							Rules.ruleSet[0][i][0] = modalContents.value;
@@ -779,7 +862,7 @@ function okModal() {
 					}
 				}
 				if (active[0].parentNode.parentNode.id == "lUsers") { //If it's a user to rename
-					console.log("Renaming a user.");
+					
 					for (var i=0; i<Rules.ruleSet[1].length; i++) {
 						if (Rules.ruleSet[1][i] == active[0].innerText) {
 							Rules.ruleSet[1][i] = modalContents.value;
@@ -788,7 +871,7 @@ function okModal() {
 					}
 				}
 				if (active[0].parentNode.parentNode.id == "lRepos") { //If it's a repo to rename
-					console.log("Renaming a repo.");
+					
 					for (var i=0; i<Rules.ruleSet[2].length; i++) {
 						if (Rules.ruleSet[2][i][0] == active[0].innerText) {
 							Rules.ruleSet[2][i][0] = modalContents.value;
@@ -823,17 +906,18 @@ function okModal() {
 	closeModal();
 }
 
+/*
+	Redirect to handle input from the "Save file" button
+	Author: Jamie Dayan (eeu6ab)
+*/
 function saveButton() {
-	var success = saveFile();
-	if (success == true) {
-		popupPrompt("Saved to file", "50", "50", "320", "24", true);
-	} else {
-		if (!popupPrompt("The file could not be saved.", "50", "50", "320", "24", true)) {
-			window.alert("The file could not be saved.");
-		}
-	}
+	saveFile();
 }
 
+/*
+	Reverts the file to the last saved state
+	Author: Jamie Dayan (eeu6ab)
+*/
 function revertButton() {
 	if (window.confirm("This will undo all changes since you last saved the file.")) {
 		load();
@@ -842,6 +926,10 @@ function revertButton() {
 	}
 }
 
+/*
+	Deletes selected items
+	Author: Jamie Dayan (eeu6ab)
+*/
 function deleteButton() {
 	var deletableGroups = getActiveItems("lGroups");
 	var deletableUsers = getActiveItems("lUsers");
@@ -864,15 +952,15 @@ function deleteButton() {
 	}
 	if (window.confirm("Ready to delete " + messageinfo + ". Continue?")) { //If the user definately wants them deleted
 		var i=0;
-		console.log("Deleting " +deletableGroups.length+ " groups...");
+		
 		for (i=0; i<deletableGroups.length; i++) {
 			deleteGroup(deletableGroups[i].innerText);
 		}
-		console.log("Deleting " +deletableUsers.length+ " users...");
+		
 		for (i=0; i<deletableUsers.length; i++) {
 			deleteUser(deletableUsers[i].innerText);
 		}
-		console.log("Deleting " +deletableRepos.length+ " repos...");
+		
 		for (i=0; i<deletableRepos.length; i++) {
 			deleteRepo(deletableRepos[i].innerText);
 		}
@@ -880,6 +968,10 @@ function deleteButton() {
 	}
 }
 
+/*
+	Renames selected item
+	Author: Jamie Dayan (eeu6ab)
+*/
 function renameButton() {
 	var active = getActiveItems("*");
 	if (active.length > 1) {
@@ -889,6 +981,10 @@ function renameButton() {
 	getInput("Enter the new name for " + active[0].innerText,"rename");
 }
 
+/*
+	Handles changes of authorisation for selected items
+	Author: Jamie Dayan (eeu6ab)
+*/
 function authButton(permission) {
 	activeDelegates = getActiveItems("lGroups").concat(getActiveItems("lUsers"));
 	activeRepos = getActiveItems("lRepos");
@@ -912,11 +1008,18 @@ function authButton(permission) {
 	popupPrompt("Authorised selection to access<br>" +activeRepos.length+ " repository(ies)", "50", "50", "320", "40", true);
 }
 
+/*
+	Handles the diff button
+	Author: Sam Lee (eeu6b2)
+*/
 function diffButton() {
 	getInput('Select Files to diff', 'diff');
 }
 
-//Updates the contents of all boxes.
+/*
+	Updates the contents of all boxes
+	Author: Sam Lee (eeu6b2)
+*/
 function updateLists() {
 	clearLists();
 	populateGroups();
@@ -926,6 +1029,10 @@ function updateLists() {
 	updateContext();
 }
 
+/*
+	Handles contextual filtering of the lists
+	Author: Jamie Dayan (eeu6ab)
+*/
 function updateContext() {
 	if (relevantGroupsOnly) {
 		document.getElementById("lGroupsHeader").innerHTML = "►Filtered Groups";
@@ -947,7 +1054,10 @@ function updateContext() {
 	filterReposList();
 }
 
-//Shows/hides items in the groups list based on selected filtering options and applies read/write icons to them
+/*
+	Shows/hides items in the groups list based on selected filtering options and applies read/write icons to them
+	Author: Jamie Dayan (eeu6ab)
+*/
 function filterGroupsList() {
 	var ul = document.getElementById("lGroups");
 	var lGroups = ul.getElementsByTagName("li");
@@ -964,7 +1074,7 @@ function filterGroupsList() {
 				for (var k = 0; k < perms.length; k++) { //For all permissions
 					if (activeRepos[j].innerText == perms[k][0]) { // If they match get current groups rule if exist
 						for (var n = 0; n < perms[k][1].length; n++) {
-							//console.log(perms[k][1][n][0] + " == " + lGroups[i].innerText);
+							//
 							if (perms[k][1][n][0] == lGroups[i].innerText) { //If the group has permission
 								if (perms[k][1][n][1] == 'r') { //Depending on permission
 									addReadOnlyImage(lGroups[i]); //Show the "READ" icon alongside the group
@@ -997,6 +1107,10 @@ function filterGroupsList() {
 	}
 }
 
+/*
+	Shows/hides items in the users list based on selected filtering options and applies read/write icons to them
+	Author: Sam Lee (eeu6b2), Jamie Dayan (eeu6ab)
+*/
 function filterUsersList() {
 var ul = document.getElementById("lUsers");
 	var lUsers = ul.getElementsByTagName("li");
@@ -1008,7 +1122,7 @@ var ul = document.getElementById("lUsers");
 	var thisGroupsUsers;
 	var thisGroupsRules;
 	var inherited=false;
-	console.log(lUsers);
+	
 	for (var i=0; i<lUsers.length; i++) { //For every user
 		lUsers[i].style.display = "block";
 		removeReadImage(lUsers[i]);
@@ -1068,6 +1182,10 @@ var ul = document.getElementById("lUsers");
 	}	
 }
 
+/*
+	Shows/hides items in the repositories list based on selected filtering options and applies read/write icons to them
+	Author: Sam Lee (eeu6b2), Jamie Dayan (eeu6ab)
+*/
 function filterReposList() {
 	var lRepos = document.getElementById("lRepos").getElementsByTagName("li");
 	var groups = Rules.ruleSet[3]; //Get the groups
@@ -1075,7 +1193,7 @@ function filterReposList() {
 	var activeGroups = getActiveItems("lGroups"); //Get selected repos
 	var activeUsers = getActiveItems("lUsers"); //Get selected repos
 	var activeDelegates = activeUsers.concat(activeGroups);
-	console.log("Repos filter has " + activeDelegates.length + " active delegates");
+	
 	var iRules;
 	var currentAuthLevel = "";
 	var inherited = false;
@@ -1085,28 +1203,28 @@ function filterReposList() {
 		lRepos[i].style.display = 'block'; //Show everything
 		for (var j=0; j<activeDelegates.length; j++) {
 			iRules = ruleLoader(activeDelegates[j].innerText);
-			console.log(iRules);
+			
 			for (var k=0; k<iRules.length; k++) {
 				if (iRules[k][0] == lRepos[i].innerText) {
 					for (var l=0; l<iRules[k][1].length; l++) {
 						if ((iRules[k][1][l][0]  == 'rw') || (iRules[k][1][l][0]  == 'r')) {
-							console.log("Repos filter has a rule from " + iRules[k][1][l][1]);
+							
 
-							console.log(groups.includes(iRules[k][1][l][1]) + " " + users.includes(activeDelegates[j].innerText) + currentAuthLevel != "rw");
+							
 							if ((groups.includes(iRules[k][1][l][1])) && (users.includes(activeDelegates[j].innerText)) && currentAuthLevel != "rw") {
-								console.log("Inherited set to true");
+								
 								currentAuthLevel = iRules[k][1][l][0];
 								inherited = true;
 							}
 							else if(!groups.includes(iRules[k][1][l][1]) && users.includes(activeDelegates[j].innerText) && currentAuthLevel != "rw") {
-								console.log("Inherited set to false");
+								
 								currentAuthLevel = iRules[k][1][l][0];
 								inherited = false;
 							}
 							else {
 								if (currentAuthLevel != "rw") {
-									console.log("Rule is from " + iRules[k][1][l][1]);
-									console.log("Input was " + activeDelegates[j].innerText);
+									
+									
 									currentAuthLevel = iRules[k][1][l][0];
 								}
 							}
@@ -1142,6 +1260,10 @@ function filterReposList() {
 	}
 }
 
+/*
+	Populates the HTML groups list with the groups
+	Author: Sam Lee (eeu6b2)
+*/
 function populateGroups() {
 	var groups = Rules.ruleSet[0];
 	var ul = document.getElementById("lGroups"); //Get the list
@@ -1156,6 +1278,10 @@ function populateGroups() {
 	}
 }
 
+/*
+	Populates the HTML repositories list with the repositories
+	Author: Sam Lee (eeu6b2)
+*/
 function populateRepos() {
 	var repos = Rules.ruleSet[2];
 	var ul = document.getElementById("lRepos"); //Get the list
@@ -1169,6 +1295,10 @@ function populateRepos() {
 	}
 }
 
+/*
+	Populates the HTML users list with the users
+	Author: Sam Lee (eeu6b2)
+*/
 function populateUsers() {
 	 var users = Rules.ruleSet[1];
 	 var ul = document.getElementById("lUsers"); //Get the user list
@@ -1182,6 +1312,10 @@ function populateUsers() {
 	 }
 }
 
+/*
+	The following five functions control permission indicators for list items.
+	Author: Jamie Dayan (eeu6ab)
+*/
 function addReadOnlyImage(toWhat) {
 	toWhat.style.backgroundImage = "url('img/read.bmp')";
 }
@@ -1202,6 +1336,10 @@ function removeReadImage(fromWhat) {
 	fromWhat.style.backgroundImage = "none";
 }
 
+/*
+	Prepares the interface for use
+	Author: Jamie Dayan (eeu6ab)
+*/
 function interfaceSetup() {
 	modalSetup();
 	gSearchableList = null;
@@ -1210,8 +1348,12 @@ function interfaceSetup() {
 	popup.style.display = "none";
 }
 
+/*
+	Handles deauthorisation button click event
+	Author: Sam Lee (eeu6b2), Jamie Dayan (eeu6ab)
+*/
 function deauthButton() {
-	console.log("Deauthing inputs");
+	
 	activeDelegates = getActiveItems("lGroups").concat(getActiveItems("lUsers"));
 	activeRepos = getActiveItems("lRepos");
 
@@ -1226,7 +1368,6 @@ function deauthButton() {
 
 	for (var i = 0; i < activeRepos.length; i++) {
 		for (var j = 0; j < activeDelegates.length; j++) {
-			console.log("Deleting " + activeDelegates[j].innerText + " from " + activeRepos[i].innerText);
 			deleteRepoRule(activeRepos[i].innerText, activeDelegates[j].innerText);
 		}
 	}
