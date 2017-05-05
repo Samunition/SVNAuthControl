@@ -381,19 +381,21 @@ function clearLists() {
 function saveFile() {
 	var jsonStringGroup = JSON.stringify(Rules.ruleSet[0]);
 	var jsonStringRepos = JSON.stringify(Rules.ruleSet[2]);
+	var successful = false;
 	$.ajax({
     url: '/scripts/save-file.php',
     type: 'POST',
     data: {
       groups: jsonStringGroup,
 			repos: jsonStringRepos
-    },
-    success: function(deleted) {
-			console.log(deleted);
-			return deleted;
-    }
-  });
-	return false;
+    }}).done(function(deleted) {
+			if (deleted == "true") {
+				popupPrompt("Saved to file", "50", "50", "320", "24", true);
+			}
+			else {
+				popupPrompt("The file could not be saved.", "50", "50", "320", "24", true);
+			}
+    });
 }
 
 // function ruleLoader(groupName) {
@@ -995,8 +997,11 @@ function filterReposList() {
 								inherited = false;
 							}
 							else {
-								console.log("group");
-								currentAuthLevel = iRules[k][1][l][0];
+								if (currentAuthLevel != "rw") {
+									console.log("Rule is from " + iRules[k][1][l][1]);
+									console.log("Input was " + activeDelegates[j].innerText);
+									currentAuthLevel = iRules[k][1][l][0];
+								}
 							}
 						}
 					}
